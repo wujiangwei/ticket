@@ -18,7 +18,7 @@ if (!config.bearychatGlobalHookUrl) {
 
 exports.newTicket = (ticket, from, to) => {
   const data = {
-    text: `LeanTicket: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 提交新工单`,
+    text: `觅马工单: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 提交新工单`,
     attachments: [{
       title: ticket.get('title'),
       text: ticket.get('content'),
@@ -33,7 +33,7 @@ exports.newTicket = (ticket, from, to) => {
 
 exports.replyTicket = ({ticket, reply, from, to, isCustomerServiceReply}) => {
   const data = {
-    text: `LeanTicket: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 回复工单`,
+    text: `觅马工单: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 回复工单`,
     attachments: [{
       title: ticket.get('title'),
       text: reply.get('content'),
@@ -48,7 +48,7 @@ exports.replyTicket = ({ticket, reply, from, to, isCustomerServiceReply}) => {
 
 exports.changeAssignee = (ticket, from ,to) => {
   const data = {
-    text: `LeanTicket: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 将工单转交给 ${to.get('username')}`,
+    text: `觅马工单: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 将工单转交给 ${to.get('username')}`,
     attachments: [{
       title: ticket.get('title'),
       text:
@@ -72,7 +72,7 @@ ${ticket.get('latestReply') && ticket.get('latestReply').content}
 exports.ticketEvaluation = (ticket, from, to) => {
   const {star, content} = ticket.get('evaluation')
   const data = {
-    text: `LeanTicket: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 评价工单`,
+    text: `觅马工单: [[${ticket.get('category').name}] #${ticket.get('nid')}](${common.getTicketUrl(ticket)}): ${from.get('username')} 评价工单`,
     attachments: [{
       title: ticket.get('title'),
       text:

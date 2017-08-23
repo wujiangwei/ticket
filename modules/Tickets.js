@@ -99,7 +99,7 @@ export default class Tickets extends Component {
     }
     return (
       <div>
-        <DocumentTitle title='工单列表 - LeanTicket' />
+        <DocumentTitle title='工单列表 - MimaTicket' />
         {ticketLinks}
         <Pager>
           <Pager.Item disabled={this.state.filters.page === 0} previous onClick={() => this.findTickets({page: this.state.filters.page - 1})}>&larr; 上一页</Pager.Item>

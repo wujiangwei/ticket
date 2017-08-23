@@ -17,7 +17,7 @@ exports.newTicket = (ticket, from, to) => {
   return send({
     from: `${from.get('username')} <ticket-${to.id}@leancloud.cn>`,
     to: to.get('email'),
-    subject: `[LeanTicket] ${ticket.get('title')} (#${ticket.get('nid')})`,
+    subject: `[觅马工单] ${ticket.get('title')} (#${ticket.get('nid')})`,
     text: ticket.get('content'),
     url: common.getTicketUrl(ticket),
   })
@@ -30,7 +30,7 @@ exports.replyTicket = ({ticket, reply, from, to}) => {
   return send({
     from: `${from.get('username')} <ticket-${to.id}@leancloud.cn>`,
     to: to.get('email'),
-    subject: `[LeanTicket] ${ticket.get('title')} (#${ticket.get('nid')})`,
+    subject: `[觅马工单] ${ticket.get('title')} (#${ticket.get('nid')})`,
     text: reply.get('content'),
     url: common.getTicketUrl(ticket),
   })
@@ -43,7 +43,7 @@ exports.changeAssignee = (ticket, from, to) => {
   return send({
     from: `${from.get('username')} <ticket-${to.id}@leancloud.cn>`,
     to: to.get('email'),
-    subject: `[LeanTicket] ${ticket.get('title')} (#${ticket.get('nid')})`,
+    subject: `[觅马工单] ${ticket.get('title')} (#${ticket.get('nid')})`,
     text:
       `${from.get('username')} 将该工单转交给您处理。
 该工单的问题：

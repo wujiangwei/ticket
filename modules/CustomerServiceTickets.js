@@ -297,7 +297,7 @@ export default class CustomerServiceTickets extends Component {
     }
     return (
       <div>
-        <DocumentTitle title='客服工单列表 - LeanTicket' />
+        <DocumentTitle title='客服工单列表 - MimaTicket' />
         {ticketAdminFilters}
 
         {ticketTrs}

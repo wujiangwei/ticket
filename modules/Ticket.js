@@ -359,7 +359,7 @@ export default class Ticket extends Component {
       <div>
         <div className="row">
           <div className="col-sm-12">
-            <DocumentTitle title={ticket.get('title') + ' - LeanTicket' || 'LeanTicket'} />
+            <DocumentTitle title={ticket.get('title') + ' - MimaTicket' || 'MimaTicket'} />
             <h1>{ticket.get('title')}</h1>
             <div className={css.meta}>
               <span className={csCss.nid}>#{ticket.get('nid')}</span>

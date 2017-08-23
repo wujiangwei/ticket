@@ -49,7 +49,7 @@ export default class CSStatsUser extends React.Component {
       </tr>
     })
     return <div>
-      <DocumentTitle title='统计 - LeanTicket' />
+      <DocumentTitle title='统计 - MimaTicket' />
       <Table>
         <thead>
           <td>工单 ID</td>
