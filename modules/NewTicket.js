@@ -150,7 +150,7 @@ export default class NewTicket extends React.Component {
           <input type="text" className="form-control" value={this.state.title} onChange={this.handleTitleChange.bind(this)} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>相关应用</ControlLabel>
+          <ControlLabel>运营区域</ControlLabel>
           <FormControl componentClass="select" value={this.state.appId} onChange={this.handleAppChange.bind(this)}>
             <option key='empty'></option>
             {appOptions}

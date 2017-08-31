@@ -4,9 +4,9 @@ const AV = require('leanengine')
 const config = require('../config')
 
 AV.init({
-  appId: process.env.LEANCLOUD_APP_ID,
-  appKey: process.env.LEANCLOUD_APP_KEY,
-  masterKey: process.env.LEANCLOUD_APP_MASTER_KEY
+  appId: process.env.LEANCLOUD_APP_ID || 'L7MQR1cbaG4AHdoGy3cBwJCc-gzGzoHsz',
+  appKey: process.env.LEANCLOUD_APP_KEY || '5v2X69PNeicRiDBCkdy1VcIi',
+  masterKey: process.env.LEANCLOUD_APP_MASTER_KEY || '00wdUUDgiF2og0de2iJou4ns'
 })
 AV.setProduction(process.env.NODE_ENV === 'production')
 

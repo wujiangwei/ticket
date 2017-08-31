@@ -35,8 +35,8 @@ if (SENTRY_PUB_DSN !== '') {
 }
 
 AV.init({
-  appId: LEANCLOUD_APP_ID,
-  appKey: LEANCLOUD_APP_KEY,
+  appId: LEANCLOUD_APP_ID || 'L7MQR1cbaG4AHdoGy3cBwJCc-gzGzoHsz',
+  appKey: LEANCLOUD_APP_KEY || '5v2X69PNeicRiDBCkdy1VcIi',
 })
 if (LEANCLOUD_APP_ENV === 'development') {
   AV.setProduction(LEAN_CLI_HAVE_STAGING !== 'true')

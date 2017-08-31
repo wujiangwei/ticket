@@ -11,7 +11,7 @@ const serverDomain = 'https://leancloud.cn'
 const oauthScope = 'client:info app:info client:account'
 
 if (!config.leancloudAppUrl) {
-  console.log('leancloudAppUrl 没有配置，导致无法生成应用链接。')
+  console.log('(oauth功能)leancloudAppUrl 没有配置，导致无法生成应用链接。')
 }
 
 exports.orgName = 'LeanCloud'
