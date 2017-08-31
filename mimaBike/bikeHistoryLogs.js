@@ -25,7 +25,7 @@ router.post('/ebileHistorys', function(req, res) {
     newEBikeLog.set('SourceType', parseInt(req.body.SourceType));
 
     newEBikeLog.save().then(function (savedNewEBikeLog) {
-        console.log('objectId is ' + savedNewEBikeLog.id);
+        // console.log('objectId is ' + savedNewEBikeLog.id);
         return res.json({'errorCode':0});
     }, function (error) {
         console.error(req.body.SN + ' save log failed:' + error);
@@ -51,6 +51,7 @@ router.post('/ebileLogList',function (req, res) {
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
     ebikeHistoryLogQuery.limit(req.body.pageCount);
     ebikeHistoryLogQuery.skip(req.body.pageCount * req.params.pageIndex);
+    ebikeHistoryLogQuery.descending();
 
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
         var resLogList = new Array();
@@ -61,7 +62,7 @@ router.post('/ebileLogList',function (req, res) {
             historyLogObject.LogType = ebikeHistoryLogObjects[i].get('LogType');
             historyLogObject.Remark = ebikeHistoryLogObjects[i].get('Remark');
             historyLogObject.SourceType = ebikeHistoryLogObjects[i].get('SourceType');
-            historyLogObject.OperationTime = ebikeHistoryLogObjects[i].createdAt;
+            historyLogObject.OperationTime = new Date(ebikeHistoryLogObjects[i].createdAt.getTime() + 8*60*60*1000);
 
             resLogList.push(historyLogObject);
         }
