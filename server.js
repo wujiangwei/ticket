@@ -1,4 +1,5 @@
 const express = require('express')
+var timeout = require('connect-timeout');
 const favicon = require('serve-favicon')
 const path = require('path')
 const bodyParser = require('body-parser')
@@ -9,6 +10,9 @@ const AV = require('leanengine')
 const app = express()
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(compression())
+
+// 设置默认超时时间
+app.use(timeout('15s'));
 
 // 加载云引擎中间件
 app.use(AV.express())
@@ -21,6 +25,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(require('./api'))
+app.use('/logs', require('./mimaBike/bikeHistoryLogs'))
 
 const orgName = require('./api/oauth').orgName
 
