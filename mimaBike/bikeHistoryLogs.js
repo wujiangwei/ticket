@@ -18,11 +18,11 @@ router.post('/ebileHistorys', function(req, res) {
     }
 
     newEBikeLog.set('SN', req.body.SN);
-    newEBikeLog.set('LogType', req.body.LogType);
+    newEBikeLog.set('LogType', parseInt(req.body.LogType));
     newEBikeLog.set('Content', req.body.Content);
     newEBikeLog.set('Remark', req.body.Remark);
     // newEBikeLog.set('OperationTime', req.body.OperationTime);
-    newEBikeLog.set('SourceType', req.body.SourceType);
+    newEBikeLog.set('SourceType', parseInt(req.body.SourceType));
 
     newEBikeLog.save().then(function (savedNewEBikeLog) {
         console.log('objectId is ' + savedNewEBikeLog.id);
@@ -34,7 +34,44 @@ router.post('/ebileHistorys', function(req, res) {
 })
 
 
-// 加载云函数定义
-// require('./bikeHistoryLogs')
+router.post('/ebileLogList',function (req, res) {
+
+    if(req.body.SN == undefined || req.body.SN.length == 0){
+        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
+    }
+
+    if(req.body.pageIndex == undefined){
+        req.body.pageIndex = 0;
+    }
+    if(req.body.pageCount == undefined){
+        req.body.pageCount = 500;
+    }
+
+    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
+    ebikeHistoryLogQuery.limit(req.body.pageCount);
+    ebikeHistoryLogQuery.skip(req.body.pageCount * req.params.pageIndex);
+
+    ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
+        var resLogList = new Array();
+        for(var i = 0; i < ebikeHistoryLogObjects.length; i++){
+            var historyLogObject = Object();
+            historyLogObject.SN = ebikeHistoryLogObjects[i].get('SN');
+            historyLogObject.Content = ebikeHistoryLogObjects[i].get('Content');
+            historyLogObject.LogType = ebikeHistoryLogObjects[i].get('LogType');
+            historyLogObject.Remark = ebikeHistoryLogObjects[i].get('Remark');
+            historyLogObject.SourceType = ebikeHistoryLogObjects[i].get('SourceType');
+            historyLogObject.OperationTime = ebikeHistoryLogObjects[i].createdAt;
+
+            resLogList.push(historyLogObject);
+        }
+
+        res.json({'ebikeHistoryLogs' : resLogList});
+    }).catch(function(err) {
+        res.status(500).json({
+            error: err.message
+        });
+    });
+})
 
 module.exports = router
