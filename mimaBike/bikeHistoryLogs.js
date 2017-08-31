@@ -51,7 +51,7 @@ router.post('/ebileLogList',function (req, res) {
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
     ebikeHistoryLogQuery.limit(req.body.pageCount);
     ebikeHistoryLogQuery.skip(req.body.pageCount * req.params.pageIndex);
-    ebikeHistoryLogQuery.descending();
+    ebikeHistoryLogQuery.descending('createdAt');
 
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
         var resLogList = new Array();
