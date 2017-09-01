@@ -82,21 +82,19 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
     }
 
-    if(req.body.queryDate == undefined){
-        return res.json({'errorCode':1, 'errorMsg':'queryDate is empty'});
-    }
-
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
 
-    var queryDateTime = new Date(req.body.queryDate).getTime();
-    var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
-    var queryDateTimeBigger = new Date(queryDateTime + 5*60*1000);
+    if(req.body.queryDate != undefined || req.body.queryDate.length == 0){
+        var queryDateTime = new Date(req.body.queryDate).getTime();
+        var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
 
-    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
-    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeBigger);
+        ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
+        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
+    }
 
     ebikeHistoryLogQuery.descending('createdAt');
+    ebikeHistoryLogQuery.limit(1);
 
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
 
