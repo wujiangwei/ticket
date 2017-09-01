@@ -84,6 +84,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
+    ebikeHistoryLogQuery.contains('Content', 'latitudeMinute');
 
     if(req.body.queryDate != undefined || req.body.queryDate.length > 0){
         var queryDateTime = new Date(req.body.queryDate).getTime();
@@ -107,9 +108,15 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         var Content = historyLogObject.get('Content');
 
         function getValueFromStr(valueKey) {
-            var valueIndex = Content.indexOf(valueKey) + valueKey.length + 3;
-            var valueIndexEnd = Content.indexOf("\"", valueIndex);
-            return Content.substr(valueIndex, valueIndexEnd - valueIndex);
+            //"longitudeDegree":111,  "longitudeDegree":"111",
+            var valueIndex = Content.indexOf(valueKey);
+            var valueIndexEnd = Content.indexOf(",", valueIndex);
+            var longValueStr = Content.substr(valueIndex, valueIndexEnd - valueIndex);
+            var longValueArray = longValueStr.split(':');
+            if(longValueArray[1].indexOf("\"") != -1){
+                return longValueArray[1].substr(1, longValueArray[1].length - 2);
+            }
+            return longValueArray[1];
         }
 
         var latitudeMinute = getValueFromStr('latitudeMinute');
