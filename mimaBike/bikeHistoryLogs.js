@@ -85,7 +85,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
 
-    if(req.body.queryDate != undefined || req.body.queryDate.length == 0){
+    if(req.body.queryDate != undefined || req.body.queryDate.length > 0){
         var queryDateTime = new Date(req.body.queryDate).getTime();
         var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
 
