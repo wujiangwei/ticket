@@ -75,4 +75,148 @@ router.post('/ebileLogList',function (req, res) {
     });
 })
 
+
+router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
+
+    if(req.body.SN == undefined || req.body.SN.length == 0){
+        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
+    }
+
+    if(req.body.queryDate == undefined){
+        return res.json({'errorCode':1, 'errorMsg':'queryDate is empty'});
+    }
+
+    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
+
+    var queryDateTime = new Date(req.body.queryDate).getTime();
+    var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
+    var queryDateTimeBigger = new Date(queryDateTime + 5*60*1000);
+
+    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
+    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeBigger);
+
+    ebikeHistoryLogQuery.descending('createdAt');
+
+    ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
+
+        if(ebikeHistoryLogObjects.length == 0){
+            return res.json({'errorCode':1, 'message' : 'can not find location at pointer time'});
+        }
+
+        var middleIndex = parseInt(ebikeHistoryLogObjects.length / 2);
+        var historyLogObject = ebikeHistoryLogObjects[middleIndex];
+        var Content = historyLogObject.get('Content');
+
+        function getValueFromStr(valueKey) {
+            var valueIndex = Content.indexOf(valueKey) + valueKey.length + 3;
+            var valueIndexEnd = Content.indexOf("\"", valueIndex);
+            return Content.substr(valueIndex, valueIndexEnd - valueIndex);
+        }
+
+        var latitudeMinute = getValueFromStr('latitudeMinute');
+        var latitudeDegree = getValueFromStr('latitudeDegree');
+        var longitudeMinute = getValueFromStr('longitudeMinute');
+        var longitudeDegree = getValueFromStr('longitudeDegree');
+
+        var lat = Number(latitudeMinute) / 60.0 + Number(latitudeDegree);
+        var lon = Number(longitudeMinute) / 60.0 + Number(longitudeDegree);
+
+        res.json({'errorCode':0, 'lat' : lat, 'lon' : lon, 'locationTime': new Date(historyLogObject.createdAt.getTime() + 8*60*60*1000)});
+    }).catch(function(err) {
+        res.status(500).json({
+            error: err.message
+        });
+    });
+})
+
+
+function testLink(XMinBefore) {
+
+    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
+
+    var currentDateTime = (new Date()).getTime();
+    var queryDate = new Date(currentDateTime - XMinBefore*60*1000);
+
+    queryDate = new Date("2017/09/1 05:53:45");
+
+    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
+    var bikeSns = new Array();
+    ebikeHistoryLogQuery.limit(1000);
+    ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
+
+        console.log('total 鉴权次数:' + xMinBeforeLogs.length);
+
+        for(var t = 0; t < xMinBeforeLogs.length; t++){
+            var xMinBeforeLogObject = xMinBeforeLogs[t];
+            var isExist = false;
+            for(var i = 0 ; i < bikeSns.length; i++){
+                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
+                    isExist = true;
+                    break;
+                }
+            }
+            if(isExist == false){
+                bikeSns.push(xMinBeforeLogObject.get('SN'));
+                console.log(xMinBeforeLogObject.get('SN'));
+            }
+        }
+
+        console.log('----------------------------');
+        console.log('----------------------------');
+        console.log('----------------------------');
+        console.log('----------------------------');
+
+
+        var manyTimeSy = [0, 0 , 0 , 0 ];
+        for(var i = 0; i < bikeSns.length; i++){
+            var bikeCount = 0;
+            for(var t = 0; t < xMinBeforeLogs.length; t++){
+                var xMinBeforeLogObject = xMinBeforeLogs[t];
+                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
+                    bikeCount++;
+                }
+            }
+
+            if(bikeCount > 1){
+                console.log(bikeSns[i] + ' : ' + bikeCount + '次')
+            }else {
+                manyTimeSy[0]++;
+            }
+
+            if(bikeCount == 2){
+                manyTimeSy[1]++;
+            }
+            if(bikeCount == 3){
+                manyTimeSy[2]++;
+            }
+            if(bikeCount == 4){
+                manyTimeSy[3]++;
+            }
+            if(bikeCount == 5){
+                manyTimeSy[4]++;
+            }
+            if(bikeCount == 6){
+                manyTimeSy[5]++;
+            }
+        }
+
+        var totalEBkke = 0;
+
+        for(var j = 0; j < manyTimeSy.length; j++){
+            console.log('车辆鉴权分布:' + (j+1) + ' 次' + '的有' + manyTimeSy[j] + '辆车');
+            totalEBkke += manyTimeSy[j];
+        }
+
+        console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
+
+    })
+
+
+
+}
+
+// testLink(34)
+
 module.exports = router
