@@ -90,7 +90,7 @@ router.post('/', function(req, res) {
 
         //actionPicUrl(for action:returnBikeByPic,reportBike,feedbackBike)
 
-        if(ActionParam == undefined){
+        if(ActionParam.role == undefined){
             lock++;
         }else {
             var MimaAction = new MimaActionSql();
@@ -124,15 +124,15 @@ function testLink(XMinBefore) {
     var queryDate = new Date(currentDateTime - XMinBefore*60*1000);
 
     // queryDate = new Date("2017/09/1 05:53:45");
-    queryDate = new Date("2017/09/1 05:59:00");
+    queryDate = new Date("2017-09-03 03:33:00");
 
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
     var bikeSns = new Array();
     ebikeHistoryLogQuery.limit(500);
     ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
 
-        console.log('第一个鉴权时间:' + xMinBeforeLogs[0].createdAt);
-        console.log('最后一个鉴权时间:' + xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt);
+        console.log('第一个鉴权时间:' + xMinBeforeLogs[0].createdAt + 'id= ' + xMinBeforeLogs[0].id);
+        console.log('最后一个鉴权时间:' + xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt + 'id= ' + xMinBeforeLogs[xMinBeforeLogs.length - 1].id);
         console.log('total 鉴权次数:' + xMinBeforeLogs.length);
 
         for(var t = 0; t < xMinBeforeLogs.length; t++){
@@ -292,7 +292,7 @@ function querySomeLogs(searchKey) {
     });
 }
 
-// testLink(34)
+// testLink(0)
 // querySomeLogs('"messageType":8');
 
 module.exports = router
