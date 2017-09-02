@@ -16,7 +16,10 @@ router.post('/', function(req, res) {
         var LogParam = req.body.LogParam;
 
         if(LogParam == undefined){
-            return res.json({'errorCode':1, 'errorMsg':'LogParam is empty'});
+            lock++;
+            if(lock == unlock) {
+                return res.json({'errorCode': 1, 'errorMsg': 'LogParam is empty'});
+            }
         }
 
         //SN LogType Content Remark OperationTime SourceType
@@ -86,6 +89,12 @@ router.post('/', function(req, res) {
         //actionPicUrl(for action:returnBikeByPic,reportBike,feedbackBike)
 
         var ActionParam = req.body.ActionParam;
+        if(ActionParam == undefined){
+            lock++;
+            if(lock == unlock) {
+                return res.json({'errorCode': 1, 'errorMsg': 'ActionParam is empty'});
+            }
+        }
 
         var MimaAction = new MimaActionSql();
 
