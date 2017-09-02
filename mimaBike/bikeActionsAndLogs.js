@@ -1,140 +1,113 @@
 /**
- * Created by wujiangwei on 2017/8/31.
+ * Created by wujiangwei on 2017/9/03.
  */
 const router = require('express').Router()
 var AV = require('leanengine');
+
 var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
+var MimaActionSql = AV.Object.extend('MimaAction');
 
-//废弃，改用bikeActionAndLogs的新设计
-router.post('/ebileHistorys', function(req, res) {
-    //SN LogType Content Remark OperationTime SourceType
-    var newEBikeLog = new NewEBikeLogSql();
+router.post('/', function(req, res) {
 
-    if(req.body.SN == undefined || req.body.SN.length == 0){
-        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
-    }
+    var lock = 0;
+    var unlock = 2;
+    {
+        //Log
+        var LogParam = req.body.LogParam;
 
-    newEBikeLog.set('SN', req.body.SN);
-    newEBikeLog.set('LogType', parseInt(req.body.LogType));
-    newEBikeLog.set('Content', req.body.Content);
-    newEBikeLog.set('Remark', req.body.Remark);
-    // newEBikeLog.set('OperationTime', req.body.OperationTime);
-    newEBikeLog.set('SourceType', parseInt(req.body.SourceType));
-
-    newEBikeLog.save().then(function (savedNewEBikeLog) {
-        // console.log('objectId is ' + savedNewEBikeLog.id);
-        return res.json({'errorCode':0});
-    }, function (error) {
-        console.error(req.body.SN + ' save log failed:' + error);
-        return res.json({'errorCode':-1, 'errorMsg':error.message});
-    });
-})
-
-//暂时为车辆日志网站使用的接口
-router.post('/ebileLogList',function (req, res) {
-
-    if(req.body.SN == undefined || req.body.SN.length == 0){
-        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
-    }
-
-    if(req.body.pageIndex == undefined){
-        req.body.pageIndex = 0;
-    }
-    if(req.body.pageCount == undefined){
-        req.body.pageCount = 500;
-    }
-
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-    ebikeHistoryLogQuery.limit(req.body.pageCount);
-    ebikeHistoryLogQuery.skip(req.body.pageCount * req.params.pageIndex);
-    ebikeHistoryLogQuery.descending('createdAt');
-
-    ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
-        var resLogList = new Array();
-        for(var i = 0; i < ebikeHistoryLogObjects.length; i++){
-            var historyLogObject = Object();
-            historyLogObject.SN = ebikeHistoryLogObjects[i].get('SN');
-            historyLogObject.Content = ebikeHistoryLogObjects[i].get('Content');
-            historyLogObject.LogType = ebikeHistoryLogObjects[i].get('LogType');
-            historyLogObject.Remark = ebikeHistoryLogObjects[i].get('Remark');
-            historyLogObject.SourceType = ebikeHistoryLogObjects[i].get('SourceType');
-            historyLogObject.OperationTime = new Date(ebikeHistoryLogObjects[i].createdAt.getTime() + 8*60*60*1000);
-
-            resLogList.push(historyLogObject);
+        if(LogParam == undefined){
+            return res.json({'errorCode':1, 'errorMsg':'LogParam is empty'});
         }
 
-        res.json({'ebikeHistoryLogs' : resLogList});
-    }).catch(function(err) {
-        res.status(500).json({
-            error: err.message
-        });
-    });
-})
+        //SN LogType Content Remark OperationTime SourceType
+        var newEBikeLog = new NewEBikeLogSql();
 
-//暂时为未客服系统查询车辆状态使用的接口
-router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
+        newEBikeLog.set('SN', LogParam.SN);
+        newEBikeLog.set('LogType', parseInt(LogParam.LogType));
+        newEBikeLog.set('Content', LogParam.Content);
+        newEBikeLog.set('Remark', LogParam.Remark);
+        // newEBikeLog.set('OperationTime', req.body.OperationTime);
+        newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
 
-    if(req.body.SN == undefined || req.body.SN.length == 0){
-        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
-    }
-
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-    ebikeHistoryLogQuery.contains('Content', 'latitudeMinute');
-
-    // if(req.body.queryDate != undefined || req.body.queryDate.length > 0){
-    //     var queryDateTime = new Date(req.body.queryDate).getTime();
-    //     var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
-    //
-    //     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
-    //     ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
-    // }
-
-    ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.limit(1);
-
-    ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
-
-        if(ebikeHistoryLogObjects.length == 0){
-            return res.json({'errorCode':1, 'message' : 'can not find location at pointer time'});
-        }
-
-        var middleIndex = parseInt(ebikeHistoryLogObjects.length / 2);
-        var historyLogObject = ebikeHistoryLogObjects[middleIndex];
-        var Content = historyLogObject.get('Content');
-
-        function getValueFromStr(valueKey) {
-            //"longitudeDegree":111,  "longitudeDegree":"111",
-            var valueIndex = Content.indexOf(valueKey);
-            var valueIndexEnd = Content.indexOf(",", valueIndex);
-            var longValueStr = Content.substr(valueIndex, valueIndexEnd - valueIndex);
-            var longValueArray = longValueStr.split(':');
-            if(longValueArray[1].indexOf("\"") != -1){
-                return longValueArray[1].substr(1, longValueArray[1].length - 2);
+        newEBikeLog.save().then(function (savedNewEBikeLog) {
+            lock++;
+            if(lock == unlock){
+                return res.json({'errorCode':0});
             }
-            return longValueArray[1];
-        }
-
-        var latitudeMinute = getValueFromStr('latitudeMinute');
-        var latitudeDegree = getValueFromStr('latitudeDegree');
-        var longitudeMinute = getValueFromStr('longitudeMinute');
-        var longitudeDegree = getValueFromStr('longitudeDegree');
-
-        var lat = Number(latitudeMinute) / 60.0 + Number(latitudeDegree);
-        var lon = Number(longitudeMinute) / 60.0 + Number(longitudeDegree);
-
-        res.json({'errorCode':0, 'lat' : lat, 'lon' : lon, 'locationTime': new Date(historyLogObject.createdAt.getTime() + 8*60*60*1000)});
-    }).catch(function(err) {
-        res.status(500).json({
-            error: err.message
+        }, function (error) {
+            lock++;
+            if(lock == unlock) {
+                console.error(req.body.SN + ' save log failed:' + error);
+                return res.json({'errorCode': -1, 'errorMsg': error.message});
+            }
         });
-    });
-})
+    }
 
+
+    {
+        //Action
+        //角色，角色ID，角色名
+        //role : user,operator,bike,service(by me)
+        //roleGuid : 这些角色在觅马数据库里的Guid
+        //rolePhone : userPhone,operatorPhone,SN,servicePhone
+        //roleName : userName,operatorName,bikeNumber,serviceName
+
+        //action(录入车辆，预约，借车，锁车，开锁，还车，电池仓，上线，下线，报警):
+        //  depositSucceed,depositRefundSubmit,depositRefundSucceed
+
+        //  bindBikeToSystem
+
+        //  （可以根据车辆报文得到success的话，一些success就不用传）
+        //  appointmentFailed,appointmentSucceed
+        //  tryTakeCar,takeCarSucceed,takeCarFailed
+        //  tryUnlockCar,unlockCarSucceed,unlockCarFailed
+        //  tryLockCar,lockCarSucceed,lockCarFailed
+        //  tryReturnBike,returnBikeSucceed,returnBikeFailed,returnBikeByPic
+
+        // tryOpenBatteryHouse,openBatteryHouseSucceed,openBatteryHouseFailed
+
+        // takeBikeOnline,takeBikeOffline
+
+        // changeBikeAlarm
+
+        // 觅马用户和客服交互的行为
+        // reportUseBikeOrder
+
+        // 其他低优先级行为(觅马出行App内)
+        // reportBike,feedbackBike
+
+        //actionMethod:(Bike:2G,BlueTooth)(Other:System,Phone)
+
+        //actionMessage:(some string)
+        //  bindBikeToSystem(车辆录入到X区域成功)
+        //  reportBike,feedbackBike (用户提交的文案)
+        //  reportUseBikeOrder(客服的处理结果：无效，退款X元，现金退款X元)
+
+        //actionPicUrl(for action:returnBikeByPic,reportBike,feedbackBike)
+
+        var ActionParam = req.body.ActionParam;
+
+        var MimaAction = new MimaActionSql();
+
+
+        MimaAction.set('role', ActionParam.role);
+
+        MimaAction.save().then(function (savedMimaActionObject) {
+            lock++;
+            if(lock == unlock){
+                return res.json({'errorCode':0});
+            }
+        }, function (error) {
+            lock++;
+            if(lock == unlock) {
+                console.error(req.body.SN + ' save log failed:' + error);
+                return res.json({'errorCode': -1, 'errorMsg': error.message});
+            }
+        });
+    }
+})
 
 //以下为测试代码
-
 function testLink(XMinBefore) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
@@ -219,9 +192,6 @@ function testLink(XMinBefore) {
         console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
 
     })
-
-
-
 }
 
 function querySomeLogs(searchKey) {

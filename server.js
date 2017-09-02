@@ -25,7 +25,15 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(require('./api'))
+
+//wujiangwei define
+app.use('/feeds', require('./Feed/actions'))
+
+app.use('/bikeActionsAndLogs', require('./mimaBike/bikeActionsAndLogs'))
+
+//need remove
 app.use('/logs', require('./mimaBike/bikeHistoryLogs'))
+//end wujiangwei define
 
 const orgName = require('./api/oauth').orgName
 
