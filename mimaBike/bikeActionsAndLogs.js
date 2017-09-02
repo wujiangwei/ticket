@@ -20,30 +20,30 @@ router.post('/', function(req, res) {
             if(lock == unlock) {
                 return res.json({'errorCode': 1, 'errorMsg': 'LogParam is empty'});
             }
+        }else {
+            //SN LogType Content Remark OperationTime SourceType
+            var newEBikeLog = new NewEBikeLogSql();
+
+            newEBikeLog.set('SN', LogParam.SN);
+            newEBikeLog.set('LogType', parseInt(LogParam.LogType));
+            newEBikeLog.set('Content', LogParam.Content);
+            newEBikeLog.set('Remark', LogParam.Remark);
+            // newEBikeLog.set('OperationTime', req.body.OperationTime);
+            newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
+
+            newEBikeLog.save().then(function (savedNewEBikeLog) {
+                lock++;
+                if(lock == unlock){
+                    return res.json({'errorCode':0});
+                }
+            }, function (error) {
+                lock++;
+                if(lock == unlock) {
+                    console.error(req.body.SN + ' save log failed:' + error);
+                    return res.json({'errorCode': -1, 'errorMsg': error.message});
+                }
+            });
         }
-
-        //SN LogType Content Remark OperationTime SourceType
-        var newEBikeLog = new NewEBikeLogSql();
-
-        newEBikeLog.set('SN', LogParam.SN);
-        newEBikeLog.set('LogType', parseInt(LogParam.LogType));
-        newEBikeLog.set('Content', LogParam.Content);
-        newEBikeLog.set('Remark', LogParam.Remark);
-        // newEBikeLog.set('OperationTime', req.body.OperationTime);
-        newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
-
-        newEBikeLog.save().then(function (savedNewEBikeLog) {
-            lock++;
-            if(lock == unlock){
-                return res.json({'errorCode':0});
-            }
-        }, function (error) {
-            lock++;
-            if(lock == unlock) {
-                console.error(req.body.SN + ' save log failed:' + error);
-                return res.json({'errorCode': -1, 'errorMsg': error.message});
-            }
-        });
     }
 
 
@@ -94,25 +94,26 @@ router.post('/', function(req, res) {
             if(lock == unlock) {
                 return res.json({'errorCode': 1, 'errorMsg': 'ActionParam is empty'});
             }
+            return;
+        }else {
+            var MimaAction = new MimaActionSql();
+
+
+            MimaAction.set('role', ActionParam.role);
+
+            MimaAction.save().then(function (savedMimaActionObject) {
+                lock++;
+                if(lock == unlock){
+                    return res.json({'errorCode':0});
+                }
+            }, function (error) {
+                lock++;
+                if(lock == unlock) {
+                    console.error(req.body.SN + ' save log failed:' + error);
+                    return res.json({'errorCode': -1, 'errorMsg': error.message});
+                }
+            });
         }
-
-        var MimaAction = new MimaActionSql();
-
-
-        MimaAction.set('role', ActionParam.role);
-
-        MimaAction.save().then(function (savedMimaActionObject) {
-            lock++;
-            if(lock == unlock){
-                return res.json({'errorCode':0});
-            }
-        }, function (error) {
-            lock++;
-            if(lock == unlock) {
-                console.error(req.body.SN + ' save log failed:' + error);
-                return res.json({'errorCode': -1, 'errorMsg': error.message});
-            }
-        });
     }
 })
 
