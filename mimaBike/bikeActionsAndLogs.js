@@ -9,17 +9,19 @@ var MimaActionSql = AV.Object.extend('MimaAction');
 
 router.post('/', function(req, res) {
 
+    var LogParam = req.body;
+    var ActionParam = req.body;
+
+    if(LogParam == undefined && ActionParam == undefined){
+        return res.json({'errorCode': 1, 'errorMsg': 'LogParam and ActionParam is all empty'});
+    }
+
     var lock = 0;
     var unlock = 2;
     {
         //Log
-        var LogParam = req.body.LogParam;
-
         if(LogParam == undefined){
             lock++;
-            if(lock == unlock) {
-                return res.json({'errorCode': 1, 'errorMsg': 'LogParam is empty'});
-            }
         }else {
             //SN LogType Content Remark OperationTime SourceType
             var newEBikeLog = new NewEBikeLogSql();
@@ -88,13 +90,8 @@ router.post('/', function(req, res) {
 
         //actionPicUrl(for action:returnBikeByPic,reportBike,feedbackBike)
 
-        var ActionParam = req.body.ActionParam;
         if(ActionParam == undefined){
             lock++;
-            if(lock == unlock) {
-                return res.json({'errorCode': 1, 'errorMsg': 'ActionParam is empty'});
-            }
-            return;
         }else {
             var MimaAction = new MimaActionSql();
 
