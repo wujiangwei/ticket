@@ -140,14 +140,14 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     var bikeLogDate = dateStringToNetParam(todayDate.toLocaleDateString());
     // console.log($location.$$absUrl);
 
-    $(".ebike-log-flatpickr").flatpickr({
-        defaultDate:todayDate,
-        // maxDate: todayDate,
-        onChange: function(selectedDates, dateStr, instance) {
-            bikeLogDate = dateStringToNetParam(dateStr);
-            console.log(bikeLogDate);
-        }
-    });
+    // $(".ebike-log-flatpickr").flatpickr({
+    //     defaultDate:todayDate,
+    //     // maxDate: todayDate,
+    //     onChange: function(selectedDates, dateStr, instance) {
+    //         bikeLogDate = dateStringToNetParam(dateStr);
+    //         console.log(bikeLogDate);
+    //     }
+    // });
 
     $scope.bikeLogDateList = [];
     $scope.bikeDisplayLogDateList = [];
