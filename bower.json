@@ -13,6 +13,8 @@
   "private": true,
   "dependencies": {
     "flatpickr": "flatpickr-calendar#^2.6.3",
-    "angular-flatpickr": "^2.4.0"
+    "angular-flatpickr": "^2.4.0",
+    "toastr":"",
+    "semantic":""
   }
 }
