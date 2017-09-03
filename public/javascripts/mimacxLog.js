@@ -236,7 +236,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                     //继续去调去本地
                     $scope.lastestContactTime = '无法获取心跳时间(本地接口)';
 
-                    $http.post("https://mimatickets.leanapp.cn/logs/ebileLogList",{
+                    $http.post("/logs/ebileLogList",{
                         "SN" : $scope.EBikeInfo.SN,
                         "pageIndex" : 1
                     })
@@ -257,18 +257,21 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                 $scope.netRequestState = 'error';
                 $scope.currentErrorMsg = '网络异常/服务器接口出错';
 
+                $scope.netRequestState = 'start';
                 //继续去调去本地
                 $scope.lastestContactTime = '无法获取心跳时间(本地接口)';
 
-                $http.post("https://mimatickets.leanapp.cn/logs/ebileLogList",{
+                $http.post("/logs/ebileLogList",{
                     "SN" : $scope.EBikeInfo.SN,
                     "pageIndex" : 1
                 })
                     .then(function(result) {
+                        $scope.netRequestState = 'success';
                         dealBikeLogsToStruct(result.data.ebikeHistoryLogs);
                         console.log(result);
                     })
                     .catch(function (result) {
+                        $scope.netRequestState = 'error';
                         //error
                         console.log(result);
                     })
