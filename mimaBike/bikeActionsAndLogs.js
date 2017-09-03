@@ -292,7 +292,7 @@ function querySomeLogs(searchKey) {
     });
 }
 
-testLink(0)
+// testLink(0)
 // querySomeLogs('"messageType":8');
 
 module.exports = router

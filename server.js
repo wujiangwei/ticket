@@ -9,26 +9,6 @@ const uuid = require('uuid/v4')
 const AV = require('leanengine')
 
 const app = express()
-
-// angularjs views
-var mimacxLog = require('./routes/mimacxLog');
-var mimacxEBike = require('./routes/mimacxEBike');
-var mimacxProducts = require('./routes/mimacxProduct');
-
-app.set('views', path.join(__dirname, 'views'));
-app.engine('.html', ejs.__express);
-app.set('view engine', 'html');
-app.use('/static', express.static('public'));
-app.use(express.static('bower_components'));
-
-// 觅马出行
-app.use('/mimacxLog', mimacxLog);
-app.use('/mimacxEBike', mimacxEBike);
-app.use('/mimacxProducts', mimacxProducts);
-
-//end angularjs
-
-
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(compression())
 
@@ -45,11 +25,31 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
+// angularjs views
+var mimacxLog = require('./routes/mimacxLog');
+var mimacxEBike = require('./routes/mimacxEBike');
+var mimacxProducts = require('./routes/mimacxProduct');
+
+app.set('views', path.join(__dirname, 'views'));
+app.engine('.html', ejs.__express);
+app.set('view engine', 'html');
+
+app.use('/static', express.static('public'));
+app.use(express.static('bower_components'));
+
+// 觅马出行
+app.use('/mimacxLog', mimacxLog);
+app.use('/mimacxEBike', mimacxEBike);
+app.use('/mimacxProducts', mimacxProducts);
+
+//end angularjs
+
 app.use(require('./api'))
 
 //wujiangwei define
 app.use('/feeds', require('./Feed/actions'))
 app.use('/bikeActionsAndLogs', require('./mimaBike/bikeActionsAndLogs'))
+
 //need remove
 app.use('/logs', require('./mimaBike/bikeHistoryLogs'))
 //end wujiangwei define
