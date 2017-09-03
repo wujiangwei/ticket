@@ -124,11 +124,11 @@ function testLink(XMinBefore) {
     var queryDate = new Date(currentDateTime - XMinBefore*60*1000);
 
     // queryDate = new Date("2017/09/1 05:53:45");
-    queryDate = new Date("2017-09-03 03:33:00");
+    queryDate = new Date("2017-09-03 07:29:16");
 
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
     var bikeSns = new Array();
-    ebikeHistoryLogQuery.limit(500);
+    ebikeHistoryLogQuery.limit(1000);
     ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
 
         console.log('第一个鉴权时间:' + xMinBeforeLogs[0].createdAt + 'id= ' + xMinBeforeLogs[0].id);
@@ -292,7 +292,7 @@ function querySomeLogs(searchKey) {
     });
 }
 
-// testLink(0)
+testLink(0)
 // querySomeLogs('"messageType":8');
 
 module.exports = router

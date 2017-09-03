@@ -11,6 +11,18 @@ const app = express()
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(compression())
 
+//增加跨域访问
+require("http").createServer(function(req,res){
+    res.setHeader("Access-Control-Allow-Origin","https://mimacx.leanapp.cn");
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "PUT, GET, POST, DELETE, HEAD, PATCH"
+    );
+    res.end(req.method+" "+req.url);
+}).listen(1234);
+
+//end
+
 // 设置默认超时时间
 app.use(timeout('15s'));
 
