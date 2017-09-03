@@ -21,10 +21,9 @@ app.use(AV.express())
 app.enable('trust proxy')
 app.use(AV.Cloud.HttpsRedirect())
 
-app.use(express.static('bower_components'));
-app.use(express.static(path.join(__dirname, 'public')))
+// app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+// app.use(bodyParser.urlencoded({ extended: false }))
 
 // angularjs views
 var mimacxLog = require('./routes/mimacxLog');
@@ -34,6 +33,7 @@ var mimacxProducts = require('./routes/mimacxProduct');
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.html', ejs.__express);
 app.set('view engine', 'html');
+app.use(express.static('bower_components'));
 
 // 觅马出行
 app.use('/mimacxLog', mimacxLog);
@@ -95,9 +95,9 @@ const getIndexPage = (uuid) => {
 `
 }
 
-app.get('*', function (req, res) {
-  res.send(getIndexPage(uuid()))
-})
+// app.get('*', function (req, res) {
+//   res.send(getIndexPage(uuid()))
+// })
 
 var PORT = parseInt(process.env.LEANCLOUD_APP_PORT || process.env.PORT || 8080)
 app.listen(PORT, function() {
