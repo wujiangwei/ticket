@@ -21,6 +21,7 @@ app.use(AV.express())
 app.enable('trust proxy')
 app.use(AV.Cloud.HttpsRedirect())
 
+app.use(express.static('bower_components'));
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -33,8 +34,6 @@ var mimacxProducts = require('./routes/mimacxProduct');
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.html', ejs.__express);
 app.set('view engine', 'html');
-app.use('/static', express.static('public'));
-app.use(express.static('bower_components'));
 
 // 觅马出行
 app.use('/mimacxLog', mimacxLog);
