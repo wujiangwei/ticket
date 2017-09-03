@@ -16,7 +16,7 @@ router.post('/ebileLogList',function (req, res) {
         req.body.pageIndex = 0;
     }
     if(req.body.pageCount == undefined){
-        req.body.pageCount = 500;
+        req.body.pageCount = 200;
     }
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');

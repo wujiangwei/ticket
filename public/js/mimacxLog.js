@@ -151,7 +151,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
     $scope.bikeLogDateList = [];
     $scope.bikeDisplayLogDateList = [];
-    var pageDateCount = 500;
+    var pageDateCount = 200;
 
     $scope.currentPage = 0;
 
