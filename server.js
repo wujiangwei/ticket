@@ -49,9 +49,7 @@ app.use(require('./api'))
 
 //wujiangwei define
 app.use('/feeds', require('./Feed/actions'))
-
 app.use('/bikeActionsAndLogs', require('./mimaBike/bikeActionsAndLogs'))
-
 //need remove
 app.use('/logs', require('./mimaBike/bikeHistoryLogs'))
 //end wujiangwei define
@@ -98,9 +96,9 @@ const getIndexPage = (uuid) => {
 `
 }
 
-app.get('*', function (req, res) {
-  res.send(getIndexPage(uuid()))
-})
+// app.get('*', function (req, res) {
+//   res.send(getIndexPage(uuid()))
+// })
 
 var PORT = parseInt(process.env.LEANCLOUD_APP_PORT || process.env.PORT || 8080)
 app.listen(PORT, function() {
