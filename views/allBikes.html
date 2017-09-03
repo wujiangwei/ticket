@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en,cn">
+<head>
+    <meta charset="UTF-8">
+    <title>觅马出行车辆日志</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="http://www.mimadd.com/logo57.png" />
+
+    <!-- 引入 AngularJS Mini 文件 -->
+    <script src="/angular/angular.js"></script>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--semantic ui css-->
+    <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.min.css">
+    <!--js 和 dialog 冲突-->
+    <script src="/semantic/dist/semantic.min.js"></script>
+
+    <link rel="stylesheet" href="/flatpickr/dist/flatpickr.min.css">
+    <script src="/flatpickr/dist/flatpickr.min.js"></script>
+
+    <!--toastr-->
+    <script src="/toastr/toastr.min.js"></script>
+    <link rel="stylesheet" href="/toastr/toastr.min.css">
+
+    <!--网站内部js-->
+    <script src="/static/javascripts/allBikes.js"></script>
+</head>
+<body ng-app="allBikesApp" ng-controller="allBikesCtrl" style="margin-top: 1.5%">
+
+    <div>
+        <h2 class="ui small center aligned icon header">
+            <i class="bicycle icon"></i>
+            查看车辆列表，需要先登录觅马运维帐号
+        </h2>
+    </div>
+
+    <!--运维人员登录-->
+    <div style="margin-left: 3%" class="ui horizontal list">
+        <div class="item">
+            <div class="ui icon input">
+                <input type="text" placeholder="运维帐号" ng-model="mimaYunweiAccount">
+            </div>
+        </div>
+        <div class="item">
+            <div class="ui icon input">
+                <input type="text" placeholder="运维密码" ng-model="mimaYunweiMima">
+            </div>
+        </div>
+        <div class="item">
+            <div class="ui primary button" ng-click="yunweiLogin()">
+                登录
+            </div>
+        </div>
+        <div class="item" ng-show="mimaYunweiLoginInfo != undefined">
+            <div class="ui visible message">
+                <p>{{mimaYunweiLoginInfo}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui horizontal divider">
+        我很白，我是一个分割线
+    </div>
+
+    <div style="margin-left: 3%" class="ui horizontal list">
+        <div class="item">
+            <div class="ui icon input">
+                <input type="text" placeholder="输入8位车辆号" ng-model="inputBikeNo">
+            </div>
+        </div>
+        <div class="item">
+            <button class="ui blue submit button" ng-disabled="inputBikeNo.length != 8" ng-click="getInputEBikeLog()">查看车辆日志</button>
+        </div>
+    </div>
+
+    <div class="ui horizontal divider">
+        下面是车辆列表
+    </div>
+
+    <!--所有运维区域-->
+    <div class="ui secondary pointing menu">
+        <a ng-repeat="areaInfo in allMimaAreas" ng-click="seeAllBikeInSelectedArea($index, areaInfo.PartnerAreaGuid)"
+           ng-class="{true:'active item',false:'item'}[selecetedAreaIndex == $index]" >
+            {{areaInfo.PartnerAreaName}}
+        </a>
+
+        <div class="right menu">
+            <a class="ui item">
+                区域被吴过滤过
+            </a>
+        </div>
+    </div>
+
+    <!--某个运维区域内所有车辆-->
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>车辆号</th>
+            <th>SN号</th>
+            <th>蓝牙号</th>
+            <th>录入者</th>
+            <th>录入时间</th>
+            <th>查看车辆日志</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="eListBikeInfo in selectedAreaEBikes">
+            <td>{{$index + 1}}</td>
+            <td>{{eListBikeInfo.BicycleNo}}</td>
+            <td>{{eListBikeInfo.ControllerNo}}</td>
+            <td>{{eListBikeInfo.ControllerBluetoothNo}}</td>
+            <td>{{eListBikeInfo.Operator}}</td>
+            <td>{{eListBikeInfo.Batch}}</td>
+            <td>
+                <button class="ui blue submit button" ng-click="getAEBikeLog(eListBikeInfo.BicycleNo)">查看车辆日志</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="ui active dimmer" ng-show="netRequestState == 'start'">
+        <div class="ui medium text loader">Loading</div>
+    </div>
+
+</body>
+</html>

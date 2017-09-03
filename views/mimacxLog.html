@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en,cn">
+<head>
+    <meta charset="UTF-8">
+    <title>觅马出行车辆日志</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="http://www.mimadd.com/logo57.png" />
+
+    <!-- 引入 AngularJS Mini 文件 -->
+    <script src="/angular/angular.js"></script>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--semantic ui css-->
+    <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.min.css">
+    <!--js 和 dialog 冲突-->
+    <script src="/semantic/dist/semantic.min.js"></script>
+
+    <link rel="stylesheet" href="/flatpickr/dist/flatpickr.min.css">
+    <script src="/flatpickr/dist/flatpickr.min.js"></script>
+
+    <!--网站内部js-->
+    <script src="/static/javascripts/mimacxLog.js"></script>
+</head>
+<body ng-app="mimacxLogApp" ng-controller="mimacxLogCtrl" style="margin-top: 1.5%">
+
+    <div class="ui two column centered grid">
+        <div>
+            <h2 class="ui small center aligned icon header">
+                <i class="circular doctor icon"></i>
+                觅马车辆日志系统 For 觅马合作伙伴
+            </h2>
+
+
+        </div>
+
+        <div class="ui horizontal divider">
+            I'm a singer x-man
+        </div>
+
+        <div class="four column centered row">
+            <!--<div class="column">-->
+                <!--<div class="ui left icon input">-->
+                    <!--<input class=ebike-log-flatpickr type="text" placeholder="选择日期(天)">-->
+                    <!--<i class="checked calendar icon"></i>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="column">
+                <div class="ui left icon action input">
+                    <i class="bicycle icon"></i>
+                    <input type="text" placeholder="输入8位车辆号" ng-model="ebikeNumber">
+                    <button class="ui blue submit button" id="getBikeLogBtn" ng-disabled="ebikeNumber.length != 8" ng-click="getEBikeLog(0)">查看车辆日志</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui compact menu">
+            <a class="item">
+                <i class="icon green barcode"></i> {{EBikeInfo.SN}}
+            </a>
+            <a class="item">
+                <i class="icon blue bluetooth"></i> {{EBikeInfo.BluetoothNo}}
+            </a>
+            <a class="item">
+                <i class="icon red heartbeat"></i> {{"最近心跳时间 " + lastestContactTime}}
+            </a>
+            <a class="item">
+                <i class="icon green spy"></i> {{EBikeInfo.PartnerAreaName}}
+            </a>
+            <!--<a class="item" ng-show="EBikeInfo.PartnerAreaGuid != undefined">-->
+                <!--<div class="ui pink button" ng-click="seeThisAreaEBikes()">-->
+                    <!--查看该区域所有车辆-->
+                <!--</div>-->
+            <!--</a>-->
+        </div>
+    </div>
+
+    <div class="ui horizontal divider" style="margin-top: 2%">
+        "I'm a singer x-woman"
+    </div>
+
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th></th>
+            <th>报文类型</th>
+            <th>插入时间</th>
+            <th>数据来源</th>
+
+            <th>GPS原生坐标/鉴权报文</th>
+            <th>搜星数</th>
+            <th>定位</th>
+
+            <th>电量</th>
+            <th>车辆状态</th>
+
+            <th>里程</th>
+
+            <th>报警类型</th>
+            <th>故障码</th>
+
+            <th>基站ID</th>
+            <th>充电状态</th>
+            <th>充电循环</th>
+            <th>断电原因</th>
+            <th>报文时间</th>
+
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr ng-repeat="messageDateObject in bikeDisplayLogDateList"
+            ng-class="{true:'positive',false:'negative'}[messageDateObject.isActive]">
+            <td>{{$index + 1}}</td>
+            <td>
+                <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
+                {{messageDateObject.Content.messageType != undefined ? messageDateObject.Content.messageType :
+                (messageDateObject.Content.cmdID != undefined ? messageDateObject.Content.cmdID : messageDateObject.messageType)}}
+            </td>
+            <td>{{messageDateObject.OperationTime}}</td>
+            <td>{{messageDateObject.SourceType == 1 ? "蓝牙" : "2G"}}</td>
+            <td>
+                <div ng-if="messageDateObject.LogType != 1 && messageDateObject.LogType != 5 && messageDateObject.Content.messageBody != undefined && (messageDateObject.Content.result == undefined  || messageDateObject.Content.result == 0)">
+
+                    <!--地图定位-->
+                    <div class="ui label" ng-if="messageDateObject.Content.messageBody.gpsPointStr != undefined">
+                        {{messageDateObject.Content.messageBody.gpsPointStr}}
+                    </div>
+                    <button class="ui icon button" ng-if="messageDateObject.Content.messageBody.gpsPointStr != undefined"
+                            ng-click="openGpsMap(messageDateObject.Content.messageBody.gpsPointStr)">
+                        <i class="marker icon"></i>
+                    </button>
+
+                    <!--历史位置-->
+                    <div class="ui label" ng-if="messageDateObject.Content.messageType == 8">
+                        查看历史位置-->
+                    </div>
+                    <button class="ui icon button" ng-if="messageDateObject.Content.messageType == 8"
+                            ng-click="openHistoryStr(messageDateObject.Content.messageBody.location)">
+                        <i class="map icon"></i>
+                    </button>
+                </div>
+                <div ng-if="messageDateObject.seeContent == true">
+                    <!--查看其他报文-->
+                    <div class="ui label">
+                        查看报文信息-->
+                    </div>
+                    <button class="ui icon button" ng-click="seeContent(messageDateObject.Content)">
+                        <i class="file word outline icon"></i>
+                    </button>
+                </div>
+
+                <div ng-if="messageDateObject.LogType == 1" class="ui label">
+                    <div class="ui label">
+                        查看登录鉴权信息-->
+                    </div>
+                    <button class="ui icon button" ng-click="seeContent(messageDateObject.Content)">
+                        <i class="unlinkify icon"></i>
+                    </button>
+                </div>
+                <div ng-if="messageDateObject.LogType == 5 || (messageDateObject.LogType == 6 && messageDateObject.Content.messageBody == undefined)
+                           || (messageDateObject.LogType == 6 && messageDateObject.Content.messageBody != undefined && messageDateObject.Content.result != 0)" class="ui label">
+                    {{messageDateObject.cmdSource}}
+                </div>
+
+            </td>
+            <td>{{messageDateObject.Content.messageBody.satellite}}</td>
+            <td>{{messageDateObject.Content.messageBody.gpstypDes}}</td>
+            <td>
+                {{messageDateObject.Content.messageBody.battery == undefined ? "" : messageDateObject.Content.messageBody.battery + "%"}}
+            </td>
+
+            <td>{{messageDateObject.Content.messageBody.ctrlStateDes}}</td>
+            <td>
+                {{messageDateObject.Content.messageBody.totalMileage == undefined ? "" : messageDateObject.Content.messageBody.totalMileage + "km"}}
+            </td>
+
+            <td>{{messageDateObject.Content.messageBody.alarmTypeDes}}</td>
+
+            <!--故障码  基站ID   充电状态	充电循环次数	断开充电的原因-->
+            <td>{{messageDateObject.Content.messageBody.errorCode}}</td>
+            <td>
+                {{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.cellId != undefined) ?
+                messageDateObject.Content.messageBody.cellId : ""}}
+            </td>
+            <td>
+                {{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.charging != undefined) ?
+                (messageDateObject.Content.messageBody.charging == true ? "有效充电" : "未充电") : ""}}
+            </td>
+            <td>{{messageDateObject.Content.messageBody.chargeCount}}</td>
+            <td ng-class="{true:'positive',false:'negative'}[messageDateObject.Content.messageBody.reason]">
+                {{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.reason != undefined) ?
+                (messageDateObject.Content.messageBody.reason == true ? "正常断开" : "保护断开") : ""}}
+            </td>
+
+            <td> {{messageDateObject.Content.messageBody.timeStamp}}</td>
+        </tr>
+        </tbody>
+
+        <tfoot>
+        <tr><th colspan="3">
+            <div class="ui right floated pagination menu">
+                <a class="icon item" ng-click="getEBikeLog(-1)">
+                    <i class="right arrow up icon"></i>
+                </a>
+                <a class="item">
+                    <i class="left bicycle icon"></i>
+                </a>
+                <a class="icon item">
+                    <!--<i class="right refresh icon">{{}}</i>-->
+                    {{currentPage + " / " + todayTotalMessageCount}}
+                </a>
+                <a class="item">
+                    <i class="left bicycle icon"></i>
+                </a>
+                <a class="icon item" ng-click="getEBikeLog(1)">
+                    <i class="left arrow down icon"></i>
+                </a>
+
+            </div>
+        </th>
+        </tr></tfoot>
+    </table>
+
+    <div class="ui active dimmer" ng-show="netRequestState == 'start'">
+        <div class="ui medium text loader">Loading</div>
+    </div>
+
+    <div class="ui red message" style="margin-left: 20%; width: 60%" ng-show="netRequestState == 'error'">
+        {{currentErrorMsg}}
+    </div>
+
+    <div class="ui horizontal segments">
+        <div class="ui segment message">
+            <div class="header">
+                觅马日志系统解释
+            </div>
+            <ul class="list">
+                <li>心跳包日志包不显示</li>
+                <li>心跳包显示最近的一次时间</li>
+                <li>若有其他报文则心跳包延后到下个批次</li>
+                <li>登录鉴权显示</li>
+                <li>车辆到服务器报文显示</li>
+                <li>服务器发送命令给车辆的报文</li>
+                <li>车辆回复服务器命令的报文</li>
+                <li>App蓝牙报文显示</li>
+            </ul>
+        </div>
+
+        <div class="ui blue segment message">
+            <div class="header">
+                报文类型解析
+            </div>
+            <ul class="list">
+                <li>1：开锁状态下每30s上报一次的信息</li>
+                <li>2：未开锁状态下每5min上报一次的信息</li>
+                <li>3：由车辆开始充电触发的上报信息</li>
+                <li>4：由车辆断开充电触发的上报信息</li>
+                <li>5：由车辆报警触发的上报信息</li>
+                <li>6：由车辆自动上锁触发的上报信息</li>
+                <li>7：蓝牙成功开锁触发的上报信息</li>
+                <li>8：历史位置数据上报信息</li>
+                <li>9：低功耗模式下周期上报消息</li>
+            </ul>
+        </div>
+        <div class="ui green segment message">
+            <div class="header">
+                服务器主动发送cmdID
+            </div>
+            <ul class="list">
+                <li>1：服务器发送的车辆开锁命令</li>
+                <li>2：服务器发送的车辆上锁命令</li>
+                <li>3：车辆状态查询命令</li>
+                <li>4：寻车命令</li>
+                <li>5：大灯闪烁命令</li>
+                <li>6：打开电池仓命令</li>
+                <li>7：最大行驶速度设定命令</li>
+                <li>9：是否激活报警</li>
+                <li>10：远程恢复出厂设置</li>
+                <li>11：远程立即定位</li>
+                <li>12：远程重启终端</li>
+                <li>13：远程固件升级</li>
+                <li>15：车辆播放指定语音</li>
+            </ul>
+        </div>
+        <div class="ui segment message">
+            <div class="header">
+                操作命令响应(MsgSeq)
+            </div>
+            <ul class="list">
+                <li>100 自动还车</li>
+                <li>101 觅马用户</li>
+                <li>102 运维人员</li>
+            </ul>
+        </div>
+        <div class="ui segment message">
+            <div class="header">
+                故障码(1为故障)
+            </div>
+            <ul class="list">
+                <li>霍尔故障</li>
+                <li>转把故障</li>
+                <li>刹车故障</li>
+                <li>控制器故障</li>
+                <li>电机故障</li>
+                <li>电池电压故障(BMS)</li>
+                <li>蓝牙故障</li>
+                <li>BMS故障(无法通讯)</li>
+                <li>Ecu主控制器固件故障</li>
+            </ul>
+        </div>
+        <div class="ui segment message">
+            <div class="header">
+                X-Man In MimaCX
+            </div>
+            <ol class="list">
+                <li>Mima Chuxing Suzhou</li>
+                <li>Sun Kai</li>
+                <li>Wan Rongrong</li>
+                <li>Wu Jiangwei</li>
+            </ol>
+        </div>
+        <div class="ui segment message">
+            <div class="header">
+                Out X-Man Support MimaCX
+            </div>
+            <ol class="list">
+                <li>Leancloud</li>
+                <li>Node.js</li>
+                <li>Semantic-Ui</li>
+                <li>Super Power</li>
+                <li>GB/JX</li>
+                <li>TBit</li>
+                <li>ZYDWLW</li>
+            </ol>
+        </div>
+    </div>
+
+
+</body>
+</html>

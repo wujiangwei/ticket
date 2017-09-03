@@ -1,7 +1,8 @@
 const express = require('express')
-var timeout = require('connect-timeout');
+var timeout = require('connect-timeout')
 const favicon = require('serve-favicon')
 const path = require('path')
+var ejs = require('ejs')
 const bodyParser = require('body-parser')
 const compression = require('compression')
 const uuid = require('uuid/v4')
@@ -10,18 +11,6 @@ const AV = require('leanengine')
 const app = express()
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(compression())
-
-//增加跨域访问
-require("http").createServer(function(req,res){
-    res.setHeader("Access-Control-Allow-Origin","https://mimacx.leanapp.cn");
-    res.setHeader(
-        "Access-Control-Allow-Methods",
-        "PUT, GET, POST, DELETE, HEAD, PATCH"
-    );
-    res.end(req.method+" "+req.url);
-}).listen(1234);
-
-//end
 
 // 设置默认超时时间
 app.use(timeout('15s'));
@@ -35,6 +24,24 @@ app.use(AV.Cloud.HttpsRedirect())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
+
+// angularjs views
+var mimacxLog = require('./routes/mimacxLog');
+var mimacxEBike = require('./routes/mimacxEBike');
+var mimacxProducts = require('./routes/mimacxProduct');
+
+app.set('views', path.join(__dirname, 'views'));
+app.engine('.html', ejs.__express);
+app.set('view engine', 'html');
+app.use('/static', express.static('public'));
+app.use(express.static('bower_components'));
+
+// 觅马出行
+app.use('/mimacxLog', mimacxLog);
+app.use('/mimacxEBike', mimacxEBike);
+app.use('/mimacxProducts', mimacxProducts);
+
+//end
 
 app.use(require('./api'))
 

@@ -1,0 +1,18 @@
+{
+  "name": "mimacxWebBower",
+  "description": "for mima chuxing web",
+  "main": "mimacxWebBower",
+  "authors": [
+    "wujiangwei55 <wujiangwei55@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "mimacx"
+  ],
+  "homepage": "http://mimacx.leanapp.cn/",
+  "private": true,
+  "dependencies": {
+    "flatpickr": "flatpickr-calendar#^2.6.3",
+    "angular-flatpickr": "^2.4.0"
+  }
+}
