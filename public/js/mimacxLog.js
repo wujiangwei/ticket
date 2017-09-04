@@ -170,6 +170,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             $scope.bikeLogDateList = [];
             $scope.bikeDisplayLogDateList = [];
 
+            $scope.netRequestState = 'start';
             $http.post("https://api.mimacx.com/BatteryCar/GetControllerInfoByBicycleNo",{
                 "BicycleNo" : $scope.ebikeNumber
             })
@@ -177,6 +178,25 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                     var response = result.data;
                     if(response.returnCode == 0){
                         $scope.EBikeInfo = response.Data;
+
+                        //继续获取该辆车的日志信息
+                        $http.post("/logs/ebileLogList",{
+                            "SN" : $scope.EBikeInfo.SN,
+                            "pageIndex" : 1
+                        })
+                            .then(function(result) {
+                                dealBikeLogsToStruct(result.data.ebikeHistoryLogs);
+                                $scope.netRequestState = 'success';
+                            })
+                            .catch(function (result) {
+                                //error
+                                console.log(result);
+                                $scope.netRequestState = 'error';
+                            })
+                            .finally(function () {
+                                //
+                            });
+
                     }else {
                         $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
                         $scope.EBikeInfo.error = 'serviceError';
@@ -212,7 +232,6 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             return;
         }
 
-        $scope.netRequestState = 'start';
         $http.post("https://api.mimacx.com/BatteryCar/GetLogInfo",{
             // 'QueryDate' : bikeLogDate,
             "BicycleNo" : $scope.ebikeNumber,
@@ -222,62 +241,19 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             .then(function(result) {
                 var response = result.data;
                 if(response.returnCode == 0){
-                    $scope.netRequestState = 'success';
-
                     $scope.lastestContactTime = response.Data1.HeartbeatTime;
 
-                    dealBikeLogsToStruct(response.Data);
-
+                    // dealBikeLogsToStruct(response.Data);
                 }else {
                     $scope.lastestContactTime = '接口失败';
-                    $scope.netRequestState = 'error';
                     $scope.currentErrorMsg = response.returnMsg;
 
-                    //继续去调去本地
-                    $scope.lastestContactTime = '无法获取心跳时间(本地接口)';
-
-                    $http.post("/logs/ebileLogList",{
-                        "SN" : $scope.EBikeInfo.SN,
-                        "pageIndex" : 1
-                    })
-                        .then(function(result) {
-                            dealBikeLogsToStruct(result.data.ebikeHistoryLogs);
-                            console.log(result);
-                        })
-                        .catch(function (result) {
-                            //error
-                            console.log(result);
-                        })
-                        .finally(function () {
-                            //
-                        });
+                    $scope.lastestContactTime = '无法获取心跳时间';
                 }
             })
             .catch(function (result) {
-                $scope.netRequestState = 'error';
                 $scope.currentErrorMsg = '网络异常/服务器接口出错';
-
-                $scope.netRequestState = 'start';
-                //继续去调去本地
-                $scope.lastestContactTime = '无法获取心跳时间(本地接口)';
-
-                $http.post("/logs/ebileLogList",{
-                    "SN" : $scope.EBikeInfo.SN,
-                    "pageIndex" : 1
-                })
-                    .then(function(result) {
-                        $scope.netRequestState = 'success';
-                        dealBikeLogsToStruct(result.data.ebikeHistoryLogs);
-                        console.log(result);
-                    })
-                    .catch(function (result) {
-                        $scope.netRequestState = 'error';
-                        //error
-                        console.log(result);
-                    })
-                    .finally(function () {
-                        //
-                    });
+                $scope.lastestContactTime = '无法获取心跳时间(网络出错)';
             })
             .finally(function () {
                 //
