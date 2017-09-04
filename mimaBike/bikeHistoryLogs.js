@@ -95,11 +95,12 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         var latitudeDegree = getValueFromStr('latitudeDegree');
         var longitudeMinute = getValueFromStr('longitudeMinute');
         var longitudeDegree = getValueFromStr('longitudeDegree');
+        var totalMileage = getValueFromStr('totalMileage');
 
         var lat = Number(latitudeMinute) / 60.0 + Number(latitudeDegree);
         var lon = Number(longitudeMinute) / 60.0 + Number(longitudeDegree);
 
-        res.json({'errorCode':0, 'lat' : lat, 'lon' : lon, 'locationTime': new Date(historyLogObject.createdAt.getTime() + 8*60*60*1000)});
+        res.json({'errorCode':0, 'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'locationTime': new Date(historyLogObject.createdAt.getTime() + 8*60*60*1000)});
     }).catch(function(err) {
         res.status(500).json({
             error: err.message
