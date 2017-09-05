@@ -140,18 +140,18 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     var bikeLogDate = dateStringToNetParam(todayDate.toLocaleDateString());
     // console.log($location.$$absUrl);
 
-    // $(".ebike-log-flatpickr").flatpickr({
-    //     defaultDate:todayDate,
-    //     // maxDate: todayDate,
-    //     onChange: function(selectedDates, dateStr, instance) {
-    //         bikeLogDate = dateStringToNetParam(dateStr);
-    //         console.log(bikeLogDate);
-    //     }
-    // });
+    $(".ebike-log-flatpickr").flatpickr({
+        defaultDate:todayDate,
+        // maxDate: todayDate,
+        onChange: function(selectedDates, dateStr, instance) {
+            bikeLogDate = dateStringToNetParam(dateStr);
+            console.log(bikeLogDate);
+        }
+    });
 
     $scope.bikeLogDateList = [];
     $scope.bikeDisplayLogDateList = [];
-    var pageDateCount = 200;
+    $scope.pageDateCount = 50;
 
     $scope.currentPage = 0;
 
@@ -162,102 +162,76 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     }
 
     function getBikeLogs(action) {
-        if(action == -1 && $scope.currentPage == 1){
-            return;
-        }
-        if(action == 0){
-            $scope.currentPage = 0;
-            $scope.bikeLogDateList = [];
-            $scope.bikeDisplayLogDateList = [];
+        if(action == -1){
+            //上一页
+            if($scope.currentPage >= 1) {
+                //首次 Or Refresh
+                toastr.info('获取之前的数据，需要最新数据，请刷新');
 
-            $scope.netRequestState = 'start';
-            $http.post("https://api.mimacx.com/BatteryCar/GetControllerInfoByBicycleNo",{
-                "BicycleNo" : $scope.ebikeNumber
-            })
-                .then(function (result) {
-                    var response = result.data;
-                    if(response.returnCode == 0){
-                        $scope.EBikeInfo = response.Data;
+                $scope.currentPage--;
 
-                        //继续获取该辆车的日志信息
-                        $http.post("/logs/ebileLogList",{
-                            "SN" : $scope.EBikeInfo.SN,
-                            "pageIndex" : 1
-                        })
-                            .then(function(result) {
-                                dealBikeLogsToStruct(result.data.ebikeHistoryLogs);
-                                $scope.netRequestState = 'success';
-                            })
-                            .catch(function (result) {
-                                //error
-                                console.log(result);
-                                $scope.netRequestState = 'error';
-                            })
-                            .finally(function () {
-                                //
-                            });
+                var startSliceIndex = $scope.currentPage * $scope.pageDateCount;
+                $scope.bikeDisplayLogDateList = $scope.bikeLogDateList.slice(startSliceIndex, startSliceIndex + $scope.pageDateCount);
 
-                    }else {
-                        $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
-                        $scope.EBikeInfo.error = 'serviceError';
-                        $scope.EBikeInfo.BluetoothNo = response.Message;
-                        $scope.EBikeInfo.SN = response.Message;
-                    }
-                })
-                .catch(function (result) {
-                    $scope.EBikeInfo = {};
-                    $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
-                    $scope.EBikeInfo.error = '?Error';
-                    $scope.EBikeInfo.BluetoothNo = '?Error';
-                    $scope.EBikeInfo.SN = '?Error';
-                })
-                .finally(function () {
-                    //
-                });
-        }
-
-        var futurePage = $scope.currentPage + action;
-        var existPageNumber = Math.ceil($scope.bikeLogDateList.length/pageDateCount);
-        if(existPageNumber != 0 && futurePage <= existPageNumber){
-            //exist data
-            var startSliceIndex = (futurePage - 1) * pageDateCount;
-            if(futurePage == existPageNumber){
-                //tail data
-                $scope.bikeDisplayLogDateList = $scope.bikeLogDateList.slice(startSliceIndex);
-            }else {
-                //body full data
-                $scope.bikeDisplayLogDateList = $scope.bikeLogDateList.slice(startSliceIndex, startSliceIndex + 100);
+                $('html,body').animate({scrollTop:0},'fast');
             }
-            $scope.currentPage = futurePage;
-            return;
-        }
+        }else {
+            if(action == 0) {
+                //首次 Or Refresh
+                $scope.currentPage = 0;
 
-        $http.post("https://api.mimacx.com/BatteryCar/GetLogInfo",{
-            // 'QueryDate' : bikeLogDate,
-            "BicycleNo" : $scope.ebikeNumber,
-            "PageIndex" : Math.floor($scope.bikeLogDateList.length/pageDateCount) + 1,
-            "PageSize" : pageDateCount
-        })
-            .then(function(result) {
-                var response = result.data;
-                if(response.returnCode == 0){
-                    $scope.lastestContactTime = response.Data1.HeartbeatTime;
-
-                    // dealBikeLogsToStruct(response.Data);
+                $scope.bikeLogDateList = [];
+                $scope.bikeDisplayLogDateList = [];
+                toastr.info('开始刷新，起飞了');
+            }else {
+                if($scope.bikeLogDateList.length % $scope.pageDateCount > 0){
+                    //无下一页了
+                    toastr.info('没有更多的数据了');
+                    return;
                 }else {
-                    $scope.lastestContactTime = '接口失败';
-                    $scope.currentErrorMsg = response.returnMsg;
+                    $scope.currentPage++;
+                    if(($scope.currentPage * $scope.pageDateCount + $scope.pageDateCount) < $scope.bikeLogDateList.length){
+                        //下一页数据已经存在
+                        toastr.info('获取之前的数据，需要最新数据，请刷新');
+                        var startSliceIndex = $scope.currentPage * $scope.pageDateCount;
+                        $scope.bikeDisplayLogDateList = $scope.bikeLogDateList.slice(startSliceIndex, startSliceIndex + (($scope.bikeLogDateList.length - startSliceIndex) >  $scope.pageDateCount) ? $scope.pageDateCount : ($scope.bikeLogDateList.length - startSliceIndex));
 
-                    $scope.lastestContactTime = '无法获取心跳时间';
+                        $('html,body').animate({scrollTop:0},'fast');
+                    }
                 }
-            })
-            .catch(function (result) {
-                $scope.currentErrorMsg = '网络异常/服务器接口出错';
-                $scope.lastestContactTime = '无法获取心跳时间(网络出错)';
-            })
-            .finally(function () {
-                //
-            });
+            }
+
+            if($scope.EBikeInfo!= undefined && $scope.EBikeInfo.BicycleNo == $scope.ebikeNumber && $scope.EBikeInfo.SN != undefined){
+                getEBikeLogsFromMima();
+            }else {
+                $scope.netRequestState = 'start';
+                $http.post("https://api.mimacx.com/BatteryCar/GetControllerInfoByBicycleNo",{
+                    "BicycleNo" : $scope.ebikeNumber,
+                    "pageIndex" : $scope.currentPage
+                })
+                    .then(function (result) {
+                        var response = result.data;
+                        if(response.returnCode == 0){
+                            $scope.EBikeInfo = response.Data;
+
+                            getEBikeLogsFromMima();
+                        }else {
+                            $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
+                            $scope.EBikeInfo.error = 'serviceError';
+                            $scope.EBikeInfo.BluetoothNo = response.Message;
+                        }
+                    })
+                    .catch(function (result) {
+                        $scope.EBikeInfo = {};
+                        $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
+                        $scope.EBikeInfo.error = '?Error';
+                        $scope.EBikeInfo.BluetoothNo = '?Error';
+                    })
+                    .finally(function () {
+                        //
+                    });
+            }
+        }
     }
 
     //action = -1(pre page),1(next page),0(refresh)
@@ -282,197 +256,228 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
         //TODO
     }
 
-    function dealBikeLogsToStruct(bikeLogList) {
-        //deal page logic
-        if(bikeLogList.length > 0){
-            $scope.currentPage++;
+    function getEBikeLogsFromMima(action) {
+
+        if($scope.currentPage == 0){
+            $scope.lastLogTime = undefined;
         }
-        //end deal page logic
 
-        //deal data
-        for (var i = 0; i < bikeLogList.length; i++){
-            var serviceData = bikeLogList[i];
+        //获取该辆车的日志信息
+        $http.post("/logs/ebileLogList",{
+            "SN" : $scope.EBikeInfo.SN,
+            "pageIndex" : $scope.currentPage,
+            "lastLogTime":$scope.lastLogTime,
+            "pageCount":$scope.pageDateCount
+        })
+            .then(function(result) {
+                $scope.netRequestState = 'success';
 
-            if(i == 0 && $scope.bikeLogDateList.length == 0){
-                $scope.todayTotalMessageCount = Math.floor(serviceData.ID/pageDateCount) + 1;
-            }
-
-            if(serviceData.LogType == 1){
-                if(serviceData.Content.indexOf("成功") != -1){
-                    serviceData.messageType = "登陆鉴权成功";
-                    serviceData.isActive = false;
-                }else {
-                    serviceData.messageType = "登陆鉴权失败";
-                    serviceData.isActive = false;
+                if(action == 0) {
+                    //首次或者刷新
+                    $scope.bikeLogDateList = [];
+                    $scope.bikeDisplayLogDateList = [];
                 }
-                $scope.bikeLogDateList.push(serviceData);
-                continue;
-            }
 
-            if(serviceData.SourceType == 1){
-                serviceData.isActive = true;
-            }
+                $scope.lastLogTime = result.data.lastLogTime;
+                var bikeLogList= result.data.ebikeHistoryLogs;
 
-            //str to object
-            var serviceDataContent = serviceData.Content;
-            if(serviceDataContent.indexOf("MsgSeq:") != -1){
-                //截取content中的MsgSeq后的数字
-                var MsgSeq = Number(serviceDataContent.substring(serviceDataContent.indexOf("MsgSeq:") + 7, serviceDataContent.indexOf("MsgSeq:") + 10));
-                switch (MsgSeq){
-                    case 101:
-                        serviceData.cmdSource = '觅马用户';
-                        break;
-                    case 102:
-                        serviceData.cmdSource = '运维人员';
-                        break;
-                    case 100:
-                        serviceData.cmdSource = '自动还车';
-                        break;
-                }
-            }
+                //deal data
+                for (var i = 0; i < bikeLogList.length; i++){
+                    var serviceData = bikeLogList[i];
 
-            var payloadIndex = serviceDataContent.indexOf("payload:");
-            if(payloadIndex != -1){
-                var contentStr = serviceDataContent.substring(payloadIndex + 8, serviceDataContent.length);
-                var contentObject = undefined;
-                try{
-                    contentObject = JSON.parse(contentStr);
+                    if(i == 0 && $scope.bikeLogDateList.length == 0){
+                        $scope.todayTotalMessageCount = Math.floor(serviceData.ID/$scope.pageDateCount) + 1;
+                    }
 
-                    if(contentObject)
-                        if(contentObject.messageBody != undefined){
-                            contentObject.messageBody.gpsPointStr = toCoordinates(contentObject);
+                    if(serviceData.LogType == 1){
+                        if(serviceData.Content.indexOf("成功") != -1){
+                            serviceData.messageType = "登陆鉴权成功";
+                            serviceData.isActive = false;
+                        }else {
+                            serviceData.messageType = "登陆鉴权失败";
+                            serviceData.isActive = false;
                         }
-                    if(contentObject.data != undefined){
-                        contentObject.messageBody = contentObject.data;
-                        contentObject.messageBody.gpsPointStr = toCoordinates(contentObject);
+                        $scope.bikeLogDateList.push(serviceData);
+                        continue;
                     }
 
-                }catch(err) {
-                    //other message
-                    // serviceData.isActive = true;
-                    serviceData.seeContent = true;
-                    $scope.bikeLogDateList.push(serviceData);
-                    continue;
-                }
-                serviceData.Content = contentObject;
-
-                //next str to object(refine)
-                var serviceDataNext = i != bikeLogList.length - 1 ? bikeLogList[i + 1] : undefined;
-                var contentObjectNext = undefined;
-                if(serviceDataNext != undefined && serviceDataNext.LogType != 1 && serviceDataNext.LogType != 6){
-                    var serviceDataContentNext = serviceDataNext.Content;
-                    var payloadIndexNext = serviceDataContentNext.indexOf("payload:");
-                    var contentStrNext = serviceDataContent.substring(payloadIndexNext + 8, serviceDataContentNext.length);
-                    try{
-                        contentObjectNext = JSON.parse(contentStrNext);
-                    }catch(err) {
-                        contentObjectNext = undefined;
-                    }
-                }
-
-                if(i == 0 || contentObjectNext == undefined || contentObject.messageType != contentObjectNext.messageType){
                     if(serviceData.SourceType == 1){
-                        serviceData.firstMessageTag = translateBTMessageTypeToDes(contentObject.messageType);
+                        serviceData.isActive = true;
+                    }
+
+                    //str to object
+                    var serviceDataContent = serviceData.Content;
+                    if(serviceDataContent.indexOf("MsgSeq:") != -1){
+                        //截取content中的MsgSeq后的数字
+                        var MsgSeq = Number(serviceDataContent.substring(serviceDataContent.indexOf("MsgSeq:") + 7, serviceDataContent.indexOf("MsgSeq:") + 10));
+                        switch (MsgSeq){
+                            case 101:
+                                serviceData.cmdSource = '觅马用户';
+                                break;
+                            case 102:
+                                serviceData.cmdSource = '运维人员';
+                                break;
+                            case 100:
+                                serviceData.cmdSource = '自动还车';
+                                break;
+                        }
+                    }
+
+                    var payloadIndex = serviceDataContent.indexOf("payload:");
+                    if(payloadIndex != -1){
+                        var contentStr = serviceDataContent.substring(payloadIndex + 8, serviceDataContent.length);
+                        var contentObject = undefined;
+                        try{
+                            contentObject = JSON.parse(contentStr);
+
+                            if(contentObject)
+                                if(contentObject.messageBody != undefined){
+                                    contentObject.messageBody.gpsPointStr = toCoordinates(contentObject);
+                                }
+                            if(contentObject.data != undefined){
+                                contentObject.messageBody = contentObject.data;
+                                contentObject.messageBody.gpsPointStr = toCoordinates(contentObject);
+                            }
+
+                        }catch(err) {
+                            //other message
+                            // serviceData.isActive = true;
+                            serviceData.seeContent = true;
+                            $scope.bikeLogDateList.push(serviceData);
+                            continue;
+                        }
+                        serviceData.Content = contentObject;
+
+                        //next str to object(refine)
+                        var serviceDataNext = i != bikeLogList.length - 1 ? bikeLogList[i + 1] : undefined;
+                        var contentObjectNext = undefined;
+                        if(serviceDataNext != undefined && serviceDataNext.LogType != 1 && serviceDataNext.LogType != 6){
+                            var serviceDataContentNext = serviceDataNext.Content;
+                            var payloadIndexNext = serviceDataContentNext.indexOf("payload:");
+                            var contentStrNext = serviceDataContent.substring(payloadIndexNext + 8, serviceDataContentNext.length);
+                            try{
+                                contentObjectNext = JSON.parse(contentStrNext);
+                            }catch(err) {
+                                contentObjectNext = undefined;
+                            }
+                        }
+
+                        if(i == 0 || contentObjectNext == undefined || contentObject.messageType != contentObjectNext.messageType){
+                            if(serviceData.SourceType == 1){
+                                serviceData.firstMessageTag = translateBTMessageTypeToDes(contentObject.messageType);
+                            }else {
+                                serviceData.firstMessageTag = translateMessageTypeToDes(contentObject.messageType);
+                            }
+                        }
                     }else {
-                        serviceData.firstMessageTag = translateMessageTypeToDes(contentObject.messageType);
+                        // serviceData.isActive = true;
+                        serviceData.seeContent = true;
+                        $scope.bikeLogDateList.push(serviceData);
+                        continue;
                     }
-                }
-            }else {
-                // serviceData.isActive = true;
-                serviceData.seeContent = true;
-                $scope.bikeLogDateList.push(serviceData);
-                continue;
-            }
 
-            //commend ID
-            if(contentObject.cmdID != undefined){
-                serviceData.firstMessageTag = translatecmdIDToDes(contentObject.cmdID);
-                // serviceData.isActive = true;
-                if(serviceData.LogType == 5){
-                    //服务器发送命令
-                    serviceData.firstMessageTag = '发送' + serviceData.firstMessageTag;
-                }else {
-                    serviceData.firstMessageTag = serviceData.firstMessageTag + '响应';
-                }
+                    //commend ID
+                    if(contentObject.cmdID != undefined){
+                        serviceData.firstMessageTag = translatecmdIDToDes(contentObject.cmdID);
+                        // serviceData.isActive = true;
+                        if(serviceData.LogType == 5){
+                            //服务器发送命令
+                            serviceData.firstMessageTag = '发送' + serviceData.firstMessageTag;
+                        }else {
+                            serviceData.firstMessageTag = serviceData.firstMessageTag + '响应';
+                        }
 
-                //argument 设置
-                if(serviceData.Content.argument != undefined){
-                    serviceData.cmdSource = serviceData.cmdSource + "Argument: " + JSON.stringify(serviceData.Content.argument);
-                }else if(serviceData.Content.result != undefined){
-                    serviceData.cmdSource = "响应结果Result: " + (serviceData.Content.result == 0 ? '成功' : ('失败' + serviceData.Content.result));
-                    if(serviceData.Content.result != 0){
-                        serviceData.isActive = false;
+                        //argument 设置
+                        if(serviceData.Content.argument != undefined){
+                            serviceData.cmdSource = serviceData.cmdSource + "Argument: " + JSON.stringify(serviceData.Content.argument);
+                        }else if(serviceData.Content.result != undefined){
+                            serviceData.cmdSource = "响应结果Result: " + (serviceData.Content.result == 0 ? '成功' : ('失败' + serviceData.Content.result));
+                            if(serviceData.Content.result != 0){
+                                serviceData.isActive = false;
+                            }
+                        }
                     }
-                }
-            }
 
-            //deal data
-            if(serviceData.Content.messageBody != undefined){
-                //deal gps type
-                if(serviceData.Content.messageBody.gpstype != undefined){
-                    switch (serviceData.Content.messageBody.gpstype){
-                        case 0:
-                            serviceData.Content.messageBody.gpstypDes = "无";
-                            break;
-                        case 1:
-                            serviceData.Content.messageBody.gpstypDes = "实时";
-                            break;
-                        case 2:
-                            serviceData.Content.messageBody.gpstypDes = "历史";
-                            break;
-                        default:
-                            serviceData.Content.messageBody.gpstypDes = "";
-                            break;
+                    //deal data
+                    if(serviceData.Content.messageBody != undefined){
+                        //deal gps type
+                        if(serviceData.Content.messageBody.gpstype != undefined){
+                            switch (serviceData.Content.messageBody.gpstype){
+                                case 0:
+                                    serviceData.Content.messageBody.gpstypDes = "无";
+                                    break;
+                                case 1:
+                                    serviceData.Content.messageBody.gpstypDes = "实时";
+                                    break;
+                                case 2:
+                                    serviceData.Content.messageBody.gpstypDes = "历史";
+                                    break;
+                                default:
+                                    serviceData.Content.messageBody.gpstypDes = "";
+                                    break;
+                            }
+                        }
+                        //deal ebike job type
+                        if(serviceData.Content.messageBody.ctrlState != undefined) {
+                            switch (serviceData.Content.messageBody.ctrlState) {
+                                case 1:
+                                    serviceData.Content.messageBody.ctrlStateDes = "车辆无电";
+                                    break;
+                                case 2:
+                                    serviceData.Content.messageBody.ctrlStateDes = "工作";
+                                    break;
+                                case 3:
+                                    serviceData.Content.messageBody.ctrlStateDes = "车辆防盗";
+                                    break;
+                                default:
+                                    serviceData.Content.messageBody.ctrlStateDes = "";
+                                    break;
+                            }
+                        }
+                        //deal ebike job type
+                        if(serviceData.Content.messageBody.alarmType != undefined) {
+                            switch (serviceData.Content.messageBody.alarmType) {
+                                case 1:
+                                    serviceData.Content.messageBody.alarmTypeDes = "车辆倒地";
+                                    break;
+                                case 2:
+                                    serviceData.Content.messageBody.alarmTypeDes = "非法触碰";
+                                    break;
+                                case 3:
+                                    serviceData.Content.messageBody.alarmTypeDes = "非法位移";
+                                    break;
+                                case 4:
+                                    serviceData.Content.messageBody.alarmTypeDes = "电源断电";
+                                    break;
+                                case 9:
+                                    serviceData.Content.messageBody.alarmTypeDes = "车辆扶正";
+                                    break;
+                                default:
+                                    serviceData.Content.messageBody.alarmTypeDes = "";
+                                    break;
+                            }
+                        }
                     }
-                }
-                //deal ebike job type
-                if(serviceData.Content.messageBody.ctrlState != undefined) {
-                    switch (serviceData.Content.messageBody.ctrlState) {
-                        case 1:
-                            serviceData.Content.messageBody.ctrlStateDes = "车辆无电";
-                            break;
-                        case 2:
-                            serviceData.Content.messageBody.ctrlStateDes = "工作";
-                            break;
-                        case 3:
-                            serviceData.Content.messageBody.ctrlStateDes = "车辆防盗";
-                            break;
-                        default:
-                            serviceData.Content.messageBody.ctrlStateDes = "";
-                            break;
-                    }
-                }
-                //deal ebike job type
-                if(serviceData.Content.messageBody.alarmType != undefined) {
-                    switch (serviceData.Content.messageBody.alarmType) {
-                        case 1:
-                            serviceData.Content.messageBody.alarmTypeDes = "车辆倒地";
-                            break;
-                        case 2:
-                            serviceData.Content.messageBody.alarmTypeDes = "非法触碰";
-                            break;
-                        case 3:
-                            serviceData.Content.messageBody.alarmTypeDes = "非法位移";
-                            break;
-                        case 4:
-                            serviceData.Content.messageBody.alarmTypeDes = "电源断电";
-                            break;
-                        case 9:
-                            serviceData.Content.messageBody.alarmTypeDes = "车辆扶正";
-                            break;
-                        default:
-                            serviceData.Content.messageBody.alarmTypeDes = "";
-                            break;
-                    }
-                }
-            }
 
-            $scope.bikeLogDateList.push(serviceData);
-        }
+                    $scope.bikeLogDateList.push(serviceData);
+                }
 
-        //tail data
-        var startIndex = ($scope.currentPage - 1) * pageDateCount;
-        $scope.bikeDisplayLogDateList = $scope.bikeLogDateList.slice(startIndex, startIndex + bikeLogList.length);
+                //tail data
+                var startIndex = $scope.currentPage * $scope.pageDateCount;
+                $scope.bikeDisplayLogDateList = $scope.bikeLogDateList.slice(startIndex, startIndex + bikeLogList.length);
+
+                $('html,body').animate({scrollTop:0},'fast');
+            })
+            .catch(function (result) {
+                //error
+                console.log(result);
+                $scope.netRequestState = 'error';
+            })
+            .finally(function () {
+                //
+            });
+
+
     }
 
 });

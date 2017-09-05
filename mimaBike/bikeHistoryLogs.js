@@ -22,7 +22,16 @@ router.post('/ebileLogList',function (req, res) {
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
     ebikeHistoryLogQuery.limit(req.body.pageCount);
-    ebikeHistoryLogQuery.skip(req.body.pageCount * req.params.pageIndex);
+
+    if(req.body.lastLogTime != undefined && req.body.lastLogTime != null){
+        //下一页，必须用时间才是准确的下一页
+        var queryDateTime = new Date(req.body.lastLogTime).getTime();
+        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
+    }else {
+        //首次
+        ebikeHistoryLogQuery.skip(req.body.pageCount * req.body.pageIndex);
+    }
+
     ebikeHistoryLogQuery.descending('createdAt');
 
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
@@ -39,7 +48,12 @@ router.post('/ebileLogList',function (req, res) {
             resLogList.push(historyLogObject);
         }
 
-        res.json({'ebikeHistoryLogs' : resLogList});
+        if(ebikeHistoryLogObjects.length > 0){
+            res.json({'ebikeHistoryLogs' : resLogList, 'lastLogTime': ebikeHistoryLogObjects[ebikeHistoryLogObjects.length - 1].createdAt});
+        }else {
+            res.json({'ebikeHistoryLogs' : resLogList});
+        }
+
     }).catch(function(err) {
         res.status(500).json({
             error: err.message
