@@ -96,9 +96,9 @@ const getIndexPage = (uuid) => {
 `
 }
 
-// app.get('*', function (req, res) {
-//   res.send(getIndexPage(uuid()))
-// })
+app.get('*', function (req, res) {
+  res.send(getIndexPage(uuid()))
+})
 
 var PORT = parseInt(process.env.LEANCLOUD_APP_PORT || process.env.PORT || 8080)
 app.listen(PORT, function() {
