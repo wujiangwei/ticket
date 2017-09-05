@@ -34,7 +34,11 @@ router.post('/ebileLogList',function (req, res) {
 
     ebikeHistoryLogQuery.descending('createdAt');
 
+    console.log('----- ebileLogList ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
+
+        console.log('----- ebileLogList ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
+
         var resLogList = new Array();
         for(var i = 0; i < ebikeHistoryLogObjects.length; i++){
             var historyLogObject = Object();
@@ -72,18 +76,22 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
     ebikeHistoryLogQuery.contains('Content', 'latitudeMinute');
 
-    // if(req.body.queryDate != undefined || req.body.queryDate.length > 0){
-    //     var queryDateTime = new Date(req.body.queryDate).getTime();
-    //     var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
-    //
-    //     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
-    //     ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
-    // }
+    if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
+        var queryDateTime = new Date(req.body.queryDate).getTime();
+        var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
+
+        ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
+        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
+    }
 
     ebikeHistoryLogQuery.descending('createdAt');
     ebikeHistoryLogQuery.limit(1);
 
+    console.log('----- ebikeHistoryLocationBySnAndTime ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
+
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
+
+        console.log('----- ebikeHistoryLocationBySnAndTime ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
 
         if(ebikeHistoryLogObjects.length == 0){
             return res.json({'errorCode':1, 'message' : 'can not find location at pointer time'});
