@@ -32,6 +32,12 @@ router.post('/ebileLogList',function (req, res) {
         ebikeHistoryLogQuery.skip(req.body.pageCount * req.body.pageIndex);
     }
 
+    if(req.body.selectedTime != undefined && req.body.selectedTime != null){
+        //下一页，必须用时间才是准确的下一页
+        var selectedDate = new Date(req.body.selectedTime);
+        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', selectedDate);
+    }
+
     ebikeHistoryLogQuery.descending('createdAt');
 
     console.log('----- ebileLogList ----- start: ' + new Date() + ':' + new Date().getMilliseconds());

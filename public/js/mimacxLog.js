@@ -137,15 +137,14 @@ function toCoordinates(contentObject)
 app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
     var todayDate = new Date();
-    var bikeLogDate = dateStringToNetParam(todayDate.toLocaleDateString());
-    // console.log($location.$$absUrl);
+    // $scope.selectedBikeLogDate = todayDate.toLocaleDateString();
 
     $(".ebike-log-flatpickr").flatpickr({
         defaultDate:todayDate,
         // maxDate: todayDate,
         onChange: function(selectedDates, dateStr, instance) {
-            bikeLogDate = dateStringToNetParam(dateStr);
-            console.log(bikeLogDate);
+            $scope.selectedBikeLogDate = dateStr + ' 23:59:59';
+            console.log($scope.selectedBikeLogDate);
         }
     });
 
@@ -267,7 +266,8 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             "SN" : $scope.EBikeInfo.SN,
             "pageIndex" : $scope.currentPage,
             "lastLogTime":$scope.lastLogTime,
-            "pageCount":$scope.pageDateCount
+            "pageCount":$scope.pageDateCount,
+            "selectedTime":$scope.selectedBikeLogDate
         })
             .then(function(result) {
                 $scope.netRequestState = 'success';
