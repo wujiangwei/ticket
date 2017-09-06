@@ -116,7 +116,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
                 return '';
             }
 
-            var longValueStr = Content.substr(valueIndex, valueIndexEnd - valueIndex);
+            var longValueStr = Content.substr(valueIndex, valueIndexEnd - valueIndex - 1);
             var longValueArray = longValueStr.split(':');
             if(longValueArray[1].indexOf("\"") != -1){
                 return longValueArray[1].substr(1, longValueArray[1].length - 2);
