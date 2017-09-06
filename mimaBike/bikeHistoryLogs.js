@@ -40,10 +40,10 @@ router.post('/ebileLogList',function (req, res) {
 
     ebikeHistoryLogQuery.descending('createdAt');
 
-    console.log('----- ebileLogList ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
+    // console.log('----- ebileLogList ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
 
-        console.log('----- ebileLogList ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
+        // console.log('----- ebileLogList ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
 
         var resLogList = new Array();
         for(var i = 0; i < ebikeHistoryLogObjects.length; i++){
@@ -110,7 +110,12 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         function getValueFromStr(valueKey) {
             //"longitudeDegree":111,  "longitudeDegree":"111",
             var valueIndex = Content.indexOf(valueKey);
-            var valueIndexEnd = Content.indexOf(",", valueIndex);
+            var valueIndexEnd = Content.indexOf("\"", valueIndex + valueKey.length + 3);
+
+            if(valueIndexEnd == -1 || valueIndex == -1){
+                return '';
+            }
+
             var longValueStr = Content.substr(valueIndex, valueIndexEnd - valueIndex);
             var longValueArray = longValueStr.split(':');
             if(longValueArray[1].indexOf("\"") != -1){
