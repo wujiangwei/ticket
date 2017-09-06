@@ -124,9 +124,13 @@ function testLink(XMinBefore) {
     var queryDate = new Date(currentDateTime - XMinBefore*60*1000);
 
     // queryDate = new Date("2017/09/1 05:53:45");
-    queryDate = new Date("2017-09-03 07:29:16");
-
+    queryDate = new Date("2017-09-06 00:25:00");
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
+
+    {
+        queryDate = new Date("2017-09-05 23:31:00");
+        // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
+    }
     var bikeSns = new Array();
     ebikeHistoryLogQuery.limit(1000);
     ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
@@ -146,7 +150,7 @@ function testLink(XMinBefore) {
             }
             if(isExist == false){
                 bikeSns.push(xMinBeforeLogObject.get('SN'));
-                console.log(xMinBeforeLogObject.get('SN'));
+                // console.log(xMinBeforeLogObject.get('SN'));
             }
         }
 
@@ -156,7 +160,7 @@ function testLink(XMinBefore) {
         console.log('----------------------------');
 
 
-        var manyTimeSy = [0, 0 , 0 , 0 ];
+        var manyTimeSy = [0,0,0,0,0,0,0,0,0,0,0,0];
         for(var i = 0; i < bikeSns.length; i++){
             var bikeCount = 0;
             for(var t = 0; t < xMinBeforeLogs.length; t++){
@@ -186,6 +190,24 @@ function testLink(XMinBefore) {
             }
             if(bikeCount == 6){
                 manyTimeSy[5]++;
+            }
+            if(bikeCount == 7){
+                manyTimeSy[6]++;
+            }
+            if(bikeCount == 8){
+                manyTimeSy[7]++;
+            }
+            if(bikeCount == 9){
+                manyTimeSy[8]++;
+            }
+            if(bikeCount == 10){
+                manyTimeSy[9]++;
+            }
+            if(bikeCount == 11){
+                manyTimeSy[10]++;
+            }
+            if(bikeCount == 12){
+                manyTimeSy[11]++;
             }
         }
 

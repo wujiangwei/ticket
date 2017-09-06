@@ -123,12 +123,25 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         var latitudeDegree = getValueFromStr('latitudeDegree');
         var longitudeMinute = getValueFromStr('longitudeMinute');
         var longitudeDegree = getValueFromStr('longitudeDegree');
+        var satellite = getValueFromStr('satellite');
         var totalMileage = getValueFromStr('totalMileage');
+        var battery = getValueFromStr('battery');
+
+        var gpsRemark = '未知定位';
+        switch (parseInt(getValueFromStr('gpstype'))){
+            case 1:
+                gpsRemark = '实时定位';
+                break;
+            case 2:
+                gpsRemark = '历史定位';
+                break;
+        }
 
         var lat = Number(latitudeMinute) / 60.0 + Number(latitudeDegree);
         var lon = Number(longitudeMinute) / 60.0 + Number(longitudeDegree);
 
-        res.json({'errorCode':0, 'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'locationTime': new Date(historyLogObject.createdAt.getTime() + 8*60*60*1000)});
+        res.json({'errorCode':0, 'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
+            'locationTime': new Date(historyLogObject.createdAt.getTime() + 8*60*60*1000)});
     }).catch(function(err) {
         res.status(500).json({
             error: err.message

@@ -136,7 +136,8 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
 
 
         // $http.post("http://localhost:8080/logs/ebikeHistoryLocationBySnAndTime",{
-        //     "SN" : 'mimacx0000000451'
+        //     "SN" : 'mimacx0000000451',
+        //     'queryDate':'2017-9-5 14:30:20'
         // })
         //     .then(function(result) {
         //         console.log(result);
