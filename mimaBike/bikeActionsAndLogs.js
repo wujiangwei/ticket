@@ -118,6 +118,24 @@ router.post('/', function(req, res) {
 })
 
 
+router.post('/getBikeLatestLogTime',function (req, res) {
+
+    if(req.body.SN == undefined || req.body.SN.length == 0){
+        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
+    }
+
+    var bikeSNKey = req.body.SN + '_Time';
+    redisUtil.getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
+        if(bikeLatestTime == undefined || bikeLatestTime == null){
+            res.json({'bikeLatestTime' : bikeLatestTime});
+        }else {
+            //exist in redis , update time
+            res.json();
+        }
+    })
+})
+
+
 function setBikeMapWithRedis(bikeSN, bikeID) {
     redisUtil.getSimpleValueFromRedis(bikeSN, function (bikeID) {
         if(bikeID == undefined || bikeID == null){
@@ -146,7 +164,8 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
                 console.error('find bike and sn error :' , err.message);
             })
         }else {
-            //exist in redis , ingore
+            //exist in redis , update time
+            redisUtil.setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
         }
     })
 }
@@ -262,7 +281,7 @@ function structLogContent(leanContentObject) {
     }
 
     //commend ID
-    if(contentObject.cmdID != undefined){
+    if(contentObject != undefined && contentObject.cmdID != undefined){
         //LogType(5:发起请求，6请求响应)
         //保存请求的参数 和 响应的结果
         if(serviceData.Content.argument != undefined){
@@ -273,7 +292,7 @@ function structLogContent(leanContentObject) {
     }
 
     //deal data
-    if(serviceData.Content.messageBody != undefined){
+    if(serviceData.Content != undefined && serviceData.Content.messageBody != undefined){
         //1 锁车中，2 行使中，3 防盗中
         leanContentObject.set('ctrlState', serviceData.Content.messageBody.ctrlState);
 

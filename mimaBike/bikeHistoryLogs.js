@@ -85,10 +85,11 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
     if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
         var queryDateTime = new Date(req.body.queryDate).getTime();
+        var queryDateTimeBigger = new Date(queryDateTime + 10*60*1000);
         var queryDateTimeLower = new Date(queryDateTime - 10*60*1000);
 
         ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
-        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
+        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTimeBigger);
     }
 
     ebikeHistoryLogQuery.descending('createdAt');
@@ -100,31 +101,54 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
         // console.log('----- ebikeHistoryLocationBySnAndTime ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
 
+        function retToClinet(retEBikeLogObject) {
+            var bikeGeo = retEBikeLogObject.get('bikeGeo');
+            var lat = bikeGeo.latitude;
+            var lon = bikeGeo.longitude;
+
+            var satellite = retEBikeLogObject.get('satellite');
+            var totalMileage = retEBikeLogObject.get('totalMileage');
+            var battery = retEBikeLogObject.get('battery');
+
+            var gpstype = retEBikeLogObject.get('gpstype');
+            var gpsRemark = '';
+            switch (parseInt(gpstype)){
+                case 1:
+                    gpsRemark = '实时定位';
+                    break;
+                case 2:
+                    gpsRemark = '历史定位';
+                    break;
+            }
+
+            res.json({'errorCode':0, 'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
+                'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
+        }
+
         if(ebikeHistoryLogObjects.length == 0) {
+            //获取一个最新位置返回
+            var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+            ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
+            ebikeHistoryLogQuery.exists('bikeGeo');
+            ebikeHistoryLogQuery.descending('createdAt');
+            ebikeHistoryLogQuery.limit(1);
+            ebikeHistoryLogQuery.find().then(function(latestEbikeHistoryLogObjects) {
+                if(latestEbikeHistoryLogObjects.length == 0) {
+                    res.json({'errorCode': 1, 'message': 'can not find location anytime'});
+                }
+
+                retToClinet(latestEbikeHistoryLogObjects[0]);
+            }, function (err) {
+                res.status(500).json({
+                    error: err.message
+                });
+            })
+
             return res.json({'errorCode': 1, 'message': 'can not find location at pointer time(10 min)'});
         }
 
-        var bikeGeo = ebikeHistoryLogObjects[0].get('bikeGeo');
-        var lat = bikeGeo.latitude;
-        var lon = bikeGeo.longitude;
+        retToClinet(ebikeHistoryLogObjects[0]);
 
-        var satellite = ebikeHistoryLogObjects[0].get('satellite');
-        var totalMileage = ebikeHistoryLogObjects[0].get('totalMileage');
-        var battery = ebikeHistoryLogObjects[0].get('battery');
-
-        var gpstype = ebikeHistoryLogObjects[0].get('gpstype');
-        var gpsRemark = '';
-        switch (parseInt(gpstype)){
-            case 1:
-                gpsRemark = '实时定位';
-                break;
-            case 2:
-                gpsRemark = '历史定位';
-                break;
-        }
-
-        res.json({'errorCode':0, 'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
-            'locationTime': new Date(ebikeHistoryLogObjects[0].createdAt.getTime() + 8*60*60*1000)});
     }).catch(function(err) {
         res.status(500).json({
             error: err.message
