@@ -143,8 +143,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
                     error: err.message
                 });
             })
-
-            return res.json({'errorCode': 1, 'message': 'can not find location at pointer time(10 min)'});
+            return;
         }
 
         retToClinet(ebikeHistoryLogObjects[0]);
