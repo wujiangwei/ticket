@@ -117,39 +117,6 @@ router.post('/', function(req, res) {
     }
 })
 
-//日志字符串变成结构体
-function dealOldDateToStruct() {
-    var pageCount = 10;
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.doesNotExist('coordinate');
-    ebikeHistoryLogQuery.limit(pageCount);
-    ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.find().then(function (objects) {
-
-        var inEnd = (objects.length == 0) ? true : (objects.length%pageCount > 0 ? true : false);
-        for (var i = 0; i < objects.length; i++){
-            var tempObject = objects[i];
-            structLogContent(tempObject);
-        }
-
-        // 批量保存
-        AV.Object.saveAll(objects).then(function () {
-            // 成功
-            console.log('struct ' + objects.length + ' old logs : ', objects[0].createdAt);
-            if(inEnd == false){
-                // dealOldDateToStruct();
-            }else {
-                console.log('struct end');
-            }
-        }, function (error) {
-            // 异常处理
-            console.log('saveAll objects error: ', error.message);
-        });
-
-    }, function (error) {
-        console.log('struct objects query error: ', error.message);
-    });
-}
 
 function setBikeMapWithRedis(bikeSN, bikeID) {
     redisUtil.getSimpleValueFromRedis(bikeSN, function (bikeID) {
@@ -249,13 +216,26 @@ function structLogContent(leanContentObject) {
             contentObject = JSON.parse(contentStr);
             if(contentObject != undefined){
 
+                if(contentObject.messageBody == undefined && contentObject.data != undefined){
+                    //控制车辆的命令响应，返回的是data，而不是messageBody（这个是车辆的报文）
+                    contentObject.messageBody = contentObject.data;
+                }
+
+                leanContentObject.set('satellite', contentObject.messageBody.satellite);
+                if(contentObject.messageBody.charging != undefined && contentObject.messageBody.charging != null && contentObject.messageBody.charging != 'null'){
+                    leanContentObject.set('charging', contentObject.messageBody.charging);
+                }
+
+                if(contentObject.messageBody.chargeCount != undefined && contentObject.messageBody.chargeCount != null && contentObject.messageBody.chargeCount != 'null'){
+                    leanContentObject.set('chargeCount', contentObject.messageBody.chargeCount);
+                }
+
+                leanContentObject.set('totalMileage', parseInt(contentObject.messageBody.totalMileage));
+                leanContentObject.set('errorCode', contentObject.messageBody.errorCode);
+                leanContentObject.set('battery', parseInt(contentObject.messageBody.battery));
+
                 //只保存实时定位，且搜星数大于5
                 if(contentObject.messageBody.gpstype == 1 && contentObject.messageBody.satellite > 5){
-
-                    if(contentObject.messageBody == undefined && contentObject.data != undefined){
-                        //控制车辆的命令响应，返回的是data，而不是messageBody（这个是车辆的报文）
-                        contentObject.messageBody = contentObject.data;
-                    }
 
                     //忽略历史信息的报文，不去存储，主要是多个定位信息，创建对象不支持，如果单独创建一个位置对象，对数据的开销是X2的开销，不划算
                     if(contentObject.messageBody.latitudeMinute == undefined || contentObject.messageBody.longitudeMinute == undefined){
@@ -341,6 +321,40 @@ function structLogContent(leanContentObject) {
     }
 }
 
+
+//日志字符串变成结构体
+function dealOldDateToStruct() {
+    var pageCount = 1000;
+    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+    ebikeHistoryLogQuery.doesNotExist('coordinate');
+    ebikeHistoryLogQuery.limit(pageCount);
+    ebikeHistoryLogQuery.descending('createdAt');
+    ebikeHistoryLogQuery.find().then(function (objects) {
+
+        var inEnd = (objects.length == 0) ? true : (objects.length%pageCount > 0 ? true : false);
+        for (var i = 0; i < objects.length; i++){
+            var tempObject = objects[i];
+            structLogContent(tempObject);
+        }
+
+        // 批量保存
+        AV.Object.saveAll(objects).then(function () {
+            // 成功
+            console.log('struct ' + objects.length + ' old logs : ', objects[0].createdAt);
+            if(inEnd == false){
+                dealOldDateToStruct();
+            }else {
+                console.log('struct end');
+            }
+        }, function (error) {
+            // 异常处理
+            console.log('saveAll objects error: ', error.message);
+        });
+
+    }, function (error) {
+        console.log('struct objects query error: ', error.message);
+    });
+}
 
 //删除旧的日志
 function deleteOldDateLogs(maxTime, queryDateLess) {

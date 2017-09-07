@@ -81,38 +81,28 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-    ebikeHistoryLogQuery.contains('Content', 'latitudeMinute');
+    ebikeHistoryLogQuery.exists('bikeGeo');
 
     if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
         var queryDateTime = new Date(req.body.queryDate).getTime();
-        var queryDateTimeLower = new Date(queryDateTime - 5*60*1000);
+        var queryDateTimeLower = new Date(queryDateTime - 10*60*1000);
 
         ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
         ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
     }
 
     ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.limit(20);
+    ebikeHistoryLogQuery.limit(1);
 
-    console.log('----- ebikeHistoryLocationBySnAndTime ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
+    // console.log('----- ebikeHistoryLocationBySnAndTime ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
 
     ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
 
-        console.log('----- ebikeHistoryLocationBySnAndTime ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
+        // console.log('----- ebikeHistoryLocationBySnAndTime ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
 
-        if(ebikeHistoryLogObjects.length == 0){
-            return res.json({'errorCode':1, 'message' : 'can not find location at pointer time'});
+        if(ebikeHistoryLogObjects.length == 0) {
+            return res.json({'errorCode': 1, 'message': 'can not find location at pointer time(10 min)'});
         }
-
-        var historyLogObject = undefined;
-        for (var i = 0; i < ebikeHistoryLogObjects.length; i++){
-            //过滤掉历史定位的报文
-            if(ebikeHistoryLogObjects[i].get('Content').indexOf('"messageBody":{"location"') != -1){
-                continue;
-            }
-            historyLogObject = ebikeHistoryLogObjects[i];
-        }
-
 
         var Content = historyLogObject.get('Content');
 
