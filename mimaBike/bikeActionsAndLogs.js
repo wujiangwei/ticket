@@ -45,7 +45,7 @@ router.post('/', function(req, res) {
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
-                    console.error(req.body.SN + ' save log failed:' + error);
+                    console.log(req.body.SN + ' save log failed:' + error);
                     return res.json({'errorCode': -1, 'errorMsg': error.message});
                 }
             });
@@ -109,7 +109,7 @@ router.post('/', function(req, res) {
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
-                    console.error(req.body.SN + ' save log failed:' + error);
+                    console.log(req.body.SN + ' save log failed:' + error);
                     return res.json({'errorCode': -1, 'errorMsg': error.message});
                 }
             });
@@ -152,7 +152,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
                     newMimaEBikeMapObject.save().then(function (savedObject) {
                         //auto set it in redis
                     },function (err) {
-                        console.error('find bike and sn but save error :', err.message);
+                        console.log('find bike and sn but save error :', err.message);
                     })
                 }else {
                     //not in redis but in sql,so set it in redis
@@ -161,7 +161,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
 
                 console.log('bike and sn exist');
             }, function (err) {
-                console.error('find bike and sn error :' , err.message);
+                console.log('find bike and sn error :' , err.message);
             })
         }else {
             //exist in redis , update time
@@ -193,7 +193,7 @@ function structLogContent(leanContentObject) {
                 leanContentObject.set('bikeID', authContentObject.bikeID);
                 setBikeMapWithRedis(leanContentObject.get('SN'), authContentObject.bikeID);
             }catch(err) {
-                console.error('auth with no bikeId');
+                console.log('auth with no bikeId');
                 console.log(contentStr);
             }
 
@@ -240,7 +240,7 @@ function structLogContent(leanContentObject) {
                     contentObject.messageBody = contentObject.data;
                 }
 
-                leanContentObject.set('satellite', contentObject.messageBody.satellite);
+                leanContentObject.set('satellite', parseInt(contentObject.messageBody.satellite));
                 if(contentObject.messageBody.charging != undefined && contentObject.messageBody.charging != null && contentObject.messageBody.charging != 'null'){
                     leanContentObject.set('charging', contentObject.messageBody.charging);
                 }
@@ -258,7 +258,7 @@ function structLogContent(leanContentObject) {
 
                     //忽略历史信息的报文，不去存储，主要是多个定位信息，创建对象不支持，如果单独创建一个位置对象，对数据的开销是X2的开销，不划算
                     if(contentObject.messageBody.latitudeMinute == undefined || contentObject.messageBody.longitudeMinute == undefined){
-                        console.error('no latitudeMinute or longitudeMinute');
+                        console.log('no latitudeMinute or longitudeMinute');
                         console.log(serviceDataContent);
                         return;
                     }
@@ -270,13 +270,13 @@ function structLogContent(leanContentObject) {
             }
         }catch(err) {
             //other message
-            console.error('payload: not struct');
+            console.log('payload: not struct');
             console.log(serviceDataContent);
         }
 
         serviceData.Content = contentObject;
     }else {
-        console.error('no payload and Payload');
+        console.log('no payload and Payload');
         console.log(contentStr);
     }
 
