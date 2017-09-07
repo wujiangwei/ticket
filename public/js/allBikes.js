@@ -263,5 +263,20 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
                 eListBikeInfo.isSetting = false;
             })
     }
+    
+    $scope.bikeOnlineDetection = function (eListBikeInfo) {
+        $http.post("/bikeActionsAndLogs/getBikeLatestLogTime",{
+            "SN" : eListBikeInfo.ControllerNo
+        })
+            .then(function(result) {
+                eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
+            })
+            .catch(function (result) {
+                //error
+                eListBikeInfo.lastestOnlineTime = '网络错误';
+            })
+            .finally(function () {
+            })
+    }
 
 });

@@ -130,7 +130,7 @@ router.post('/getBikeLatestLogTime',function (req, res) {
             res.json({'bikeLatestTime' : bikeLatestTime});
         }else {
             //exist in redis , update time
-            res.json();
+            res.json({'bikeLatestTime' : '无效车'});
         }
     })
 })
