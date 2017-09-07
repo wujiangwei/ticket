@@ -427,6 +427,6 @@ function deleteOldDateLogs(maxTime, queryDateLess) {
 
 // deleteOldDateLogs(20);
 
-dealOldDateToStruct();
+// dealOldDateToStruct();
 
 module.exports = router
