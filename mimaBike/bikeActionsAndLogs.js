@@ -242,11 +242,11 @@ function structLogContent(leanContentObject) {
 
                 leanContentObject.set('satellite', parseInt(contentObject.messageBody.satellite));
                 if(contentObject.messageBody.charging != undefined && contentObject.messageBody.charging != null && contentObject.messageBody.charging != 'null'){
-                    leanContentObject.set('charging', contentObject.messageBody.charging);
+                    leanContentObject.set('charging', parseInt(contentObject.messageBody.charging));
                 }
 
                 if(contentObject.messageBody.chargeCount != undefined && contentObject.messageBody.chargeCount != null && contentObject.messageBody.chargeCount != 'null'){
-                    leanContentObject.set('chargeCount', contentObject.messageBody.chargeCount);
+                    leanContentObject.set('chargeCount', parseInt(contentObject.messageBody.chargeCount));
                 }
 
                 leanContentObject.set('totalMileage', parseInt(contentObject.messageBody.totalMileage));
