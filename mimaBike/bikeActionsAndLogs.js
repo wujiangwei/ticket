@@ -270,14 +270,14 @@ function structLogContent(leanContentObject) {
             }
         }catch(err) {
             //other message
-            console.log('payload: not struct');
-            console.log(serviceDataContent);
+            // console.log('payload: not struct');
+            // console.log(serviceDataContent);
         }
 
         serviceData.Content = contentObject;
     }else {
-        console.log('no payload and Payload');
-        console.log(contentStr);
+        // console.log('no payload and Payload');
+        // console.log(contentStr);
     }
 
     //commend ID
