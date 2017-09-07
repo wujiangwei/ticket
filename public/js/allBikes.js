@@ -218,7 +218,7 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
                 //error
                 console.log(result.data);
             })
-            .final(function () {
+            .finally(function () {
                 eListBikeInfo.isGetting = false;
             })
     }
@@ -254,7 +254,7 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
                 //error
                 console.log(result.data);
             })
-            .final(function () {
+            .finally(function () {
                 eListBikeInfo.isSetting = false;
             })
     }
