@@ -3,6 +3,7 @@
  */
 const router = require('express').Router()
 var AV = require('leanengine');
+
 var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
 
 //暂时为车辆日志网站使用的接口
@@ -91,7 +92,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
     }
 
     ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.limit(1);
+    ebikeHistoryLogQuery.limit(20);
 
     console.log('----- ebikeHistoryLocationBySnAndTime ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
 
@@ -103,8 +104,16 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
             return res.json({'errorCode':1, 'message' : 'can not find location at pointer time'});
         }
 
-        var middleIndex = parseInt(ebikeHistoryLogObjects.length / 2);
-        var historyLogObject = ebikeHistoryLogObjects[middleIndex];
+        var historyLogObject = undefined;
+        for (var i = 0; i < ebikeHistoryLogObjects.length; i++){
+            //过滤掉历史定位的报文
+            if(ebikeHistoryLogObjects[i].get('Content').indexOf('"messageBody":{"location"') != -1){
+                continue;
+            }
+            historyLogObject = ebikeHistoryLogObjects[i];
+        }
+
+
         var Content = historyLogObject.get('Content');
 
         function getValueFromStr(valueKey) {
@@ -241,103 +250,8 @@ function testLink(XMinBefore) {
         console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
 
     })
-
-
-
-}
-
-function querySomeLogs(searchKey) {
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.contains('Content', searchKey);
-
-    var currentDateTime = (new Date()).getTime();
-    var queryDate = new Date(currentDateTime - 8*60*1000);
-
-    // queryDate = new Date("2017/09/1 05:53:45");
-    queryDate = new Date("2017/09/2 05:00:00");
-    var queryDateLess = new Date("2017/09/1 06:00:00");
-
-    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateLess);
-    ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
-
-    ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.limit(1000);
-
-    var bikeSns = new Array();
-
-    ebikeHistoryLogQuery.find().then(function(xMinBeforeLogs) {
-
-        console.log('第一个鉴权时间:' + xMinBeforeLogs[0].createdAt);
-        console.log('最后一个鉴权时间:' + xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt);
-        console.log('total 鉴权次数:' + xMinBeforeLogs.length);
-
-        for(var t = 0; t < xMinBeforeLogs.length; t++){
-            var xMinBeforeLogObject = xMinBeforeLogs[t];
-            var isExist = false;
-            for(var i = 0 ; i < bikeSns.length; i++){
-                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
-                    isExist = true;
-                    break;
-                }
-            }
-            if(isExist == false){
-                bikeSns.push(xMinBeforeLogObject.get('SN'));
-                console.log(xMinBeforeLogObject.get('SN'));
-            }
-        }
-
-        console.log('----------------------------');
-        console.log('----------------------------');
-        console.log('----------------------------');
-        console.log('----------------------------');
-
-
-        var manyTimeSy = [0, 0 , 0 , 0 ];
-        for(var i = 0; i < bikeSns.length; i++){
-            var bikeCount = 0;
-            for(var t = 0; t < xMinBeforeLogs.length; t++){
-                var xMinBeforeLogObject = xMinBeforeLogs[t];
-                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
-                    bikeCount++;
-                }
-            }
-
-            if(bikeCount > 1){
-                console.log(bikeSns[i] + ' : ' + bikeCount + '次')
-            }else {
-                manyTimeSy[0]++;
-            }
-
-            if(bikeCount == 2){
-                manyTimeSy[1]++;
-            }
-            if(bikeCount == 3){
-                manyTimeSy[2]++;
-            }
-            if(bikeCount == 4){
-                manyTimeSy[3]++;
-            }
-            if(bikeCount == 5){
-                manyTimeSy[4]++;
-            }
-            if(bikeCount == 6){
-                manyTimeSy[5]++;
-            }
-        }
-
-        var totalEBkke = 0;
-
-        for(var j = 0; j < manyTimeSy.length; j++){
-            console.log('车辆历史报文分布:' + (j+1) + ' 次' + '的有' + manyTimeSy[j] + '辆车');
-            totalEBkke += manyTimeSy[j];
-        }
-
-        console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
-
-    });
 }
 
 // testLink(34)
-// querySomeLogs('"messageType":8');
 
 module.exports = router

@@ -4,6 +4,9 @@
 const router = require('express').Router()
 var AV = require('leanengine');
 
+var redisUtil = require('../redis/leanObjectRedis');
+
+var MimaEBikeMapSql = AV.Object.extend('MimaEBikeMap');
 var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
 var MimaActionSql = AV.Object.extend('MimaAction');
 
@@ -30,8 +33,9 @@ router.post('/', function(req, res) {
             newEBikeLog.set('LogType', parseInt(LogParam.LogType));
             newEBikeLog.set('Content', LogParam.Content);
             newEBikeLog.set('Remark', LogParam.Remark);
-            // newEBikeLog.set('OperationTime', req.body.OperationTime);
             newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
+
+            structLogContent(newEBikeLog);
 
             newEBikeLog.save().then(function (savedNewEBikeLog) {
                 lock++;
@@ -47,7 +51,6 @@ router.post('/', function(req, res) {
             });
         }
     }
-
 
     {
         //Action
@@ -114,207 +117,282 @@ router.post('/', function(req, res) {
     }
 })
 
-//以下为测试代码
-function testLink(XMinBefore) {
-
+//日志字符串变成结构体
+function dealOldDateToStruct() {
+    var pageCount = 10;
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
-
-    var currentDateTime = (new Date()).getTime();
-    var queryDate = new Date(currentDateTime - XMinBefore*60*1000);
-
-    // queryDate = new Date("2017/09/1 05:53:45");
-    queryDate = new Date("2017-09-06 00:25:00");
-    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
-
-    {
-        queryDate = new Date("2017-09-05 23:31:00");
-        // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
-    }
-    var bikeSns = new Array();
-    ebikeHistoryLogQuery.limit(1000);
-    ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
-
-        console.log('第一个鉴权时间:' + xMinBeforeLogs[0].createdAt + 'id= ' + xMinBeforeLogs[0].id);
-        console.log('最后一个鉴权时间:' + xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt + 'id= ' + xMinBeforeLogs[xMinBeforeLogs.length - 1].id);
-        console.log('total 鉴权次数:' + xMinBeforeLogs.length);
-
-        for(var t = 0; t < xMinBeforeLogs.length; t++){
-            var xMinBeforeLogObject = xMinBeforeLogs[t];
-            var isExist = false;
-            for(var i = 0 ; i < bikeSns.length; i++){
-                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
-                    isExist = true;
-                    break;
-                }
-            }
-            if(isExist == false){
-                bikeSns.push(xMinBeforeLogObject.get('SN'));
-                // console.log(xMinBeforeLogObject.get('SN'));
-            }
-        }
-
-        console.log('----------------------------');
-        console.log('----------------------------');
-        console.log('----------------------------');
-        console.log('----------------------------');
-
-
-        var manyTimeSy = [0,0,0,0,0,0,0,0,0,0,0,0];
-        for(var i = 0; i < bikeSns.length; i++){
-            var bikeCount = 0;
-            for(var t = 0; t < xMinBeforeLogs.length; t++){
-                var xMinBeforeLogObject = xMinBeforeLogs[t];
-                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
-                    bikeCount++;
-                }
-            }
-
-            if(bikeCount > 1){
-                console.log(bikeSns[i] + ' : ' + bikeCount + '次')
-            }else {
-                manyTimeSy[0]++;
-            }
-
-            if(bikeCount == 2){
-                manyTimeSy[1]++;
-            }
-            if(bikeCount == 3){
-                manyTimeSy[2]++;
-            }
-            if(bikeCount == 4){
-                manyTimeSy[3]++;
-            }
-            if(bikeCount == 5){
-                manyTimeSy[4]++;
-            }
-            if(bikeCount == 6){
-                manyTimeSy[5]++;
-            }
-            if(bikeCount == 7){
-                manyTimeSy[6]++;
-            }
-            if(bikeCount == 8){
-                manyTimeSy[7]++;
-            }
-            if(bikeCount == 9){
-                manyTimeSy[8]++;
-            }
-            if(bikeCount == 10){
-                manyTimeSy[9]++;
-            }
-            if(bikeCount == 11){
-                manyTimeSy[10]++;
-            }
-            if(bikeCount == 12){
-                manyTimeSy[11]++;
-            }
-        }
-
-        var totalEBkke = 0;
-
-        for(var j = 0; j < manyTimeSy.length; j++){
-            console.log('车辆鉴权分布:' + (j+1) + ' 次' + '的有' + manyTimeSy[j] + '辆车');
-            totalEBkke += manyTimeSy[j];
-        }
-
-        console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
-
-    })
-}
-
-function querySomeLogs(searchKey) {
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.contains('Content', searchKey);
-
-    var currentDateTime = (new Date()).getTime();
-    var queryDate = new Date(currentDateTime - 8*60*1000);
-
-    // queryDate = new Date("2017/09/1 05:53:45");
-    queryDate = new Date("2017/09/2 05:00:00");
-    var queryDateLess = new Date("2017/09/1 06:00:00");
-
-    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateLess);
-    ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
-
+    ebikeHistoryLogQuery.doesNotExist('coordinate');
+    ebikeHistoryLogQuery.limit(pageCount);
     ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.limit(1000);
+    ebikeHistoryLogQuery.find().then(function (objects) {
 
-    var bikeSns = new Array();
-
-    ebikeHistoryLogQuery.find().then(function(xMinBeforeLogs) {
-
-        console.log('第一个鉴权时间:' + xMinBeforeLogs[0].createdAt);
-        console.log('最后一个鉴权时间:' + xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt);
-        console.log('total 鉴权次数:' + xMinBeforeLogs.length);
-
-        for(var t = 0; t < xMinBeforeLogs.length; t++){
-            var xMinBeforeLogObject = xMinBeforeLogs[t];
-            var isExist = false;
-            for(var i = 0 ; i < bikeSns.length; i++){
-                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
-                    isExist = true;
-                    break;
-                }
-            }
-            if(isExist == false){
-                bikeSns.push(xMinBeforeLogObject.get('SN'));
-                console.log(xMinBeforeLogObject.get('SN'));
-            }
+        var inEnd = (objects.length == 0) ? true : (objects.length%pageCount > 0 ? true : false);
+        for (var i = 0; i < objects.length; i++){
+            var tempObject = objects[i];
+            structLogContent(tempObject);
         }
 
-        console.log('----------------------------');
-        console.log('----------------------------');
-        console.log('----------------------------');
-        console.log('----------------------------');
-
-
-        var manyTimeSy = [0, 0 , 0 , 0 ];
-        for(var i = 0; i < bikeSns.length; i++){
-            var bikeCount = 0;
-            for(var t = 0; t < xMinBeforeLogs.length; t++){
-                var xMinBeforeLogObject = xMinBeforeLogs[t];
-                if(bikeSns[i] == xMinBeforeLogObject.get('SN')){
-                    bikeCount++;
-                }
-            }
-
-            if(bikeCount > 1){
-                console.log(bikeSns[i] + ' : ' + bikeCount + '次')
+        // 批量保存
+        AV.Object.saveAll(objects).then(function () {
+            // 成功
+            console.log('struct ' + objects.length + ' old logs : ', objects[0].createdAt);
+            if(inEnd == false){
+                // dealOldDateToStruct();
             }else {
-                manyTimeSy[0]++;
+                console.log('struct end');
             }
+        }, function (error) {
+            // 异常处理
+            console.log('saveAll objects error: ', error.message);
+        });
 
-            if(bikeCount == 2){
-                manyTimeSy[1]++;
-            }
-            if(bikeCount == 3){
-                manyTimeSy[2]++;
-            }
-            if(bikeCount == 4){
-                manyTimeSy[3]++;
-            }
-            if(bikeCount == 5){
-                manyTimeSy[4]++;
-            }
-            if(bikeCount == 6){
-                manyTimeSy[5]++;
-            }
-        }
-
-        var totalEBkke = 0;
-
-        for(var j = 0; j < manyTimeSy.length; j++){
-            console.log('车辆历史报文分布:' + (j+1) + ' 次' + '的有' + manyTimeSy[j] + '辆车');
-            totalEBkke += manyTimeSy[j];
-        }
-
-        console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
-
+    }, function (error) {
+        console.log('struct objects query error: ', error.message);
     });
 }
 
-// testLink(0)
-// querySomeLogs('"messageType":8');
+function setBikeMapWithRedis(bikeSN, bikeID) {
+    redisUtil.getSimpleValueFromRedis(bikeSN, function (bikeID) {
+        if(bikeID == undefined || bikeID == null){
+            //query,if not in mangdb,set it in
+            var ebikeHistoryLogQuery = new AV.Query('MimaEBikeMapSql');
+            ebikeHistoryLogQuery.equalTo('SN', bikeSN);
+
+            // console.log('----- ebileLogList ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
+            ebikeHistoryLogQuery.find().then(function(MimaEBikeMapObjects) {
+                if(MimaEBikeMapObjects.length == 0){
+                    var newMimaEBikeMapObject = new MimaEBikeMapObjects();
+                    newMimaEBikeMapObject.set('SN', bikeSN);
+                    newMimaEBikeMapObject.set('bikeID', bikeID);
+                    newMimaEBikeMapObject.save().then(function (savedObject) {
+                        //auto set it in redis
+                    },function (err) {
+                        console.error('find bike and sn but save error :', err.message);
+                    })
+                }else {
+                    //not in redis but in sql,so set it in redis
+                    redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
+                }
+
+                console.log('bike and sn exist');
+            }, function (err) {
+                console.error('find bike and sn error :' , err.message);
+            })
+        }else {
+            //exist in redis , ingore
+        }
+    })
+}
+
+function structLogContent(leanContentObject) {
+    var serviceData = Object();
+    serviceData.LogType = leanContentObject.get('LogType');
+    serviceData.Remark = leanContentObject.get('Remark');
+    serviceData.SourceType = leanContentObject.get('SourceType');
+    serviceData.Content = leanContentObject.get('Content');
+
+    var serviceDataContent = serviceData.Content;
+
+    //处理鉴权事宜
+    if(serviceData.LogType == 1){
+        //解析车辆号进行保存
+        var payloadIndex = serviceDataContent.indexOf("Payload:");
+        if(payloadIndex != -1){
+
+            var authContentStr = serviceDataContent.substring(payloadIndex + 8, serviceDataContent.length);
+            var authContentObject = undefined;
+
+            try {
+                authContentObject = JSON.parse(contentStr);
+                leanContentObject.set('bikeID', authContentObject.bikeID);
+                setBikeMapWithRedis(leanContentObject.get('SN'), authContentObject.bikeID);
+            }catch(err) {
+                console.error('auth with no bikeId');
+                console.log(contentStr);
+            }
+
+            if(serviceData.Content.indexOf("成功") != -1){
+                leanContentObject.set('authResult', true);
+            }else {
+                leanContentObject.set('authResult', false);
+            }
+        }else {
+            leanContentObject.set('authResult', false);
+        }
+
+    }
+
+    //处理操作者事宜
+    if(serviceDataContent.indexOf("MsgSeq:") != -1){
+        //截取content中的MsgSeq后的数字
+        var MsgSeq = Number(serviceDataContent.substring(serviceDataContent.indexOf("MsgSeq:") + 7, serviceDataContent.indexOf("MsgSeq:") + 10));
+        switch (MsgSeq){
+            case 101:
+                leanContentObject.set('roleDes', 'user');
+                break;
+            case 102:
+                leanContentObject.set('roleDes', 'operator');
+                break;
+            case 105:
+                leanContentObject.set('roleDes', 'other');
+                break;
+        }
+    }
+
+    //处理定位信息
+    var payloadIndex = serviceDataContent.indexOf("payload:");
+    if(payloadIndex != -1){
+        var contentStr = serviceDataContent.substring(payloadIndex + 8, serviceDataContent.length);
+        var contentObject = undefined;
+
+        try{
+            contentObject = JSON.parse(contentStr);
+            if(contentObject != undefined){
+
+                //只保存实时定位，且搜星数大于5
+                if(contentObject.messageBody.gpstype == 1 && contentObject.messageBody.satellite > 5){
+
+                    if(contentObject.messageBody == undefined && contentObject.data != undefined){
+                        //控制车辆的命令响应，返回的是data，而不是messageBody（这个是车辆的报文）
+                        contentObject.messageBody = contentObject.data;
+                    }
+
+                    //忽略历史信息的报文，不去存储，主要是多个定位信息，创建对象不支持，如果单独创建一个位置对象，对数据的开销是X2的开销，不划算
+                    if(contentObject.messageBody.latitudeMinute == undefined || contentObject.messageBody.longitudeMinute == undefined){
+                        console.error(contentObject.id + ': no latitudeMinute or longitudeMinute');
+                        return;
+                    }
+
+                    var lat = Number(contentObject.messageBody.latitudeMinute) / 60.0 + Number(contentObject.messageBody.latitudeDegree);
+                    var lon = Number(contentObject.messageBody.longitudeMinute) / 60.0 + Number(contentObject.messageBody.longitudeDegree);
+                    leanContentObject.set('bikeGeo', new AV.GeoPoint(lat, lon));
+                }
+            }
+        }catch(err) {
+            //other message
+            console.error('payload: not struct');
+            console.log(serviceDataContent);
+        }
+
+        serviceData.Content = contentObject;
+    }else {
+        console.error(contentObject.id + 'no payload and Payload');
+        console.log(contentStr);
+    }
+
+    //commend ID
+    if(contentObject.cmdID != undefined){
+        //LogType(5:发起请求，6请求响应)
+        //保存请求的参数 和 响应的结果
+        if(serviceData.Content.argument != undefined){
+            leanContentObject.set('cmdRequestArgument', serviceData.Content.argument);
+        }else if(serviceData.Content.result != undefined){
+            leanContentObject.set('cmdResponseResult', serviceData.Content.result != undefined);
+        }
+    }
+
+    //deal data
+    if(serviceData.Content.messageBody != undefined){
+        //1 锁车中，2 行使中，3 防盗中
+        leanContentObject.set('ctrlState', serviceData.Content.messageBody.ctrlState);
+
+        //deal ebike job type
+        if(serviceData.Content.messageBody.ctrlState != undefined) {
+            switch (serviceData.Content.messageBody.ctrlState) {
+                case 1:
+                    leanContentObject.set('bikeEState', 'noElectric');
+                    break;
+                case 2:
+                    leanContentObject.set('bikeEState', 'electric');
+                    break;
+                case 3:
+                    leanContentObject.set('bikeEState', 'preventSteal');
+                    break;
+                default:
+                    break;
+            }
+        }
+        //deal ebike job type
+        if(serviceData.Content.messageBody.alarmType != undefined) {
+            switch (serviceData.Content.messageBody.alarmType) {
+                case 1:
+                    leanContentObject.set('bikeNState', 'fall');
+                    break;
+                case 2:
+                    leanContentObject.set('bikeNState', 'touches');
+                    // serviceData.Content.messageBody.alarmTypeDes = "非法触碰";
+                    break;
+                case 3:
+                    leanContentObject.set('bikeNState', 'shifting');
+                    // serviceData.Content.messageBody.alarmTypeDes = "非法位移";
+                    break;
+                case 4:
+                    leanContentObject.set('bikeNState', 'powerOff');
+                    // serviceData.Content.messageBody.alarmTypeDes = "电源断电";
+                    break;
+                case 9:
+                    leanContentObject.set('bikeNState', 'vertical');
+                    // serviceData.Content.messageBody.alarmTypeDes = "车辆扶正";
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+
+//删除旧的日志
+function deleteOldDateLogs(maxTime, queryDateLess) {
+
+    maxTime--;
+    if(maxTime == 0){
+        console.log('delete end with maxTime');
+        return;
+    }else {
+        console.log('batch delete with maxTime ', maxTime);
+    }
+
+    var pageCount = 1000;
+    var tempQueryDateLess = queryDateLess;
+    if(tempQueryDateLess == undefined){
+        tempQueryDateLess = new Date("2017/09/6 01:00:00");
+    }
+
+    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+    ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', tempQueryDateLess);
+    ebikeHistoryLogQuery.limit(pageCount);
+    ebikeHistoryLogQuery.descending('createdAt');
+    ebikeHistoryLogQuery.find().then(function (objects) {
+
+        var count = objects.length;
+        var inEnd = (count == 0) ? true : (count%pageCount > 0 ? true : false);
+
+        if(inEnd == false){
+            tempQueryDateLess = objects[count - 1].createdAt;
+        }
+
+        // 批量删除
+        AV.Object.destroyAll(objects).then(function () {
+            // 成功
+            console.log('delete ' + objects.length + ' old logs : ', tempQueryDateLess.toLocaleString())
+            if(inEnd == false){
+                deleteOldDateLogs(maxTime, tempQueryDateLess);
+            }else {
+                console.log('end delete old logs');
+            }
+        }, function (error) {
+            // 异常处理
+            console.log('destroyAll objects error: ', error.message);
+        });
+
+    }, function (error) {
+        console.log('delete objects query error: ', error.message);
+    });
+}
+
+// deleteOldDateLogs(20);
+
+// dealOldDateToStruct();
 
 module.exports = router

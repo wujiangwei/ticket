@@ -51,6 +51,7 @@
     "react-dom": "^15.4.2",
     "react-notification-system": "^0.2.14",
     "react-router": "^3.0.2",
+    "redis": "^2.2.5",
     "remarkable": "^1.7.1",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
@@ -59,7 +60,9 @@
     "uuid": "^3.1.0",
     "webpack": "^1.12.13",
     "wechat-enterprise": "^0.1.1",
-    "xss": "^0.3.3"
+    "xss": "^0.3.3",
+    "underscore":"",
+    "q":""
   },
   "devDependencies": {
     "eslint": "^3.15.0",
