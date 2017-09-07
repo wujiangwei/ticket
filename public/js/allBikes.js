@@ -198,6 +198,8 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
         }
 
         eListBikeInfo.isGetting = true;
+        eListBikeInfo.paramValue = '请求中...';
+
         $http.post("https://api.mimacx.com/Peration/GetProperty",{
             "BicycleNo" : eListBikeInfo.BicycleNo,
             "ParamName" : eListBikeInfo.gettingParam,
@@ -211,12 +213,13 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
                     eListBikeInfo.paramValue = response.Data.paramvalue;
                 }else {
                     //error
-                    console.log('设置失败' , response.returnMsg);
+                    eListBikeInfo.paramValue = '获取失败:' + response.returnMsg;
                 }
             })
             .catch(function (result) {
                 //error
                 console.log(result.data);
+                eListBikeInfo.paramValue = '获取失败:' + '网络错误';
             })
             .finally(function () {
                 eListBikeInfo.isGetting = false;
@@ -230,6 +233,7 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
         }
 
         eListBikeInfo.isSetting = true;
+        eListBikeInfo.paramValue = '设置...';
         $http.post("https://api.mimacx.com/Peration/SetProperty",{
             "BicycleNo" : eListBikeInfo.BicycleNo,
             "ParamName" : eListBikeInfo.settingParam,
@@ -253,6 +257,7 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
             .catch(function (result) {
                 //error
                 console.log(result.data);
+                eListBikeInfo.paramValue = '获取失败:' + '网络错误';
             })
             .finally(function () {
                 eListBikeInfo.isSetting = false;
