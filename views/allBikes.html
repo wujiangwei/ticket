@@ -125,19 +125,23 @@
             </td>
 
             <td>
-                <div ng-class="{true:'ui action input loading',false:'ui action input'}[eListBikeInfo.isGetting == true]">
+                <div ng-class="{true:'ui action input small loading',false:'ui action small input'}[eListBikeInfo.isGetting == true]">
                     <input type="text" ng-model="eListBikeInfo.gettingParam" placeholder="输入终端参数"  ng-disabled="eListBikeInfo.isGetting">
                     <button class="ui button" ng-click="getBikeParamValue(eListBikeInfo)" ng-disabled="eListBikeInfo.isGetting">查看</button>
-                    <div class="floating ui green label">{{eListBikeInfo.paramValue}}</div>
+                </div>
+                <div class="ui pointing red basic label">
+                    {{eListBikeInfo.paramValue == undefined ? '结果在这里展示哦'  : eListBikeInfo.paramValue}}
                 </div>
             </td>
 
             <td>
-                <div ng-class="{true:'ui action input loading',false:'ui action input'}[eListBikeInfo.isSetting == true]">
+                <div ng-class="{true:'ui action input small loading',false:'ui action small input'}[eListBikeInfo.isSetting == true]">
                     <input type="text" ng-model="eListBikeInfo.settingParam" placeholder="输入终端参数" ng-disabled="eListBikeInfo.isSetting">
                     <input type="text" ng-model="eListBikeInfo.settingValue" placeholder="输入参数值" ng-disabled="eListBikeInfo.isSetting">
                     <button class="ui button" ng-click="setBikeParamValue(eListBikeInfo)" ng-disabled="eListBikeInfo.isSetting">设置</button>
-                    <div class="floating ui red label">eListBikeInfo.setParamResponse</div>
+                </div>
+                <div class="ui pointing red basic label">
+                    {{eListBikeInfo.setParamResponse  ? '结果在这里展示哦'  : eListBikeInfo.setParamResponse}}
                 </div>
             </td>
         </tr>
