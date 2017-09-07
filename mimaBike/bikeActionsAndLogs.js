@@ -189,11 +189,11 @@ function structLogContent(leanContentObject) {
             var authContentObject = undefined;
 
             try {
-                authContentObject = JSON.parse(contentStr);
+                authContentObject = JSON.parse(authContentStr);
                 leanContentObject.set('bikeID', authContentObject.bikeID);
                 setBikeMapWithRedis(leanContentObject.get('SN'), authContentObject.bikeID);
             }catch(err) {
-                console.log('auth with no bikeId');
+                console.log('auth with no bikeId ', err.message);
                 console.log(contentStr);
             }
 
@@ -346,7 +346,7 @@ function structLogContent(leanContentObject) {
 function dealOldDateToStruct() {
     var pageCount = 1000;
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.doesNotExist('coordinate');
+    ebikeHistoryLogQuery.equalTo('LogType', 1);
     ebikeHistoryLogQuery.limit(pageCount);
     ebikeHistoryLogQuery.descending('createdAt');
     ebikeHistoryLogQuery.find().then(function (objects) {
@@ -427,6 +427,6 @@ function deleteOldDateLogs(maxTime, queryDateLess) {
 
 // deleteOldDateLogs(20);
 
-// dealOldDateToStruct();
+dealOldDateToStruct();
 
 module.exports = router
