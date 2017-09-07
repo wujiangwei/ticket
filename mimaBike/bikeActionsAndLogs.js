@@ -257,7 +257,7 @@ function structLogContent(leanContentObject) {
 
         serviceData.Content = contentObject;
     }else {
-        console.error(contentObject.id + 'no payload and Payload');
+        console.error('no payload and Payload');
         console.log(contentStr);
     }
 
