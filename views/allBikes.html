@@ -103,7 +103,7 @@
             <th>序号</th>
             <th>车辆号</th>
             <th>SN号</th>
-            <!--<th>蓝牙号</th>-->
+            <th>蓝牙号</th>
             <th>录入者</th>
             <th>录入时间</th>
             <th>查看日志</th>
@@ -119,11 +119,11 @@
             <td>{{$index + 1}}</td>
             <td>{{eListBikeInfo.BicycleNo}}</td>
             <td>{{eListBikeInfo.ControllerNo}}</td>
-            <!--<td>{{eListBikeInfo.ControllerBluetoothNo}}</td>-->
+            <td>{{eListBikeInfo.ControllerBluetoothNo}}</td>
             <td>{{eListBikeInfo.Operator}}</td>
             <td>{{eListBikeInfo.Batch}}</td>
             <td>
-                <button class="ui blue submit button" ng-click="getAEBikeLog(eListBikeInfo.BicycleNo)">查看日志</button>
+                <button class="ui blue submit button" ng-click="getAEBikeLog(eListBikeInfo.BicycleNo)">日志</button>
             </td>
 
             <td>
