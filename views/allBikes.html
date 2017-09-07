@@ -130,7 +130,7 @@
                     <button class="ui button" ng-click="getBikeParamValue(eListBikeInfo)" ng-disabled="eListBikeInfo.isGetting">查看</button>
                 </div>
                 <div class="ui pointing red basic label">
-                    {{eListBikeInfo.paramValue == undefined ? '结果在这里展示哦'  : eListBikeInfo.paramValue}}
+                    {{eListBikeInfo.paramValue == undefined ? '参数值在这里展示哦'  : eListBikeInfo.paramValue}}
                 </div>
             </td>
 
@@ -141,7 +141,7 @@
                     <button class="ui button" ng-click="setBikeParamValue(eListBikeInfo)" ng-disabled="eListBikeInfo.isSetting">设置</button>
                 </div>
                 <div class="ui pointing red basic label">
-                    {{eListBikeInfo.setParamResponse  ? '结果在这里展示哦'  : eListBikeInfo.setParamResponse}}
+                    {{eListBikeInfo.setParamResponse == undefined  ? '设置结果在这里展示哦'  : eListBikeInfo.setParamResponse}}
                 </div>
             </td>
         </tr>
