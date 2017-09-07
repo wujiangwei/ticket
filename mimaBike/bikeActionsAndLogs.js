@@ -252,6 +252,7 @@ function structLogContent(leanContentObject) {
                 leanContentObject.set('totalMileage', parseInt(contentObject.messageBody.totalMileage));
                 leanContentObject.set('errorCode', contentObject.messageBody.errorCode);
                 leanContentObject.set('battery', parseInt(contentObject.messageBody.battery));
+                leanContentObject.set('gpstype', parseInt(contentObject.messageBody.gpstype));
 
                 //只保存实时定位，且搜星数大于5
                 if(contentObject.messageBody.gpstype == 1 && contentObject.messageBody.satellite > 5){
@@ -294,7 +295,7 @@ function structLogContent(leanContentObject) {
     //deal data
     if(serviceData.Content != undefined && serviceData.Content.messageBody != undefined){
         //1 锁车中，2 行使中，3 防盗中
-        leanContentObject.set('ctrlState', serviceData.Content.messageBody.ctrlState);
+        leanContentObject.set('ctrlState', parseInt(serviceData.Content.messageBody.ctrlState));
 
         //deal ebike job type
         if(serviceData.Content.messageBody.ctrlState != undefined) {
