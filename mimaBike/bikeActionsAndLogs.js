@@ -239,7 +239,8 @@ function structLogContent(leanContentObject) {
 
                     //忽略历史信息的报文，不去存储，主要是多个定位信息，创建对象不支持，如果单独创建一个位置对象，对数据的开销是X2的开销，不划算
                     if(contentObject.messageBody.latitudeMinute == undefined || contentObject.messageBody.longitudeMinute == undefined){
-                        console.error(contentObject.id + ': no latitudeMinute or longitudeMinute');
+                        console.error('no latitudeMinute or longitudeMinute');
+                        console.log(serviceDataContent);
                         return;
                     }
 
