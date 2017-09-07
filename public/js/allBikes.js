@@ -135,23 +135,23 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
     $scope.yunweiLogin = function () {
 
 
-        $http.post("http://localhost:8080/logs/ebikeHistoryLocationBySnAndTime",{
-            "SN" : 'mimacx0000000741',
-            'queryDate':'2017-09-07 07:56:59',
-            'pageCount':50
-        })
-            .then(function(result) {
-                console.log(result);
-            })
-            .catch(function (result) {
-                //error
-                console.log(result);
-            })
-            .finally(function () {
-                //
-            });
-
-        return;
+        // $http.post("http://localhost:8080/logs/ebikeHistoryLocationBySnAndTime",{
+        //     "SN" : 'mimacx0000000274',
+        //     'queryDate':'2017-09-07 14:54:50',
+        //     'pageCount':50
+        // })
+        //     .then(function(result) {
+        //         console.log(result);
+        //     })
+        //     .catch(function (result) {
+        //         //error
+        //         console.log(result);
+        //     })
+        //     .finally(function () {
+        //         //
+        //     });
+        //
+        // return;
 
         $scope.netRequestState = 'start';
         $http.post("https://api.mimacx.com/Peration/Login",{
@@ -190,5 +190,73 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
 
     toastr.info("请先登录运维帐号");
 
+    $scope.getBikeParamValue = function (eListBikeInfo) {
+
+        if($scope.yunweiAccountSession == undefined){
+            toastr.error("请先登录运维帐号");
+            return;
+        }
+
+        eListBikeInfo.isGetting = true;
+        $http.post("https://api.mimacx.com/Peration/GetProperty",{
+            "BicycleNo" : eListBikeInfo.BicycleNo,
+            "ParamName" : eListBikeInfo.gettingParam,
+            "Accesskey" : '123456',
+            "SessionKey" : $scope.yunweiAccountSession
+        })
+            .then(function(result) {
+                var response = result.data;
+                eListBikeInfo.isGetting = false;
+                if(response.returnCode == 1){
+                    eListBikeInfo.paramValue = response.Data.paramvalue;
+                }else {
+                    //error
+                    console.log('设置失败' , response.returnMsg);
+                }
+            })
+            .catch(function (result) {
+                //error
+                console.log(result.data);
+            })
+            .final(function () {
+                eListBikeInfo.isGetting = false;
+            })
+    }
+
+    $scope.setBikeParamValue = function (eListBikeInfo) {
+        if($scope.yunweiAccountSession == undefined){
+            toastr.error("请先登录运维帐号");
+            return;
+        }
+
+        eListBikeInfo.isSetting = true;
+        $http.post("https://api.mimacx.com/Peration/SetProperty",{
+            "BicycleNo" : eListBikeInfo.BicycleNo,
+            "ParamName" : eListBikeInfo.settingParam,
+            "ParamValue" : eListBikeInfo.settingValue,
+            "Accesskey" : '123456',
+            "SessionKey" : $scope.yunweiAccountSession
+        })
+            .then(function(result) {
+                eListBikeInfo.isSetting = false;
+                var response = result.data;
+                if(response.returnCode == 1){
+                    console.log('设置成功');
+                    eListBikeInfo.gettingParam = eListBikeInfo.settingParam;
+                    eListBikeInfo.paramValue = eListBikeInfo.settingValue;
+                }else {
+                    //error
+                    console.log('设置失败' , response.returnMsg);
+                    eListBikeInfo.paramValue = '设置失败' + response.returnMsg;
+                }
+            })
+            .catch(function (result) {
+                //error
+                console.log(result.data);
+            })
+            .final(function () {
+                eListBikeInfo.isSetting = false;
+            })
+    }
 
 });

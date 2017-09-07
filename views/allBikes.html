@@ -106,7 +106,10 @@
             <th>蓝牙号</th>
             <th>录入者</th>
             <th>录入时间</th>
-            <th>查看车辆日志</th>
+            <th>查看日志</th>
+
+            <th>车辆参数查看</th>
+            <th>设置车辆参数</th>
         </tr>
         </thead>
         <tbody>
@@ -118,7 +121,24 @@
             <td>{{eListBikeInfo.Operator}}</td>
             <td>{{eListBikeInfo.Batch}}</td>
             <td>
-                <button class="ui blue submit button" ng-click="getAEBikeLog(eListBikeInfo.BicycleNo)">查看车辆日志</button>
+                <button class="ui blue submit button" ng-click="getAEBikeLog(eListBikeInfo.BicycleNo)">查看日志</button>
+            </td>
+
+            <td>
+                <div ng-class="{true:'ui action input loading',false:'ui action input'}[eListBikeInfo.isGetting == true]">
+                    <input type="text" ng-model="eListBikeInfo.gettingParam" placeholder="输入终端参数"  ng-disabled="eListBikeInfo.isGetting">
+                    <button class="ui button" ng-click="getBikeParamValue(eListBikeInfo)">查看</button>
+                    <div class="floating ui green label">{{eListBikeInfo.paramValue}}</div>
+                </div>
+            </td>
+
+            <td>
+                <div ng-class="{true:'ui action input loading',false:'ui action input'}[eListBikeInfo.isSetting == true]">
+                    <input type="text" ng-model="eListBikeInfo.settingParam" placeholder="输入终端参数" ng-disabled="eListBikeInfo.isSetting">
+                    <input type="text" ng-model="eListBikeInfo.settingValue" placeholder="输入参数" ng-disabled="eListBikeInfo.isSetting">
+                    <button class="ui button" ng-click="setBikeParamValue(eListBikeInfo)">设置</button>
+                    <div class="floating ui red label">eListBikeInfo.setParamResponse</div>
+                </div>
             </td>
         </tr>
         </tbody>
