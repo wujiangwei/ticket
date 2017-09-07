@@ -124,7 +124,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         }
 
         res.json({'errorCode':0, 'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
-            'locationTime': new Date(historyLogObject.createdAt.getTime() + 8*60*60*1000)});
+            'locationTime': new Date(ebikeHistoryLogObjects[0].createdAt.getTime() + 8*60*60*1000)});
     }).catch(function(err) {
         res.status(500).json({
             error: err.message
