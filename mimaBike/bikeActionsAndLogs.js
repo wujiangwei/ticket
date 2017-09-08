@@ -162,6 +162,14 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
                 console.log('bike and sn exist');
             }, function (err) {
                 console.log('find bike and sn error :' , err.message);
+                var newMimaEBikeMapObject = new MimaEBikeMapObjects();
+                newMimaEBikeMapObject.set('SN', bikeSN);
+                newMimaEBikeMapObject.set('bikeID', bikeID);
+                newMimaEBikeMapObject.save().then(function (savedObject) {
+                    //auto set it in redis
+                },function (err) {
+                    console.log('find bike and sn but save error :', err.message);
+                })
             })
         }else {
             //exist in redis , update time

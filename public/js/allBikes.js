@@ -270,6 +270,9 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
         })
             .then(function(result) {
                 eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
+                if(result.data.bikeLatestTime == undefined){
+                    eListBikeInfo.lastestOnlineTime = 'undefine';
+                }
             })
             .catch(function (result) {
                 //error
