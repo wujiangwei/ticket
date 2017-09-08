@@ -191,7 +191,7 @@ function structLogContent(leanContentObject) {
             try {
                 authContentObject = JSON.parse(authContentStr);
                 leanContentObject.set('bikeID', authContentObject.bikeID);
-                // setBikeMapWithRedis(leanContentObject.get('SN'), authContentObject.bikeID);
+                setBikeMapWithRedis(leanContentObject.get('SN'), authContentObject.bikeID);
             }catch(err) {
                 console.log('auth with no bikeId ', err.message);
                 console.log(contentStr);
