@@ -136,8 +136,8 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
 
 
         // $http.post("http://localhost:8080/logs/ebikeHistoryLocationBySnAndTime",{
-        //     "SN" : 'mimacx0000000274',
-        //     'queryDate':'2017-09-07 14:54:50',
+        //     "SN" : 'mimacx0000000388',
+        //     'queryDate':'2017-09-06 15:30:44',
         //     'pageCount':50
         // })
         //     .then(function(result) {
@@ -247,17 +247,17 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
                 if(response.returnCode == 1){
                     console.log('设置成功');
                     eListBikeInfo.gettingParam = eListBikeInfo.settingParam;
-                    eListBikeInfo.paramValue = eListBikeInfo.settingValue;
+                    eListBikeInfo.setParamResponse = '设置成功:' + eListBikeInfo.settingValue;
                 }else {
                     //error
                     console.log('设置失败' , response.returnMsg);
-                    eListBikeInfo.paramValue = '设置失败' + response.returnMsg;
+                    eListBikeInfo.setParamResponse = '设置失败' + response.returnMsg;
                 }
             })
             .catch(function (result) {
                 //error
                 console.log(result.data);
-                eListBikeInfo.paramValue = '获取失败:' + '网络错误';
+                eListBikeInfo.setParamResponse = '获取失败:' + '网络错误';
             })
             .finally(function () {
                 eListBikeInfo.isSetting = false;

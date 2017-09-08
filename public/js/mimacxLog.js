@@ -143,14 +143,15 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
         defaultDate:todayDate,
         // maxDate: todayDate,
         onChange: function(selectedDates, dateStr, instance) {
-            $scope.selectedBikeLogDate = dateStr + ' 23:59:59';
-            console.log($scope.selectedBikeLogDate);
+            $scope.userSelectedOriginalTime = dateStr + ' 23:59:59';
+            $scope.selectedBikeLogDate = $scope.userSelectedOriginalTime;
+            console.log($scope.userSelectedOriginalTime);
         }
     });
 
     $scope.bikeLogDateList = [];
     $scope.bikeDisplayLogDateList = [];
-    $scope.pageDateCount = 50;
+    $scope.pageDateCount = 60;
 
     $scope.currentPage = 0;
 
@@ -181,6 +182,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
                 $scope.bikeLogDateList = [];
                 $scope.bikeDisplayLogDateList = [];
+                $scope.selectedBikeLogDate = $scope.userSelectedOriginalTime;
                 toastr.info('开始刷新，起飞了');
             }else {
                 if($scope.bikeLogDateList.length % $scope.pageDateCount > 0){
@@ -256,16 +258,10 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     }
 
     function getEBikeLogsFromMima(action) {
-
-        if($scope.currentPage == 0){
-            $scope.lastLogTime = undefined;
-        }
-
         //获取该辆车的日志信息
         $http.post("/logs/ebileLogList",{
             "SN" : $scope.EBikeInfo.SN,
             "pageIndex" : $scope.currentPage,
-            "lastLogTime":$scope.lastLogTime,
             "pageCount":$scope.pageDateCount,
             "selectedTime":$scope.selectedBikeLogDate
         })
@@ -278,7 +274,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                     $scope.bikeDisplayLogDateList = [];
                 }
 
-                $scope.lastLogTime = result.data.lastLogTime;
+                $scope.selectedBikeLogDate = result.data.lastLogTime;
                 var bikeLogList= result.data.ebikeHistoryLogs;
 
                 //deal data

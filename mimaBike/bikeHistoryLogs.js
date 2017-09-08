@@ -13,30 +13,24 @@ router.post('/ebileLogList',function (req, res) {
         return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
     }
 
-    if(req.body.pageIndex == undefined){
-        req.body.pageIndex = 0;
-    }
     if(req.body.pageCount == undefined){
-        req.body.pageCount = 200;
+        req.body.pageCount = 60;
     }
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
     ebikeHistoryLogQuery.limit(req.body.pageCount);
 
-    if(req.body.lastLogTime != undefined && req.body.lastLogTime != null){
-        //下一页，必须用时间才是准确的下一页
-        var queryDateTime = new Date(req.body.lastLogTime).getTime();
-        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', new Date(queryDateTime));
-    }else {
-        //首次
-        ebikeHistoryLogQuery.skip(req.body.pageCount * req.body.pageIndex);
-    }
-
     if(req.body.selectedTime != undefined && req.body.selectedTime != null){
         //下一页，必须用时间才是准确的下一页
         var selectedDate = new Date(req.body.selectedTime);
         ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', selectedDate);
+    }else {
+        //若未传时间，则用分页的index
+        if(req.body.pageIndex == undefined){
+            req.body.pageIndex = 0;
+        }
+        ebikeHistoryLogQuery.skip(req.body.pageCount * req.body.pageIndex);
     }
 
     ebikeHistoryLogQuery.descending('createdAt');
@@ -60,7 +54,8 @@ router.post('/ebileLogList',function (req, res) {
         }
 
         if(ebikeHistoryLogObjects.length > 0){
-            res.json({'ebikeHistoryLogs' : resLogList, 'lastLogTime': ebikeHistoryLogObjects[ebikeHistoryLogObjects.length - 1].createdAt});
+            var tempLastLogTime = new Date(ebikeHistoryLogObjects[ebikeHistoryLogObjects.length - 1].createdAt.getTime());
+            res.json({'ebikeHistoryLogs' : resLogList, 'lastLogTime': tempLastLogTime});
         }else {
             res.json({'ebikeHistoryLogs' : resLogList});
         }
