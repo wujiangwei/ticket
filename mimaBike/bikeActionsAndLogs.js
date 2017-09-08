@@ -255,7 +255,7 @@ function structLogContent(leanContentObject) {
                 leanContentObject.set('gpstype', parseInt(contentObject.messageBody.gpstype));
 
                 //只保存实时定位，且搜星数大于5
-                if(contentObject.messageBody.gpstype == 1 && contentObject.messageBody.satellite > 5){
+                if(parseInt(contentObject.messageBody.gpstype) != 2 && parseInt(contentObject.messageBody.satellite) > 5){
 
                     //忽略历史信息的报文，不去存储，主要是多个定位信息，创建对象不支持，如果单独创建一个位置对象，对数据的开销是X2的开销，不划算
                     if(contentObject.messageBody.latitudeMinute == undefined || contentObject.messageBody.longitudeMinute == undefined){
@@ -343,40 +343,6 @@ function structLogContent(leanContentObject) {
 }
 
 
-//日志字符串变成结构体
-function dealOldDateToStruct() {
-    var pageCount = 1000;
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('LogType', 1);
-    ebikeHistoryLogQuery.limit(pageCount);
-    ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.find().then(function (objects) {
-
-        var inEnd = (objects.length == 0) ? true : (objects.length%pageCount > 0 ? true : false);
-        for (var i = 0; i < objects.length; i++){
-            var tempObject = objects[i];
-            structLogContent(tempObject);
-        }
-
-        // 批量保存
-        AV.Object.saveAll(objects).then(function () {
-            // 成功
-            console.log('struct ' + objects.length + ' old logs : ', objects[0].createdAt);
-            if(inEnd == false){
-                dealOldDateToStruct();
-            }else {
-                console.log('struct end');
-            }
-        }, function (error) {
-            // 异常处理
-            console.log('saveAll objects error: ', error.message);
-        });
-
-    }, function (error) {
-        console.log('struct objects query error: ', error.message);
-    });
-}
-
 //删除旧的日志
 function deleteOldDateLogs(maxTime, queryDateLess) {
 
@@ -428,6 +394,15 @@ function deleteOldDateLogs(maxTime, queryDateLess) {
 
 // deleteOldDateLogs(20);
 
-// dealOldDateToStruct();
+
+var newEBikeLog = new NewEBikeLogSql();
+
+newEBikeLog.set('SN', 'mimacx0000000002');
+newEBikeLog.set('LogType', 6);
+newEBikeLog.set('Content', '转发命令至ApiService成功,cmdId:3,protocolMsgSeq:101,payload:{"result":"0","sn":"MjAwMDAwMDAwMHhjYW1pbQ==","data":{"longitudeMinute":"24.762060398","kickstand":true,"totalMileage":21.0,"longitudeDegree":"120","satellite":7,"battery":50,"errorCode":"0123a","charging":false,"latitudeMinute":"14.25475979","latitudeDegree":"31"},"cmdID":3}');
+newEBikeLog.set('Remark', '命令响应');
+newEBikeLog.set('SourceType', 0);
+
+// structLogContent(newEBikeLog)
 
 module.exports = router
