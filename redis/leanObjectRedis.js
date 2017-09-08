@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 var _ = require('underscore');
 var Q = require('q');
 
-var redisClient = undefined;//require('redis').createClient();
+var redisClient = require('redis').createClient();
 
 
 /*
