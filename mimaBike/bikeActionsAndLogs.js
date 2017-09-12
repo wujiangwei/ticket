@@ -38,7 +38,7 @@ router.post('/', function(req, res) {
             structLogContent(newEBikeLog);
 
             //update bike time in redis
-            setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
+            redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
 
             newEBikeLog.save().then(function (savedNewEBikeLog) {
                 lock++;
@@ -128,7 +128,7 @@ router.post('/getBikeLatestLogTime',function (req, res) {
     }
 
     var bikeSNKey = req.body.SN + '_Time';
-    getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
+    redisUtil.getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
         if(bikeLatestTime != undefined || bikeLatestTime != null){
             res.json({'bikeLatestTime' : bikeLatestTime});
         }else {
@@ -150,12 +150,12 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
         return;
     }
 
-    getSimpleValueFromRedis(bikeSN, function (redisBikeID) {
+    redisUtil.getSimpleValueFromRedis(bikeSN, function (redisBikeID) {
         if(redisBikeID == null){
             //query,if not in mangdb,set it in
-            setSimpleValueToRedis(bikeSN, bikeID, 0);
+            redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
             //add time in redis
-            setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
+            redisUtil.setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
 
             var ebikeHistoryLogQuery = new AV.Query('MimaEBikeMap');
             ebikeHistoryLogQuery.equalTo('SN', bikeSN);
@@ -173,7 +173,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
                 }
             }, function (err) {
                 //not in redis but in sql,so set it in redis
-                setSimpleValueToRedis(bikeSN, bikeID, 0);
+                redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
 
                 console.log('find bike and sn error :' , err.message);
                 var newMimaEBikeMapObject = new MimaEBikeMapSql();
@@ -187,7 +187,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
             })
         }else {
             //exist in redis , update time
-            setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
+            redisUtil.setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
         }
     })
 }
@@ -383,7 +383,7 @@ function alarmBike(sn, alarmType, leanContentObject) {
     var illegalityMovePoliceSecond = 120;//parseInt(process.env['illegalityMovePoliceMin']) * 60;
     var illegalityMovePoliceCountInMin = 3;// parseInt(process.env['illegalityMovePoliceCountInMin']);
 
-    redisUtil.hgetall(alarmRedisKey, function (err, alarmValues) {
+    redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
         if(err != null){
             console.error('alarmBike hgetall in redis error, ', err.message);
             return;
@@ -401,11 +401,14 @@ function alarmBike(sn, alarmType, leanContentObject) {
 
         //call the sms to 觅马地面运维人员
         //短信也存在redis中
-        if(0 && illegalMove >= illegalityMovePoliceCountInMin){
+        if(illegalMove >= illegalityMovePoliceCountInMin){
             //请求觅马服务器，获取该车的负责人，发送短信
+            // http.get('http://codestudy.sinaapp.com', function (response) {
+            //     //
+            // });
             //TODO:
-            var bikeNumber = '00000264';
-            var alarmPhone = '17601528908';
+            var bikeNumber = sn;
+            var alarmPhone = '15950045730';
 
             //发送报警短信
             AV.Cloud.requestSmsCode({
@@ -424,7 +427,7 @@ function alarmBike(sn, alarmType, leanContentObject) {
             });
 
             //报警完，删掉这个key，reset
-            redisUtil.del(alarmRedisKey, function (err, reply) {
+            redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
                 if(err != null){
                     console.error('alarmBike del in redis error, ', err.message);
                     return;
@@ -432,7 +435,7 @@ function alarmBike(sn, alarmType, leanContentObject) {
             });
         }else {
             //未触发报警，也不更新这个key的时间，过期后重置
-            redisUtil.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
+            redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
                 if(err != null){
                     console.error('alarmBike hmset in redis error, ', err.message);
                     return;
@@ -509,5 +512,13 @@ newEBikeLog.set('SourceType', 0);
 
 // alarmBike('mimacx0000000611', 3, newEBikeLog);
 
+// redisUtil.getSimpleValueFromRedis('testKey', function (bikeLatestTime) {
+//     if(bikeLatestTime != undefined || bikeLatestTime != null){
+//         res.json({'bikeLatestTime' : bikeLatestTime});
+//     }else {
+//         //exist in redis , update time
+//         res.json({'bikeLatestTime' : '无效车'});
+//     }
+// })
 
 module.exports = router

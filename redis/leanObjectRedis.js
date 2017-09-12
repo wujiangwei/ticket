@@ -27,14 +27,14 @@ function createClient() {
 }
 
 var redisClient = createClient();
-
+exports.redisClient = redisClient;
 
 /*
  *   Redis 基础接口:设置某个值 && 获取某个值
  */
 //往redis中设置某个值,并且设置这个key的过期时间（秒）,key过期后,对应的值也不存在
 //expiration = 0 永久有效
-var setSimpleValueToRedis =  function(redisKey, value, expiration) {
+exports.setSimpleValueToRedis =  function(redisKey, value, expiration) {
     redisClient.set(redisKey, value, redisClient.print);//set "string key" "string val"
     if(expiration > 0){
         redisClient.expire(redisKey, expiration);
@@ -42,7 +42,7 @@ var setSimpleValueToRedis =  function(redisKey, value, expiration) {
 };
 
 //获取redis中之前设置的某个值
-var getSimpleValueFromRedis =  function(redisKey, callback) {
+exports.getSimpleValueFromRedis =  function(redisKey, callback) {
     return redisClient.get(redisKey, function (err, reply) {
         if (err) return;
                               // 取值成功，返回指定键值对应的value,若键值不存在，返回null
@@ -51,4 +51,4 @@ var getSimpleValueFromRedis =  function(redisKey, callback) {
 };
 
 
-module.exports = redisClient;
+// module.exports = redisClient;
