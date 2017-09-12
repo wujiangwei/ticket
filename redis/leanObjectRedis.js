@@ -34,7 +34,7 @@ var redisClient = createClient();
  */
 //往redis中设置某个值,并且设置这个key的过期时间（秒）,key过期后,对应的值也不存在
 //expiration = 0 永久有效
-exports.setSimpleValueToRedis =  function(redisKey, value, expiration) {
+var setSimpleValueToRedis =  function(redisKey, value, expiration) {
     redisClient.set(redisKey, value, redisClient.print);//set "string key" "string val"
     if(expiration > 0){
         redisClient.expire(redisKey, expiration);
@@ -42,7 +42,7 @@ exports.setSimpleValueToRedis =  function(redisKey, value, expiration) {
 };
 
 //获取redis中之前设置的某个值
-exports.getSimpleValueFromRedis =  function(redisKey, callback) {
+var getSimpleValueFromRedis =  function(redisKey, callback) {
     return redisClient.get(redisKey, function (err, reply) {
         if (err) return;
                               // 取值成功，返回指定键值对应的value,若键值不存在，返回null
@@ -50,35 +50,5 @@ exports.getSimpleValueFromRedis =  function(redisKey, callback) {
     });
 };
 
-
-//redis set
-exports.setHMValueToRedis =  function() {
-
-    if(arguments.length < 3){
-        console.error('setHMValueToRedis param error,too short');
-        return;
-    }
-
-    var redisKey = arguments[0];
-    var keyList
-    for( var i = 0; i < arguments.length; i++ ){
-        alert(arguments[i]);
-    }
-
-    redisClient.set(redisKey, value, redisClient.print);//set "string key" "string val"
-    if(expiration > 0){
-        redisClient.expire(redisKey, expiration);
-    }
-};
-
-exports.getSimpleValueFromRedis =  function(redisKey, callback) {
-    return redisClient.get(redisKey, function (err, reply) {
-        if (err) return;
-        // 取值成功，返回指定键值对应的value,若键值不存在，返回null
-        callback(reply);
-    });
-};
-
-// var MimaEBikeMap = AV.Object.extend('MimaEBikeMap');
 
 module.exports = redisClient;

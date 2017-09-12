@@ -38,7 +38,7 @@ router.post('/', function(req, res) {
             structLogContent(newEBikeLog);
 
             //update bike time in redis
-            redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
+            setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
 
             newEBikeLog.save().then(function (savedNewEBikeLog) {
                 lock++;
@@ -128,7 +128,7 @@ router.post('/getBikeLatestLogTime',function (req, res) {
     }
 
     var bikeSNKey = req.body.SN + '_Time';
-    redisUtil.getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
+    getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
         if(bikeLatestTime != undefined || bikeLatestTime != null){
             res.json({'bikeLatestTime' : bikeLatestTime});
         }else {
@@ -150,12 +150,12 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
         return;
     }
 
-    redisUtil.getSimpleValueFromRedis(bikeSN, function (redisBikeID) {
+    getSimpleValueFromRedis(bikeSN, function (redisBikeID) {
         if(redisBikeID == null){
             //query,if not in mangdb,set it in
-            redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
+            setSimpleValueToRedis(bikeSN, bikeID, 0);
             //add time in redis
-            redisUtil.setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
+            setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
 
             var ebikeHistoryLogQuery = new AV.Query('MimaEBikeMap');
             ebikeHistoryLogQuery.equalTo('SN', bikeSN);
@@ -173,7 +173,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
                 }
             }, function (err) {
                 //not in redis but in sql,so set it in redis
-                redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
+                setSimpleValueToRedis(bikeSN, bikeID, 0);
 
                 console.log('find bike and sn error :' , err.message);
                 var newMimaEBikeMapObject = new MimaEBikeMapSql();
@@ -187,7 +187,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
             })
         }else {
             //exist in redis , update time
-            redisUtil.setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
+            setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
         }
     })
 }
