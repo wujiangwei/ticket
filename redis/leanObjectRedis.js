@@ -15,7 +15,7 @@ Promise.promisifyAll(redis.Multi.prototype);
 
 function createClient() {
     // 本地环境下此环境变量为 undefined, node-redis 会链接到默认的 127.0.0.1:6379
-    console.log('process.env : ',  process.env);
+    // console.log('process.env : ',  process.env);
     var redisClient = redis.createClient(process.env['REDIS_URL_MimaRedis']);
 
     //增加 redisClient 的 on error 事件处理，否则可能因为网络波动或 redis server 主从切换等原因造成短暂不可用导致应用进程退出。
@@ -51,5 +51,34 @@ exports.getSimpleValueFromRedis =  function(redisKey, callback) {
 };
 
 
+//redis set
+exports.setHMValueToRedis =  function() {
+
+    if(arguments.length < 3){
+        console.error('setHMValueToRedis param error,too short');
+        return;
+    }
+
+    var redisKey = arguments[0];
+    var keyList
+    for( var i = 0; i < arguments.length; i++ ){
+        alert(arguments[i]);
+    }
+
+    redisClient.set(redisKey, value, redisClient.print);//set "string key" "string val"
+    if(expiration > 0){
+        redisClient.expire(redisKey, expiration);
+    }
+};
+
+exports.getSimpleValueFromRedis =  function(redisKey, callback) {
+    return redisClient.get(redisKey, function (err, reply) {
+        if (err) return;
+        // 取值成功，返回指定键值对应的value,若键值不存在，返回null
+        callback(reply);
+    });
+};
+
 // var MimaEBikeMap = AV.Object.extend('MimaEBikeMap');
 
+module.exports = redisClient;

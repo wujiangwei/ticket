@@ -129,7 +129,7 @@ router.post('/getBikeLatestLogTime',function (req, res) {
 
     var bikeSNKey = req.body.SN + '_Time';
     redisUtil.getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
-        if(bikeLatestTime == undefined || bikeLatestTime == null){
+        if(bikeLatestTime != undefined || bikeLatestTime != null){
             res.json({'bikeLatestTime' : bikeLatestTime});
         }else {
             //exist in redis , update time
@@ -344,6 +344,11 @@ function structLogContent(leanContentObject) {
 
 
 function alarmBike(sn, alarmType, leanContentObject) {
+
+    var alarmRedisKey = sn + '_Alarm';
+    var illegalTouch = 0;
+    var illegalMove = 0;
+
     switch (alarmType) {
         case 1:
             leanContentObject.set('bikeNState', 'fall');
@@ -351,15 +356,20 @@ function alarmBike(sn, alarmType, leanContentObject) {
             break;
         case 2:
             leanContentObject.set('bikeNState', 'touches');
+            illegalTouch++;
             // serviceData.Content.messageBody.alarmTypeDes = "非法触碰";
             break;
         case 3:
             leanContentObject.set('bikeNState', 'shifting');
             // serviceData.Content.messageBody.alarmTypeDes = "非法位移";
+            illegalMove++;
             break;
         case 4:
             leanContentObject.set('bikeNState', 'powerOff');
             // serviceData.Content.messageBody.alarmTypeDes = "电源断电";
+        {
+            //TODO 查看打开电池仓何时成功的，10分钟内，则断电是正常的，否则不正常。发送报警短信。
+        }
             break;
         case 9:
             leanContentObject.set('bikeNState', 'vertical');
@@ -368,6 +378,69 @@ function alarmBike(sn, alarmType, leanContentObject) {
         default:
             break;
     }
+
+    //配置参数
+    var illegalityMovePoliceSecond = 120;//parseInt(process.env['illegalityMovePoliceMin']) * 60;
+    var illegalityMovePoliceCountInMin = 3;// parseInt(process.env['illegalityMovePoliceCountInMin']);
+
+    redisUtil.hgetall(alarmRedisKey, function (err, alarmValues) {
+        if(err != null){
+            console.error('alarmBike hgetall in redis error, ', err.message);
+            return;
+        }
+
+        //{ illegalMove: '2', illegalTouch: '2' }
+        if(alarmValues != null){
+            //update 计数
+            illegalTouch += parseInt(alarmValues.illegalTouch);
+            illegalMove += parseInt(alarmValues.illegalMove);
+        }
+
+        //更新生存时间为illegalityMovePoliceSecond秒
+        // redisUtil.expire(alarmRedisKey, illegalityMovePoliceSecond);
+
+        //call the sms to 觅马地面运维人员
+        //短信也存在redis中
+        if(0 && illegalMove >= illegalityMovePoliceCountInMin){
+            //请求觅马服务器，获取该车的负责人，发送短信
+            //TODO:
+            var bikeNumber = '00000264';
+            var alarmPhone = '17601528908';
+
+            //发送报警短信
+            AV.Cloud.requestSmsCode({
+                mobilePhoneNumber: alarmPhone,
+                template: 'bikeAlarm',
+                bikeNumber: bikeNumber,
+                alarmTime: process.env['illegalityMovePoliceMin'],
+                touches: illegalTouch,
+                illegalityMove: illegalMove
+            }).then(function(){
+                //发送成功
+                console.log('send sms succeed : alarmBike' + bikeNumber + ' send sms to' + alarmPhone);
+            }, function(err){
+                //发送失败
+                console.error('alarmBike' + bikeNumber + ' send sms to' + alarmPhone + 'error ' + err.message);
+            });
+
+            //报警完，删掉这个key，reset
+            redisUtil.del(alarmRedisKey, function (err, reply) {
+                if(err != null){
+                    console.error('alarmBike del in redis error, ', err.message);
+                    return;
+                }
+            });
+        }else {
+            //未触发报警，也不更新这个key的时间，过期后重置
+            redisUtil.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
+                if(err != null){
+                    console.error('alarmBike hmset in redis error, ', err.message);
+                    return;
+                }
+            });
+        }
+
+    })
 }
 
 //以下为测试debug代码
@@ -434,6 +507,7 @@ newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
 
-// setBikeMapWithRedis('mimacx0000000611', '00000264');
+// alarmBike('mimacx0000000611', 3, newEBikeLog);
+
 
 module.exports = router
