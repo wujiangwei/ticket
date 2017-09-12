@@ -153,27 +153,37 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
 //以下为测试代码
 
-function testLink(XMinBefore) {
+function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
-
-    var currentDateTime = (new Date()).getTime();
-    var queryDate = new Date(currentDateTime - XMinBefore*60*1000);
-
-    // queryDate = new Date("2017/09/1 05:53:45");
-    queryDate = new Date("2017/09/1 05:59:00");
+    // ebikeHistoryLogQuery.contains('Content', '请求成功');
 
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
-    var bikeSns = new Array();
-    ebikeHistoryLogQuery.limit(500);
+
+    // var queryDate = new Date("2017-09-9 21:10:00");
+    // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
+
+    ebikeHistoryLogQuery.limit(queryCountEatchBatch);
     ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
 
+        bachCount--;
+        if(xMinBeforeLogs.length != 0) {
+            if (bachCount > 0) {
+                return testLink(xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt, bachCount, queryCountEatchBatch, logList.concat(xMinBeforeLogs));
+            }
+        }
+
+        var bikeSns = [];
+        xMinBeforeLogs = logList.concat(xMinBeforeLogs)
         console.log('第一个鉴权时间:' + xMinBeforeLogs[0].createdAt);
         console.log('最后一个鉴权时间:' + xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt);
         console.log('total 鉴权次数:' + xMinBeforeLogs.length);
 
         for(var t = 0; t < xMinBeforeLogs.length; t++){
+
+            console.log(t + ' ------- ' + xMinBeforeLogs[t].get('Content'));
+
             var xMinBeforeLogObject = xMinBeforeLogs[t];
             var isExist = false;
             for(var i = 0 ; i < bikeSns.length; i++){
@@ -184,7 +194,7 @@ function testLink(XMinBefore) {
             }
             if(isExist == false){
                 bikeSns.push(xMinBeforeLogObject.get('SN'));
-                console.log(xMinBeforeLogObject.get('SN'));
+                // console.log(xMinBeforeLogObject.get('SN'));
             }
         }
 
@@ -194,7 +204,7 @@ function testLink(XMinBefore) {
         console.log('----------------------------');
 
 
-        var manyTimeSy = [0, 0 , 0 , 0 ];
+        var manyTimeSy = [];
         for(var i = 0; i < bikeSns.length; i++){
             var bikeCount = 0;
             for(var t = 0; t < xMinBeforeLogs.length; t++){
@@ -206,25 +216,16 @@ function testLink(XMinBefore) {
 
             if(bikeCount > 1){
                 console.log(bikeSns[i] + ' : ' + bikeCount + '次')
-            }else {
-                manyTimeSy[0]++;
             }
 
-            if(bikeCount == 2){
-                manyTimeSy[1]++;
+            if(manyTimeSy.length < bikeCount){
+                for(var j = 0; j < bikeCount; j++){
+                    if(manyTimeSy.length <= j){
+                        manyTimeSy[j] = 0;
+                    }
+                }
             }
-            if(bikeCount == 3){
-                manyTimeSy[2]++;
-            }
-            if(bikeCount == 4){
-                manyTimeSy[3]++;
-            }
-            if(bikeCount == 5){
-                manyTimeSy[4]++;
-            }
-            if(bikeCount == 6){
-                manyTimeSy[5]++;
-            }
+            manyTimeSy[bikeCount - 1]++;
         }
 
         var totalEBkke = 0;
@@ -239,6 +240,7 @@ function testLink(XMinBefore) {
     })
 }
 
-// testLink(34)
+var queryDate = new Date("2017-09-9T21:03:00");
+// testLink(queryDate, 5, 1000, []);
 
 module.exports = router

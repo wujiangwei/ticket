@@ -37,6 +37,9 @@ router.post('/', function(req, res) {
 
             structLogContent(newEBikeLog);
 
+            //update bike time in redis
+            redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
+
             newEBikeLog.save().then(function (savedNewEBikeLog) {
                 lock++;
                 if(lock == unlock){
@@ -137,38 +140,49 @@ router.post('/getBikeLatestLogTime',function (req, res) {
 
 
 function setBikeMapWithRedis(bikeSN, bikeID) {
-    redisUtil.getSimpleValueFromRedis(bikeSN, function (bikeID) {
-        if(bikeID == undefined || bikeID == null){
-            //query,if not in mangdb,set it in
-            var ebikeHistoryLogQuery = new AV.Query('MimaEBikeMapSql');
-            ebikeHistoryLogQuery.equalTo('SN', bikeSN);
+    if(bikeSN == undefined || bikeSN.length != 16){
+        console.error('invalid sn : ', bikeSN);
+        return;
+    }
 
+    if(bikeID == undefined || bikeID.length != 8){
+        console.error('invalid bikeID : ', bikeID);
+        return;
+    }
+
+    redisUtil.getSimpleValueFromRedis(bikeSN, function (redisBikeID) {
+        if(redisBikeID == null){
+            //query,if not in mangdb,set it in
+            redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
+            //add time in redis
+            redisUtil.setSimpleValueToRedis(bikeSN + '_Time', new Date(), 0);
+
+            var ebikeHistoryLogQuery = new AV.Query('MimaEBikeMap');
+            ebikeHistoryLogQuery.equalTo('SN', bikeSN);
             // console.log('----- ebileLogList ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
             ebikeHistoryLogQuery.find().then(function(MimaEBikeMapObjects) {
                 if(MimaEBikeMapObjects.length == 0){
-                    var newMimaEBikeMapObject = new MimaEBikeMapObjects();
+                    var newMimaEBikeMapObject = new MimaEBikeMapSql();
                     newMimaEBikeMapObject.set('SN', bikeSN);
                     newMimaEBikeMapObject.set('bikeID', bikeID);
                     newMimaEBikeMapObject.save().then(function (savedObject) {
-                        //auto set it in redis
+                        console.log('save bike and sn exist :' , bikeSN);
                     },function (err) {
                         console.log('find bike and sn but save error :', err.message);
                     })
-                }else {
-                    //not in redis but in sql,so set it in redis
-                    redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
                 }
-
-                console.log('bike and sn exist');
             }, function (err) {
+                //not in redis but in sql,so set it in redis
+                redisUtil.setSimpleValueToRedis(bikeSN, bikeID, 0);
+
                 console.log('find bike and sn error :' , err.message);
-                var newMimaEBikeMapObject = new MimaEBikeMapObjects();
+                var newMimaEBikeMapObject = new MimaEBikeMapSql();
                 newMimaEBikeMapObject.set('SN', bikeSN);
                 newMimaEBikeMapObject.set('bikeID', bikeID);
                 newMimaEBikeMapObject.save().then(function (savedObject) {
                     //auto set it in redis
                 },function (err) {
-                    console.log('find bike and sn but save error :', err.message);
+                    console.log('save bike map error :', err.message);
                 })
             })
         }else {
@@ -323,33 +337,40 @@ function structLogContent(leanContentObject) {
         }
         //deal ebike job type
         if(serviceData.Content.messageBody.alarmType != undefined) {
-            switch (serviceData.Content.messageBody.alarmType) {
-                case 1:
-                    leanContentObject.set('bikeNState', 'fall');
-                    break;
-                case 2:
-                    leanContentObject.set('bikeNState', 'touches');
-                    // serviceData.Content.messageBody.alarmTypeDes = "非法触碰";
-                    break;
-                case 3:
-                    leanContentObject.set('bikeNState', 'shifting');
-                    // serviceData.Content.messageBody.alarmTypeDes = "非法位移";
-                    break;
-                case 4:
-                    leanContentObject.set('bikeNState', 'powerOff');
-                    // serviceData.Content.messageBody.alarmTypeDes = "电源断电";
-                    break;
-                case 9:
-                    leanContentObject.set('bikeNState', 'vertical');
-                    // serviceData.Content.messageBody.alarmTypeDes = "车辆扶正";
-                    break;
-                default:
-                    break;
-            }
+            alarmBike(serviceData.SN, serviceData.Content.messageBody.alarmType, leanContentObject);
         }
     }
 }
 
+
+function alarmBike(sn, alarmType, leanContentObject) {
+    switch (alarmType) {
+        case 1:
+            leanContentObject.set('bikeNState', 'fall');
+            //车辆倒地
+            break;
+        case 2:
+            leanContentObject.set('bikeNState', 'touches');
+            // serviceData.Content.messageBody.alarmTypeDes = "非法触碰";
+            break;
+        case 3:
+            leanContentObject.set('bikeNState', 'shifting');
+            // serviceData.Content.messageBody.alarmTypeDes = "非法位移";
+            break;
+        case 4:
+            leanContentObject.set('bikeNState', 'powerOff');
+            // serviceData.Content.messageBody.alarmTypeDes = "电源断电";
+            break;
+        case 9:
+            leanContentObject.set('bikeNState', 'vertical');
+            // serviceData.Content.messageBody.alarmTypeDes = "车辆扶正";
+            break;
+        default:
+            break;
+    }
+}
+
+//以下为测试debug代码
 
 //删除旧的日志
 function deleteOldDateLogs(maxTime, queryDateLess) {
@@ -412,5 +433,7 @@ newEBikeLog.set('Remark', '命令响应');
 newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
+
+// setBikeMapWithRedis('mimacx0000000611', '00000264');
 
 module.exports = router
