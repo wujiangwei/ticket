@@ -10,6 +10,18 @@ var MimaEBikeMapSql = AV.Object.extend('MimaEBikeMap');
 var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
 var MimaActionSql = AV.Object.extend('MimaAction');
 
+//配置参数
+var openBatteryMin = parseInt(process.env['openBatteryMin']);
+
+//Redis Key
+function getOpenBatteryKey(sn) {
+    return sn + '_' + 'openBattery';
+}
+function getIllegalMoveKey(sn) {
+    return sn + '_' + 'Alarm';
+}
+//Redis Key end
+
 router.post('/', function(req, res) {
 
     var LogParam = req.body;
@@ -17,6 +29,10 @@ router.post('/', function(req, res) {
 
     if(LogParam == undefined && ActionParam == undefined){
         return res.json({'errorCode': 1, 'errorMsg': 'LogParam and ActionParam is all empty'});
+    }
+
+    if(LogParam.SN == undefined || ActionParam.SN == undefined){
+        return res.json({'errorCode': 1, 'errorMsg': 'SN is empty'});
     }
 
     var lock = 0;
@@ -96,13 +112,23 @@ router.post('/', function(req, res) {
 
         //actionPicUrl(for action:returnBikeByPic,reportBike,feedbackBike)
 
-        if(ActionParam.role == undefined){
+        if(1 || ActionParam.role == undefined){
             lock++;
         }else {
             var MimaAction = new MimaActionSql();
-
-
             MimaAction.set('role', ActionParam.role);
+            MimaAction.set('roleGuid', ActionParam.roleGuid);
+            MimaAction.set('rolePhone', ActionParam.rolePhone);
+            MimaAction.set('roleName', ActionParam.roleName);
+            MimaAction.set('action', ActionParam.action);
+            MimaAction.set('actionMethod', ActionParam.actionMethod);
+            MimaAction.set('SN', ActionParam.SN);
+            MimaAction.set('bikeId', ActionParam.bikeNo);
+
+            //开电池仓，用于报警逻辑
+            if(ActionParam.action == 'openBatteryHouseSucceed'){
+                redisUtil.setSimpleValueToRedis(getOpenBatteryKey(ActionParam.SN), 1, openBatteryMin * 60);
+            }
 
             MimaAction.save().then(function (savedMimaActionObject) {
                 lock++;
@@ -198,6 +224,7 @@ function structLogContent(leanContentObject) {
     serviceData.Remark = leanContentObject.get('Remark');
     serviceData.SourceType = leanContentObject.get('SourceType');
     serviceData.Content = leanContentObject.get('Content');
+    serviceData.SN = leanContentObject.get('SN');
 
     var serviceDataContent = serviceData.Content;
 
@@ -312,6 +339,12 @@ function structLogContent(leanContentObject) {
         }else if(serviceData.Content.result != undefined){
             leanContentObject.set('cmdResponseResult', serviceData.Content.result != undefined);
         }
+
+        leanContentObject.set('cmdId', parseInt(contentObject.cmdID));
+        if(parseInt(contentObject.cmdID) == 6){
+            //处理打开电池仓
+            redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
+        }
     }
 
     //deal data
@@ -337,15 +370,15 @@ function structLogContent(leanContentObject) {
         }
         //deal ebike job type
         if(serviceData.Content.messageBody.alarmType != undefined) {
-            alarmBike(serviceData.SN, serviceData.Content.messageBody.alarmType, leanContentObject);
+            alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
         }
     }
 }
 
 
-function alarmBike(sn, alarmType, leanContentObject) {
+function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
-    var alarmRedisKey = sn + '_Alarm';
+    var alarmRedisKey = getIllegalMoveKey(sn);
     var illegalTouch = 0;
     var illegalMove = 0;
 
@@ -362,6 +395,10 @@ function alarmBike(sn, alarmType, leanContentObject) {
         case 3:
             leanContentObject.set('bikeNState', 'shifting');
             // serviceData.Content.messageBody.alarmTypeDes = "非法位移";
+            if(satellite < 7){
+                //因为定位漂移引起的非法位移
+                return;
+            }
             illegalMove++;
             break;
         case 4:
@@ -369,6 +406,32 @@ function alarmBike(sn, alarmType, leanContentObject) {
             // serviceData.Content.messageBody.alarmTypeDes = "电源断电";
         {
             //TODO 查看打开电池仓何时成功的，10分钟内，则断电是正常的，否则不正常。发送报警短信。
+            redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
+                if(openBattery != 1){
+                    //not opened battery in 10 min
+                    var bikeNumber = sn;
+                    redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+                        if(bikeId != null){
+                            bikeNumber = bikeId;
+                        }
+
+                        var alarmPhone = '15950045730';
+
+                        //发送报警短信
+                        AV.Cloud.requestSmsCode({
+                            mobilePhoneNumber: alarmPhone,
+                            template: 'batteryAlarm',
+                            bikeNumber: bikeNumber
+                        }).then(function(){
+                            //发送成功
+                            console.log('send sms succeed : battery stoled' + bikeNumber + ' send sms to' + alarmPhone);
+                        }, function(err){
+                            //发送失败
+                            console.error('battery stoled' + bikeNumber + ' send sms to' + alarmPhone + 'error ' + err.message);
+                        });
+                    })
+                }
+            })
         }
             break;
         case 9:
@@ -380,8 +443,8 @@ function alarmBike(sn, alarmType, leanContentObject) {
     }
 
     //配置参数
-    var illegalityMovePoliceSecond = 120;//parseInt(process.env['illegalityMovePoliceMin']) * 60;
-    var illegalityMovePoliceCountInMin = 3;// parseInt(process.env['illegalityMovePoliceCountInMin']);
+    var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
+    var illegalityMovePoliceCountInMin = parseInt(process.env['illegalityMovePoliceCountInMin']);
 
     redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
         if(err != null){
@@ -408,23 +471,29 @@ function alarmBike(sn, alarmType, leanContentObject) {
             // });
             //TODO:
             var bikeNumber = sn;
-            var alarmPhone = '15950045730';
+            redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+                if(bikeId != null){
+                    bikeNumber = bikeId;
+                }
 
-            //发送报警短信
-            AV.Cloud.requestSmsCode({
-                mobilePhoneNumber: alarmPhone,
-                template: 'bikeAlarm',
-                bikeNumber: bikeNumber,
-                alarmTime: process.env['illegalityMovePoliceMin'],
-                touches: illegalTouch,
-                illegalityMove: illegalMove
-            }).then(function(){
-                //发送成功
-                console.log('send sms succeed : alarmBike' + bikeNumber + ' send sms to' + alarmPhone);
-            }, function(err){
-                //发送失败
-                console.error('alarmBike' + bikeNumber + ' send sms to' + alarmPhone + 'error ' + err.message);
-            });
+                var alarmPhone = '15950045730';
+
+                //发送报警短信
+                AV.Cloud.requestSmsCode({
+                    mobilePhoneNumber: alarmPhone,
+                    template: 'bikeAlarm',
+                    bikeNumber: bikeNumber,
+                    alarmTime: process.env['illegalityMovePoliceMin'],
+                    touches: illegalTouch,
+                    illegalityMove: illegalMove
+                }).then(function(){
+                    //发送成功
+                    console.log('send sms succeed : alarmBike' + bikeNumber + ' send sms to' + alarmPhone);
+                }, function(err){
+                    //发送失败
+                    console.error('alarmBike' + bikeNumber + ' send sms to' + alarmPhone + 'error ' + err.message);
+                });
+            })
 
             //报警完，删掉这个key，reset
             redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
@@ -504,7 +573,7 @@ var newEBikeLog = new NewEBikeLogSql();
 
 newEBikeLog.set('SN', 'mimacx0000000002');
 newEBikeLog.set('LogType', 6);
-newEBikeLog.set('Content', '转发命令至ApiService成功,cmdId:3,protocolMsgSeq:101,payload:{"result":"0","sn":"MjAwMDAwMDAwMHhjYW1pbQ==","data":{"longitudeMinute":"24.762060398","kickstand":true,"totalMileage":21.0,"longitudeDegree":"120","satellite":7,"battery":50,"errorCode":"0123a","charging":false,"latitudeMinute":"14.25475979","latitudeDegree":"31"},"cmdID":3}');
+newEBikeLog.set('Content', '转发命令至OperService成功,cmdId:2,protocolMsgSeq:102,payload:{"sn":"NDMyMDAwMDAwMHhjYW1pbQ==","cmdID":2,"result":1,"data":{"latitudeDegree":22,"latitudeMinute":41.737080,"longitudeDegree":113,"longitudeMinute":15.907380,"totalMileage":522.542000,"battery":100,"gpstype":1,"satellite":8}} ');
 newEBikeLog.set('Remark', '命令响应');
 newEBikeLog.set('SourceType', 0);
 

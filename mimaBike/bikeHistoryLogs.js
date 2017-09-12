@@ -156,8 +156,8 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
-    // ebikeHistoryLogQuery.contains('Content', '请求成功');
+    // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
+    ebikeHistoryLogQuery.contains('Content', '"cmdID":6');
 
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
 
@@ -241,6 +241,6 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 }
 
 var queryDate = new Date("2017-09-9T21:03:00");
-// testLink(queryDate, 5, 1000, []);
+// testLink(queryDate, 1, 1000, []);
 
 module.exports = router
