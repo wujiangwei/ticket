@@ -3,6 +3,8 @@
  */
 const router = require('express').Router()
 var AV = require('leanengine');
+var httpUtil = require('./httpUtil');
+var alarmSms = require('./alarmSms');
 
 var redisUtil = require('../redis/leanObjectRedis');
 
@@ -413,20 +415,12 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                             bikeNumber = bikeId;
                         }
 
-                        var alarmPhone = '15950045730';
-
-                        //发送报警短信
-                        AV.Cloud.requestSmsCode({
+                        var smsData = {
                             mobilePhoneNumber: alarmPhone,
                             template: 'batteryAlarm',
                             bikeNumber: bikeNumber
-                        }).then(function(){
-                            //发送成功
-                            console.log('send sms succeed : battery stoled' + bikeNumber + ' send sms to' + alarmPhone);
-                        }, function(err){
-                            //发送失败
-                            console.error('battery stoled' + bikeNumber + ' send sms to' + alarmPhone + 'error ' + err.message);
-                        });
+                        };
+                        alarmSms.sendAlarmSms(smsData);
                     })
                 }
             })
@@ -464,42 +458,43 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
         //短信也存在redis中
         if(illegalMove >= illegalityMovePoliceCountInMin){
             //请求觅马服务器，获取该车的负责人，发送短信
-            // http.get('http://codestudy.sinaapp.com', function (response) {
-            //     //
-            // });
-            //TODO:
-            var bikeNumber = sn;
-            redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-                if(bikeId != null){
-                    bikeNumber = bikeId;
+            //http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do
+            //url, port, path, method, reqData, callback
+            var reqData = {'SN': sn};
+            httpUtil.httpRequest('http://120.27.221.91', 8080, 'minihorse_zb/StuCert/GetCarMes.do', 'POST', reqData, function (responseData) {
+                if(responseData == undefined){
+                    console.error('minihorse_zb/StuCert/GetCarMes.do api error');
+                }else {
+
+                    console.log(responseData);
+
+                    redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+                        if(bikeId != null){
+                            bikeNumber = bikeId;
+                        }
+
+                        var sendSmsData = {
+                            mobilePhoneNumber: alarmPhone,
+                            template: 'bikeAlarm',
+                            bikeNumber: bikeNumber,
+                            alarmTime: process.env['illegalityMovePoliceMin'],
+                            touches: illegalTouch,
+                            illegalityMove: illegalMove
+                        };
+
+                        alarmPhone.sendAlarmSms(sendSmsData, );
+                    })
+
+                    //报警完，删掉这个key，reset
+                    redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
+                        if(err != null){
+                            console.error('alarmBike del in redis error, ', err.message);
+                            return;
+                        }
+                    });
                 }
-
-                var alarmPhone = '15950045730';
-
-                //发送报警短信
-                AV.Cloud.requestSmsCode({
-                    mobilePhoneNumber: alarmPhone,
-                    template: 'bikeAlarm',
-                    bikeNumber: bikeNumber,
-                    alarmTime: process.env['illegalityMovePoliceMin'],
-                    touches: illegalTouch,
-                    illegalityMove: illegalMove
-                }).then(function(){
-                    //发送成功
-                    console.log('send sms succeed : alarmBike' + bikeNumber + ' send sms to' + alarmPhone);
-                }, function(err){
-                    //发送失败
-                    console.error('alarmBike' + bikeNumber + ' send sms to' + alarmPhone + 'error ' + err.message);
-                });
             })
 
-            //报警完，删掉这个key，reset
-            redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
-                if(err != null){
-                    console.error('alarmBike del in redis error, ', err.message);
-                    return;
-                }
-            });
         }else {
             //未触发报警，也不更新这个key的时间，过期后重置
             redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){

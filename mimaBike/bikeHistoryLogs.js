@@ -241,6 +241,6 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 }
 
 var queryDate = new Date("2017-09-13T08:00:00");
-testLink(queryDate, 1, 1000, []);
+// testLink(queryDate, 1, 1000, []);
 
 module.exports = router
