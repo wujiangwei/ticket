@@ -112,7 +112,7 @@ router.post('/', function(req, res) {
 
         //actionPicUrl(for action:returnBikeByPic,reportBike,feedbackBike)
 
-        if(1 || ActionParam.role == undefined){
+        if(ActionParam.role == undefined || ActionParam.SN == undefined){
             lock++;
         }else {
             var MimaAction = new MimaActionSql();
@@ -298,24 +298,22 @@ function structLogContent(leanContentObject) {
                     leanContentObject.set('chargeCount', parseInt(contentObject.messageBody.chargeCount));
                 }
 
-                leanContentObject.set('totalMileage', parseInt(contentObject.messageBody.totalMileage));
+                leanContentObject.set('totalMileage', parseFloat(contentObject.messageBody.totalMileage));
                 leanContentObject.set('errorCode', contentObject.messageBody.errorCode);
                 leanContentObject.set('battery', parseInt(contentObject.messageBody.battery));
                 leanContentObject.set('gpstype', parseInt(contentObject.messageBody.gpstype));
 
-                //只保存实时定位，且搜星数大于5
-                if(parseInt(contentObject.messageBody.gpstype) != 2 && parseInt(contentObject.messageBody.satellite) > 5){
-
-                    //忽略历史信息的报文，不去存储，主要是多个定位信息，创建对象不支持，如果单独创建一个位置对象，对数据的开销是X2的开销，不划算
-                    if(contentObject.messageBody.latitudeMinute == undefined || contentObject.messageBody.longitudeMinute == undefined){
-                        console.log('no latitudeMinute or longitudeMinute');
-                        console.log(serviceDataContent);
-                        return;
-                    }
-
+                //保存定位
+                if(contentObject.messageBody.latitudeMinute != undefined || contentObject.messageBody.longitudeMinute != undefined){
                     var lat = Number(contentObject.messageBody.latitudeMinute) / 60.0 + Number(contentObject.messageBody.latitudeDegree);
                     var lon = Number(contentObject.messageBody.longitudeMinute) / 60.0 + Number(contentObject.messageBody.longitudeDegree);
                     leanContentObject.set('bikeGeo', new AV.GeoPoint(lat, lon));
+                }
+
+                //只保存实时定位时且搜星数大于5的
+                //或者保存历史定位的（此时忽略搜星数）
+                if(parseInt(contentObject.messageBody.gpstype) == 1 && parseInt(contentObject.messageBody.satellite) > 5){
+                    //有效定位上传
                 }
             }
         }catch(err) {
