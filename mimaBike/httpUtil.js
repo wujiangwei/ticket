@@ -5,6 +5,7 @@ var http = require('http');
 
 exports.httpRequest = function (url, port, path, method, reqData, callback) {
 
+    return;
     if(method == 'POST'){
         var jsonData = JSON.stringify(reqData);
         var post_options = {
