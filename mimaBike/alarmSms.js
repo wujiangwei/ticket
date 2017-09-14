@@ -6,6 +6,7 @@ var AV = require('leanengine');
 
 exports.sendAlarmSms = function (requestSmsData, ownerDic, operateDic) {
     //发送报警短信
+    //sign:'sign_BuyBuyBuy'  短信签名
     AV.Cloud.requestSmsCode(requestSmsData).then(function(){
         //发送成功
         console.log(requestSmsData['template'] + ': send sms succeed, alarmBike :' + requestSmsData['bikeNumber'] + ' , send sms to ' + requestSmsData['alarmPhone']);

@@ -307,9 +307,12 @@ function structLogContent(leanContentObject) {
 
                 //保存定位
                 if(contentObject.messageBody.latitudeMinute != undefined || contentObject.messageBody.longitudeMinute != undefined){
-                    var lat = Number(contentObject.messageBody.latitudeMinute) / 60.0 + Number(contentObject.messageBody.latitudeDegree);
-                    var lon = Number(contentObject.messageBody.longitudeMinute) / 60.0 + Number(contentObject.messageBody.longitudeDegree);
-                    leanContentObject.set('bikeGeo', new AV.GeoPoint(lat, lon));
+                    if(contentObject.messageBody.latitudeMinute != 0 || contentObject.messageBody.longitudeMinute != 0){
+                        var lat = Number(contentObject.messageBody.latitudeMinute) / 60.0 + Number(contentObject.messageBody.latitudeDegree);
+                        var lon = Number(contentObject.messageBody.longitudeMinute) / 60.0 + Number(contentObject.messageBody.longitudeDegree);
+                        leanContentObject.set('bikeGeo', new AV.GeoPoint(lat, lon));
+                    }
+
                 }
 
                 //只保存实时定位时且搜星数大于5的
