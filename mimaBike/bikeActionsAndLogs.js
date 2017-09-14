@@ -485,7 +485,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                             illegalityMove: illegalMove
                         };
 
-                        alarmPhone.sendAlarmSms(sendSmsData, );
+                        // alarmPhone.sendAlarmSms(sendSmsData, );
                     })
 
                     //报警完，删掉这个key，reset

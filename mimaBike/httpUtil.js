@@ -39,37 +39,37 @@ exports.httpRequest = function (url, port, path, method, reqData, callback) {
     }
 }
 
-var reqData = {'SN': 'mimacx0000000326'};
-exports.httpRequest('120.27.221.91', 8080, 'minihorse_zb/StuCert/GetCarMes.do', 'POST', reqData, function (responseData) {
-    if(responseData == undefined){
-        console.error('minihorse_zb/StuCert/GetCarMes.do api error');
-    }else {
-
-        console.log(responseData);
-
-        redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-            if(bikeId != null){
-                bikeNumber = bikeId;
-            }
-
-            var sendSmsData = {
-                mobilePhoneNumber: alarmPhone,
-                template: 'bikeAlarm',
-                bikeNumber: bikeNumber,
-                alarmTime: process.env['illegalityMovePoliceMin'],
-                touches: illegalTouch,
-                illegalityMove: illegalMove
-            };
-
-            alarmPhone.sendAlarmSms(sendSmsData, );
-        })
-
-        //报警完，删掉这个key，reset
-        redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
-            if(err != null){
-                console.error('alarmBike del in redis error, ', err.message);
-                return;
-            }
-        });
-    }
-})
+// var reqData = {'SN': 'mimacx0000000326'};
+// exports.httpRequest('120.27.221.91', 8080, 'minihorse_zb/StuCert/GetCarMes.do', 'POST', reqData, function (responseData) {
+//     if(responseData == undefined){
+//         console.error('minihorse_zb/StuCert/GetCarMes.do api error');
+//     }else {
+//
+//         console.log(responseData);
+//
+//         redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+//             if(bikeId != null){
+//                 bikeNumber = bikeId;
+//             }
+//
+//             var sendSmsData = {
+//                 mobilePhoneNumber: alarmPhone,
+//                 template: 'bikeAlarm',
+//                 bikeNumber: bikeNumber,
+//                 alarmTime: process.env['illegalityMovePoliceMin'],
+//                 touches: illegalTouch,
+//                 illegalityMove: illegalMove
+//             };
+//
+//             alarmPhone.sendAlarmSms(sendSmsData, );
+//         })
+//
+//         //报警完，删掉这个key，reset
+//         redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
+//             if(err != null){
+//                 console.error('alarmBike del in redis error, ', err.message);
+//                 return;
+//             }
+//         });
+//     }
+// })
