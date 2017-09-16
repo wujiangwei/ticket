@@ -436,7 +436,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             break;
     }
 
-    if(illegalMove == 1){
+    if(illegalMove == 1 || illegalTouch == 1){
         //非法位移触发报警
         //配置参数
         var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
@@ -537,7 +537,8 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                     }
                 })
 
-            }else {
+            }
+            else {
                 //未触发报警，也不更新这个key的时间，过期后重置
                 redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
                     if(err != null){
