@@ -22,9 +22,6 @@ function getOpenBatteryKey(sn) {
 function getIllegalMoveKey(sn) {
     return sn + '_' + 'Alarm';
 }
-function getAlarmPhoneKey(phoneNumber) {
-    return phoneNumber + '_' + 'Alarm';
-}
 //Redis Key end
 
 router.post('/', function(req, res) {
