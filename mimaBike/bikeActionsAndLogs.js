@@ -627,18 +627,20 @@ newEBikeLog.set('SourceType', 0);
 //     }
 // })
 
-// for (var i = 1; i <= 700; i++){
+// for (var i = 1; i <= 4000; i++){
 //     var snSu = '';
 //     if(i < 10){
-//         snSu = '00' + i;
+//         snSu = '000' + i;
 //     }else if(i < 100){
+//         snSu = '00' + i;
+//     }else if(i < 1000){
 //         snSu = '0' + i;
 //     }else {
 //         snSu = i;
 //     }
-//     console.log('mimacx0000000' + snSu + '_Alarm');
+//     console.log('mimacx000000' + snSu + '_Alarm');
 //     //删除掉redis里的key
-//     redisUtil.redisClient.del('mimacx0000000' + snSu + '_Alarm');
+//     redisUtil.redisClient.del('mimacx000000' + snSu + '_Alarm');
 // }
 
 module.exports = router
