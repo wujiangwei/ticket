@@ -22,6 +22,9 @@ function getOpenBatteryKey(sn) {
 function getIllegalMoveKey(sn) {
     return sn + '_' + 'Alarm';
 }
+function getAlarmPhoneKey(phoneNumber) {
+    return phoneNumber + '_' + 'Alarm';
+}
 //Redis Key end
 
 router.post('/', function(req, res) {
@@ -315,10 +318,9 @@ function structLogContent(leanContentObject) {
 
                 }
 
-                //只保存实时定位时且搜星数大于5的
-                //或者保存历史定位的（此时忽略搜星数）
+                //是不是有效定位
                 if(parseInt(contentObject.messageBody.gpstype) == 1 && parseInt(contentObject.messageBody.satellite) > 5){
-                    //有效定位上传
+                    //
                 }
             }
         }catch(err) {
@@ -371,7 +373,8 @@ function structLogContent(leanContentObject) {
                     break;
             }
         }
-        //deal ebike job type
+
+        //车辆报警
         if(serviceData.Content.messageBody.alarmType != undefined) {
             alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
         }
@@ -381,7 +384,6 @@ function structLogContent(leanContentObject) {
 
 function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
-    var alarmRedisKey = getIllegalMoveKey(sn);
     var illegalTouch = 0;
     var illegalMove = 0;
 
@@ -437,78 +439,118 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             break;
     }
 
-    //配置参数
-    var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
-    var illegalityMovePoliceCountInMin = parseInt(process.env['illegalityMovePoliceCountInMin']);
+    if(illegalMove == 1){
+        //非法位移触发报警
+        //配置参数
+        var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
+        var illegalityMovePoliceCountInMin = parseInt(process.env['illegalityMovePoliceCountInMin']);
 
-    redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
-        if(err != null){
-            console.error('alarmBike hgetall in redis error, ', err.message);
-            return;
-        }
+        var alarmRedisKey = getIllegalMoveKey(sn);
+        redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
+            if(err != null){
+                console.error('alarmBike hgetall in redis error, ', err.message);
+                return;
+            }
 
-        //{ illegalMove: '2', illegalTouch: '2' }
-        if(alarmValues != null){
-            //update 计数
-            illegalTouch += parseInt(alarmValues.illegalTouch);
-            illegalMove += parseInt(alarmValues.illegalMove);
-        }
+            //{ illegalMove: '2', illegalTouch: '2' }
+            if(alarmValues != null){
+                //update 计数
+                illegalTouch += parseInt(alarmValues.illegalTouch);
+                illegalMove += parseInt(alarmValues.illegalMove);
+            }
 
-        //更新生存时间为illegalityMovePoliceSecond秒
-        // redisUtil.expire(alarmRedisKey, illegalityMovePoliceSecond);
+            //更新生存时间为illegalityMovePoliceSecond秒
+            // redisUtil.expire(alarmRedisKey, illegalityMovePoliceSecond);
 
-        //call the sms to 觅马地面运维人员
-        //短信也存在redis中
-        if(illegalMove >= illegalityMovePoliceCountInMin){
-            //请求觅马服务器，获取该车的负责人，发送短信
-            //http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do
-            //url, port, path, method, reqData, callback
-            var reqData = {'SN': sn};
-            httpUtil.httpRequest('http://120.27.221.91', 8080, 'minihorse_zb/StuCert/GetCarMes.do', 'POST', reqData, function (responseData) {
-                if(responseData == undefined){
-                    console.error('minihorse_zb/StuCert/GetCarMes.do api error');
-                }else {
+            //call the sms to 觅马地面运维人员
+            if(illegalMove >= illegalityMovePoliceCountInMin){
+                //请求觅马服务器，获取该车的负责人，发送短信
+                var reqData = {'SN': sn};
+                var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn;
+                httpUtil.httpGetRequest(getPhoneUrl, function (getResponseBody) {
+                    if(getResponseBody == undefined){
+                        console.error('minihorse_zb/StuCert/GetCarMes.do api error');
+                    }else {
+                        redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+                            if(bikeId !== null){
+                                bikeId = sn;
+                            }
 
-                    console.log(responseData);
+                            var areaData = getResponseBody.data;
+                            var ownerData = areaData.PartnerinfoModel;
+                            var operateDatas = areaData.PerationuserModel;
+                            var phoneList = [];
+                            for(var i = 0; i < operateDatas.length; i++){
+                                var perationUser = operateDatas[i];
+                                if(perationUser.NeedWaring == 1){
+                                    phoneList.push(perationUser.UserPhone)
+                                }
+                            }
+                            //老总放到最后提示，无视他是不是接受短信
+                            for(var i = 0; i < operateDatas.length; i++){
+                                var perationUser = operateDatas[i];
+                                if(perationUser.UserRealName.indexOf('总') != -1 && phoneList.indexOf(perationUser.UserPhone) == -1){
+                                    phoneList.push(perationUser.UserPhone)
+                                }
+                            }
+                            //其次是负责人
+                            if(ownerData.PartnerCellPhone != undefined && phoneList.indexOf(ownerData.PartnerCellPhone) == -1){
+                                phoneList.push(ownerData.PartnerCellPhone);
+                            }
+                            //最后是不接受短信的人
+                            for (var i = 0; i < operateDatas.length; i++) {
+                                var perationUser = operateDatas[i];
+                                if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
+                                    phoneList.push(perationUser.UserPhone)
+                                }
+                            }
 
-                    redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-                        if(bikeId != null){
-                            bikeNumber = bikeId;
-                        }
+                            //递归
+                            function alarmToPhone() {
+                                var sendSmsData = {
+                                    mobilePhoneNumber: phoneList[sendPhoneIndex],
+                                    template: 'bikeAlarm',
+                                    bikeNumber: bikeId,
+                                    alarmTime: process.env['illegalityMovePoliceMin'],
+                                    touches: illegalTouch,
+                                    illegalityMove: illegalMove
+                                };
+                                alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
+                                    sendPhoneIndex++;
+                                    if(Ret == 0 && sendPhoneIndex < phoneList.length){
+                                        //发送失败，且有人在，继续发送
+                                        alarmToPhone();
+                                    }else {
+                                        //报警成功，删掉这个key，reset
+                                        redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
+                                            if(err != null){
+                                                console.error('alarmBike del in redis error, ', err.message);
+                                                return;
+                                            }
+                                        });
+                                    }
+                                })
+                            }
 
-                        // var sendSmsData = {
-                        //     mobilePhoneNumber: alarmPhone,
-                        //     template: 'bikeAlarm',
-                        //     bikeNumber: bikeNumber,
-                        //     alarmTime: process.env['illegalityMovePoliceMin'],
-                        //     touches: illegalTouch,
-                        //     illegalityMove: illegalMove
-                        // };
+                            var sendPhoneIndex = 0;
+                            //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
+                            alarmToPhone(phoneList[sendPhoneIndex]);
+                        })
+                    }
+                })
 
-                        // alarmPhone.sendAlarmSms(sendSmsData, );
-                    })
+            }else {
+                //未触发报警，也不更新这个key的时间，过期后重置
+                redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
+                    if(err != null){
+                        console.error('alarmBike hmset in redis error, ', err.message);
+                        return;
+                    }
+                });
+            }
 
-                    //报警完，删掉这个key，reset
-                    redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
-                        if(err != null){
-                            console.error('alarmBike del in redis error, ', err.message);
-                            return;
-                        }
-                    });
-                }
-            })
-
-        }else {
-            //未触发报警，也不更新这个key的时间，过期后重置
-            redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
-                if(err != null){
-                    console.error('alarmBike hmset in redis error, ', err.message);
-                    return;
-                }
-            });
-        }
-
-    })
+        })
+    }
 }
 
 //以下为测试debug代码
@@ -575,7 +617,7 @@ newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
 
-// alarmBike('mimacx0000000611', 3, newEBikeLog);
+// alarmBike('mimacx0000000052', 8, 3, newEBikeLog);
 
 // redisUtil.getSimpleValueFromRedis('testKey', function (bikeLatestTime) {
 //     if(bikeLatestTime != undefined || bikeLatestTime != null){
