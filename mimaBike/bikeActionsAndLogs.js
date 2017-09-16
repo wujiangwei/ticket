@@ -469,7 +469,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                         console.error('minihorse_zb/StuCert/GetCarMes.do api error');
                     }else {
                         redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-                            if(bikeId !== null){
+                            if(bikeId == null){
                                 bikeId = sn;
                             }
 
@@ -504,6 +504,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
                             //递归
                             function alarmToPhone() {
+                                return;
                                 var sendSmsData = {
                                     mobilePhoneNumber: phoneList[sendPhoneIndex],
                                     template: 'bikeAlarm',
@@ -541,7 +542,8 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                 redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
                     if(err != null){
                         console.error('alarmBike hmset in redis error, ', err.message);
-                        return;
+                    }else {
+                        redisUtil.redisClient.expire(alarmRedisKey, illegalityMovePoliceSecond);
                     }
                 });
             }
@@ -624,5 +626,16 @@ newEBikeLog.set('SourceType', 0);
 //         res.json({'bikeLatestTime' : '无效车'});
 //     }
 // })
+
+for (var i = 0; i < 700; i++){
+    var snSu = '';
+    if(i < 10){
+        snSu = '00' + i;
+    }else if(i < 100){
+        snSu = '0' + i;
+    }
+    //删除掉redis里的key
+    redisUtil.redisClient.del('mimacx0000000' + snSu + '_Alarm');
+}
 
 module.exports = router
