@@ -467,16 +467,14 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             //更新生存时间为illegalityMovePoliceSecond秒
             // redisUtil.expire(alarmRedisKey, illegalityMovePoliceSecond);
 
-            //call the sms to 觅马地面运维人员
-            if(illegalMove >= illegalityMovePoliceCountInMin){
-
-                redisUtil.getSimpleValueFromRedis(getSatelliteKey(sn), function (redisSatellite) {
-                    if(redisSatellite != undefined && redisSatellite < 6)
-                    {
-                        console.log('sn is not illegal shifting, because of lastest gps number is ', redisSatellite);
-                        return;
-                    }
-
+            redisUtil.getSimpleValueFromRedis(getSatelliteKey(sn), function (redisSatellite) {
+                if(redisSatellite != undefined && redisSatellite < 6)
+                {
+                    console.log('sn is not illegal shifting, because of lastest gps number is ', redisSatellite);
+                    return;
+                }
+                //call the sms to 觅马地面运维人员
+                if(illegalMove >= illegalityMovePoliceCountInMin){
                     //请求觅马服务器，获取该车的负责人，发送短信
                     var reqData = {'SN': sn};
                     var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn;
@@ -552,19 +550,18 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                             })
                         }
                     })
-                })
-            }
-            else {
-                //未触发报警，也不更新这个key的时间，过期后重置
-                redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
-                    if(err != null){
-                        console.error('alarmBike hmset in redis error, ', err.message);
-                    }else {
-                        redisUtil.redisClient.expire(alarmRedisKey, illegalityMovePoliceSecond);
-                    }
-                });
-            }
-
+                }
+                else {
+                    //未触发报警，也不更新这个key的时间，过期后重置
+                    redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalMove, 'illegalTouch', illegalTouch, function(err, response){
+                        if(err != null){
+                            console.error('alarmBike hmset in redis error, ', err.message);
+                        }else {
+                            redisUtil.redisClient.expire(alarmRedisKey, illegalityMovePoliceSecond);
+                        }
+                    });
+                }
+            })
         })
     }
 }
