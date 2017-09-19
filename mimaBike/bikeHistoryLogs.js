@@ -67,7 +67,7 @@ router.post('/ebileLogList',function (req, res) {
     });
 })
 
-//暂时为未客服系统查询车辆状态使用的接口
+//暂时为客服系统查询车辆状态使用的接口
 router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
     if(req.body.SN == undefined || req.body.SN.length == 0){
@@ -116,7 +116,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
                     break;
             }
 
-            res.json({'errorCode':0, 'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
+            res.json({'errorCode':0, 'bikeEState' : '','totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
                 'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
         }
 
@@ -156,7 +156,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
+    // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
     // ebikeHistoryLogQuery.contains('Content', '"cmdID":6');
 
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
@@ -183,7 +183,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
         for(var t = 0; t < xMinBeforeLogs.length; t++){
 
-            // console.log(t + ' ------- ' + xMinBeforeLogs[t].get('Content'));
+            console.log(t + ' ------- ' + xMinBeforeLogs[t].get('Content'));
 
             var xMinBeforeLogObject = xMinBeforeLogs[t];
             var isExist = false;
@@ -241,7 +241,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-09-17 07:25:00");
-testLink(queryDate, 1, 1000, []);
+var queryDate = new Date("2017-09-18 11:44:00");
+// testLink(queryDate, 1, 1000, []);
 
 module.exports = router
