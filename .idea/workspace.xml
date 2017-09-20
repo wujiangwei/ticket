@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="34041dad-6a6b-4269-8ecd-e6f8db444a9c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" afterPath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,7 +13,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="bikeHistoryLogs.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="bikeHistoryLogs.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-11">
@@ -44,11 +43,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-5081">
-              <caret line="296" column="93" lean-forward="false" selection-start-line="296" selection-start-column="93" selection-end-line="296" selection-end-column="93" />
+            <state relative-caret-position="3181">
+              <caret line="303" column="20" lean-forward="false" selection-start-line="303" selection-start-column="20" selection-end-line="303" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -73,6 +72,7 @@
       <find>setSimpleValueToRedis</find>
       <find>getSimpleValueFromRedis</find>
       <find>messageType</find>
+      <find>cmdID</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -328,12 +328,12 @@
       <workItem from="1505867937309" duration="22000" />
       <workItem from="1505867963446" duration="364000" />
       <workItem from="1505868363939" duration="60000" />
-      <workItem from="1505868427696" duration="3962000" />
+      <workItem from="1505868427696" duration="5897000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33085000" />
+    <option name="totallyTimeSpent" value="35020000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="709" extended-state="0" />
@@ -751,18 +751,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5081">
-          <caret line="296" column="93" lean-forward="false" selection-start-line="296" selection-start-column="93" selection-end-line="296" selection-end-column="93" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-11">
           <caret line="110" column="0" lean-forward="true" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3181">
+          <caret line="303" column="20" lean-forward="false" selection-start-line="303" selection-start-column="20" selection-end-line="303" selection-end-column="20" />
           <folding />
         </state>
       </provider>
