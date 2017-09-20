@@ -296,11 +296,12 @@ function structLogContent(leanContentObject) {
                 if (contentObject.messageType == 1 || (contentObject.cmdID == 1 && contentObject.result == 0)){
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
                 }
-                else if(contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0)){
+                else if(contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0) ||
+                        contentObject.messageType == 5 || contentObject.messageType == 6){
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
                 }
                 else {
-                    redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'Failure',0)
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
                 }
 
                 if(contentObject.messageBody == undefined && contentObject.data != undefined){

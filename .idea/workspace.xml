@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="34041dad-6a6b-4269-8ecd-e6f8db444a9c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/allBikes.js" afterPath="$PROJECT_DIR$/public/js/allBikes.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" afterPath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -16,8 +16,8 @@
       <file leaf-file-name="bikeHistoryLogs.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="122">
-              <caret line="123" column="49" lean-forward="true" selection-start-line="123" selection-start-column="20" selection-end-line="123" selection-end-column="49" />
+            <state relative-caret-position="-11">
+              <caret line="110" column="0" lean-forward="true" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -46,8 +46,8 @@
       <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="421">
-              <caret line="645" column="0" lean-forward="false" selection-start-line="645" selection-start-column="0" selection-end-line="645" selection-end-column="0" />
+            <state relative-caret-position="362">
+              <caret line="303" column="95" lean-forward="false" selection-start-line="303" selection-start-column="95" selection-end-line="303" selection-end-column="95" />
               <folding />
             </state>
           </provider>
@@ -61,7 +61,6 @@
       <find>redis</find>
       <find>serviceData.Content.messageBody</find>
       <find>structLogContent</find>
-      <find>messageType</find>
       <find>bikeState</find>
       <find>getOpenBatteryKey</find>
       <find>getIllegalMoveKey</find>
@@ -72,6 +71,7 @@
       <find>SourceType</find>
       <find>setSimpleValueToRedis</find>
       <find>getSimpleValueFromRedis</find>
+      <find>messageType</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -86,9 +86,9 @@
         <option value="vm:2149" />
         <option value="vm:2184" />
         <option value="vm:2198" />
-        <option value="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
         <option value="$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js" />
         <option value="$PROJECT_DIR$/public/js/allBikes.js" />
+        <option value="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
       </list>
     </option>
   </component>
@@ -327,12 +327,12 @@
       <workItem from="1505867937309" duration="22000" />
       <workItem from="1505867963446" duration="364000" />
       <workItem from="1505868363939" duration="60000" />
-      <workItem from="1505868427696" duration="531000" />
+      <workItem from="1505868427696" duration="2907000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29654000" />
+    <option name="totallyTimeSpent" value="32030000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="709" extended-state="0" />
@@ -341,6 +341,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25416997" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32899022" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -352,7 +353,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -742,14 +742,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="123" column="49" lean-forward="true" selection-start-line="123" selection-start-column="20" selection-end-line="123" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/js/allBikes.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1505">
@@ -758,10 +750,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-11">
+          <caret line="110" column="0" lean-forward="true" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="645" column="0" lean-forward="false" selection-start-line="645" selection-start-column="0" selection-end-line="645" selection-end-column="0" />
+        <state relative-caret-position="362">
+          <caret line="303" column="95" lean-forward="false" selection-start-line="303" selection-start-column="95" selection-end-line="303" selection-end-column="95" />
           <folding />
         </state>
       </provider>
