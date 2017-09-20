@@ -179,7 +179,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
         return;
     }
 
-    if(bikeID == undefined || bikeID.length != 8){
+    if(bikeID == undefined || bikeID.length >= 10 ){
         console.error('invalid bikeID : ', bikeID);
         return;
     }
@@ -662,7 +662,7 @@ newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
 
-alarmBike('mimacx0000000525', 10, 3, newEBikeLog);
+// alarmBike('mimacx0000000525', 10, 3, newEBikeLog);
 
 // redisUtil.getSimpleValueFromRedis('testKey', function (bikeLatestTime) {
 //     if(bikeLatestTime != undefined || bikeLatestTime != null){

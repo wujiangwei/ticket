@@ -70,11 +70,11 @@
     <div style="margin-left: 3%" class="ui horizontal list">
         <div class="item">
             <div class="ui icon input">
-                <input type="text" placeholder="输入8位车辆号" ng-model="inputBikeNo">
+                <input type="text" placeholder="输入正确车辆号" ng-model="inputBikeNo">
             </div>
         </div>
         <div class="item">
-            <button class="ui blue submit button" ng-disabled="inputBikeNo.length != 8" ng-click="getInputEBikeLog()">查看车辆日志</button>
+            <button class="ui blue submit button" ng-disabled="inputBikeNo.length >= 10" ng-click="getInputEBikeLog()">查看车辆日志</button>
         </div>
     </div>
 

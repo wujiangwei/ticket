@@ -56,8 +56,8 @@
             <div class="column">
                 <div class="ui left icon action input">
                     <i class="bicycle icon"></i>
-                    <input type="text" placeholder="输入8位车辆号" ng-model="ebikeNumber">
-                    <button class="ui blue submit button" id="getBikeLogBtn" ng-disabled="ebikeNumber.length != 8" ng-click="getEBikeLog(0)">查看车辆日志</button>
+                    <input type="text" placeholder="输入正确车辆号" ng-model="ebikeNumber">
+                    <button class="ui blue submit button" id="getBikeLogBtn" ng-disabled="ebikeNumber.length >= 10" ng-click="getEBikeLog(0)">查看车辆日志</button>
                 </div>
             </div>
         </div>
