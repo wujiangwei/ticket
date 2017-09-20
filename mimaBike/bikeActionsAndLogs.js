@@ -25,6 +25,9 @@ function getSatelliteKey(sn) {
 function getIllegalMoveKey(sn) {
     return sn + '_' + 'Alarm';
 }
+function getBikeStateKey(sn) {
+    return sn + '_' + 'BikeEState';
+}
 //Redis Key end
 
 router.post('/', function(req, res) {
@@ -288,6 +291,17 @@ function structLogContent(leanContentObject) {
         try{
             contentObject = JSON.parse(contentStr);
             if(contentObject != undefined){
+
+
+                if (contentObject.messageType == 1 || (contentObject.cmdID == 1 && contentObject.result == 0)){
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
+                }
+                else if(contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0)){
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
+                }
+                else {
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'Failure',0)
+                }
 
                 if(contentObject.messageBody == undefined && contentObject.data != undefined){
                     //控制车辆的命令响应，返回的是data，而不是messageBody（这个是车辆的报文）
@@ -622,10 +636,10 @@ function deleteOldDateLogs(maxTime, queryDateLess) {
 
 var newEBikeLog = new NewEBikeLogSql();
 
-newEBikeLog.set('SN', 'mimacx0000000002');
-newEBikeLog.set('LogType', 6);
-newEBikeLog.set('Content', '转发命令至OperService成功,cmdId:2,protocolMsgSeq:102,payload:{"sn":"NDMyMDAwMDAwMHhjYW1pbQ==","cmdID":2,"result":1,"data":{"latitudeDegree":22,"latitudeMinute":41.737080,"longitudeDegree":113,"longitudeMinute":15.907380,"totalMileage":522.542000,"battery":100,"gpstype":1,"satellite":8}} ');
-newEBikeLog.set('Remark', '命令响应');
+newEBikeLog.set('SN', 'mimacx0000000525');
+newEBikeLog.set('LogType', '3');
+newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"NTI1MDAwMDAwMHhjYW1pbQ==","messageType":2,"messageBody":{"latitudeDegree":31,"latitudeMinute":13.480080,"longitudeDegree":120,"longitudeMinute":25.231680,"totalMileage":200.344000,"battery":91,"satellite":6,"chargeCount":3,"charging":false,"errorCode":"000000000","ctrlState":1,"kickstand":0,"gpstype":1,"timeStamp":"2017-09-19 22:12:39","cellId":"460.00.20831.19043"}}');
+newEBikeLog.set('Remark', '上报数据');
 newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
