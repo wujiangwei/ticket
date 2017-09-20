@@ -19,6 +19,26 @@ exports.httpGetRequest = function (url, callback) {
     })
 }
 
+exports.httpGetBicycleState = function(bikeId, callback){
+    var aso100RequestUrl = encodeURI('http://120.27.221.91:8080/minihorse_zb/outerInterface/findBicycleStatus.do?bicycleNo=' + bikeId);
+
+    //创建请求
+    request(aso100RequestUrl,function(error, response, body){
+        if (!error && response.statusCode == 200) {
+            var bodyT =  JSON.parse(body);
+            if (bodyT.data.bicycleState == 1 || bodyT.data.bicycleState == 2){
+                callback(true);
+            }
+            else {
+                callback(false);
+            }
+
+        }else {
+            callback('网络错误');
+        }
+    });
+};
+
 exports.httpPostRequest = function (url, port, path, reqData, callback) {
     //BUGBUG 不知道为何参数无效
     return;
