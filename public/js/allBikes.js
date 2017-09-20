@@ -135,23 +135,23 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
     $scope.yunweiLogin = function () {
 
 
-        $http.post("http://localhost:8080/logs/ebikeHistoryLocationBySnAndTime",{
-            "SN" : 'mimacx0000000525',
-            'queryDate':'2017-09-19 22:32:40',
-            'pageCount':50
-        })
-            .then(function(result) {
-                console.log(result);
-            })
-            .catch(function (result) {
-                //error
-                console.log(result);
-            })
-            .finally(function () {
-                //
-            });
-
-        return;
+        // $http.post("http://localhost:8080/logs/ebikeHistoryLocationBySnAndTime",{
+        //     "SN" : 'mimacx0000000525',
+        //     'queryDate':'2017-09-19 22:32:40',
+        //     'pageCount':50
+        // })
+        //     .then(function(result) {
+        //         console.log(result);
+        //     })
+        //     .catch(function (result) {
+        //         //error
+        //         console.log(result);
+        //     })
+        //     .finally(function () {
+        //         //
+        //     });
+        //
+        // return;
 
         $scope.netRequestState = 'start';
         $http.post("https://api.mimacx.com/Peration/Login",{
