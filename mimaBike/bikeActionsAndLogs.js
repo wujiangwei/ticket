@@ -294,13 +294,16 @@ function structLogContent(leanContentObject) {
 
 
                 if (contentObject.messageType == 1 || (contentObject.cmdID == 1 && contentObject.result == 0)){
+                    console.log('开锁中' + contentObject.messageType + '_' + contentObject.cmdID)
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
                 }
                 else if(contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0) ||
                         contentObject.messageType == 5 || contentObject.messageType == 6){
+                    console.log('锁车中' + contentObject.messageType + '_' + contentObject.cmdID)
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
                 }
                 else {
+                    console.log('其他逻辑锁车' + contentObject.messageType + '_' + contentObject.cmdID)
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
                 }
 
