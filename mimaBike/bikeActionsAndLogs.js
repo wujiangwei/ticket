@@ -511,7 +511,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
                                     if (bicycleInfo != undefined){
 
-                                        if (bicycleInfo.data.bicycleState != 1 || bicycleInfo.data.bicycleState != 2){
+                                        if (bicycleInfo.data.bicycleState != 1){
                                             var areaData = getResponseBody.data;
                                             var ownerData = areaData.PartnerinfoModel;
                                             var operateDatas = areaData.PerationuserModel;

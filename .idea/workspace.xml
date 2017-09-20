@@ -16,8 +16,8 @@
       <file leaf-file-name="leanObjectRedis.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/redis/leanObjectRedis.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="151">
-              <caret line="48" column="8" lean-forward="false" selection-start-line="48" selection-start-column="8" selection-end-line="48" selection-end-column="8" />
+            <state relative-caret-position="52">
+              <caret line="36" column="29" lean-forward="false" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -46,8 +46,8 @@
       <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="467" column="45" lean-forward="false" selection-start-line="467" selection-start-column="45" selection-end-line="467" selection-end-column="45" />
+            <state relative-caret-position="191">
+              <caret line="513" column="78" lean-forward="false" selection-start-line="513" selection-start-column="78" selection-end-line="513" selection-end-column="78" />
               <folding />
             </state>
           </provider>
@@ -95,7 +95,6 @@
       <find>sendAlarmSms</find>
       <find>alarmBike</find>
       <find>bicycleNo</find>
-      <find>setSimpleValueToRedis</find>
       <find>illegalityMovePoliceMin</find>
       <find>testKey</find>
       <find>protected-mode</find>
@@ -107,6 +106,7 @@
       <find>mimacxLogCtrl</find>
       <find>ebikeNumber</find>
       <find>bikeID</find>
+      <find>setSimpleValueToRedis</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -366,12 +366,12 @@
       <workItem from="1505867963446" duration="364000" />
       <workItem from="1505868363939" duration="60000" />
       <workItem from="1505868427696" duration="5897000" />
-      <workItem from="1505905232751" duration="14117000" />
+      <workItem from="1505905232751" duration="15444000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="65656000" />
+    <option name="totallyTimeSpent" value="66983000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="709" extended-state="0" />
@@ -791,14 +791,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/leanObjectRedis.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="151">
-          <caret line="48" column="8" lean-forward="false" selection-start-line="48" selection-start-column="8" selection-end-line="48" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/alarmSms.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -847,10 +839,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/redis/leanObjectRedis.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="36" column="29" lean-forward="false" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="467" column="45" lean-forward="false" selection-start-line="467" selection-start-column="45" selection-end-line="467" selection-end-column="45" />
+        <state relative-caret-position="191">
+          <caret line="513" column="78" lean-forward="false" selection-start-line="513" selection-start-column="78" selection-end-line="513" selection-end-column="78" />
           <folding />
         </state>
       </provider>
