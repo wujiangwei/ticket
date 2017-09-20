@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="34041dad-6a6b-4269-8ecd-e6f8db444a9c" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" afterPath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/allBikes.html" afterPath="$PROJECT_DIR$/views/allBikes.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/mimacxLog.html" afterPath="$PROJECT_DIR$/views/mimacxLog.html" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -45,27 +43,17 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="allBikes.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/js/allBikes.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1276">
-              <caret line="128" column="18" lean-forward="true" selection-start-line="128" selection-start-column="18" selection-end-line="128" selection-end-column="18" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="98">
-              <caret line="181" column="49" lean-forward="false" selection-start-line="181" selection-start-column="49" selection-end-line="181" selection-end-column="49" />
+            <state relative-caret-position="72">
+              <caret line="467" column="45" lean-forward="false" selection-start-line="467" selection-start-column="45" selection-end-line="467" selection-end-column="45" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="allBikes.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="allBikes.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/allBikes.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="134">
@@ -135,9 +123,9 @@
         <option value="$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js" />
         <option value="$PROJECT_DIR$/public/js/allBikes.js" />
         <option value="$PROJECT_DIR$/public/js/mimacxLog.js" />
-        <option value="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
         <option value="$PROJECT_DIR$/views/mimacxLog.html" />
         <option value="$PROJECT_DIR$/views/allBikes.html" />
+        <option value="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
       </list>
     </option>
   </component>
@@ -378,12 +366,12 @@
       <workItem from="1505867963446" duration="364000" />
       <workItem from="1505868363939" duration="60000" />
       <workItem from="1505868427696" duration="5897000" />
-      <workItem from="1505905232751" duration="13864000" />
+      <workItem from="1505905232751" duration="14117000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="65403000" />
+    <option name="totallyTimeSpent" value="65656000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="709" extended-state="0" />
@@ -843,14 +831,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="98">
-          <caret line="181" column="49" lean-forward="false" selection-start-line="181" selection-start-column="49" selection-end-line="181" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/mimacxLog.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="209">
@@ -863,6 +843,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="134">
           <caret line="72" column="52" lean-forward="false" selection-start-line="72" selection-start-column="52" selection-end-line="72" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="467" column="45" lean-forward="false" selection-start-line="467" selection-start-column="45" selection-end-line="467" selection-end-column="45" />
           <folding />
         </state>
       </provider>

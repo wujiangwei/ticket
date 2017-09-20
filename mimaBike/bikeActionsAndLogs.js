@@ -465,7 +465,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
         //非法位移触发报警
         //配置参数
         var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
-        var illegalityMovePoliceCountInMin = 0//parseInt(process.env['illegalityMovePoliceCountInMin']);
+        var illegalityMovePoliceCountInMin = parseInt(process.env['illegalityMovePoliceCountInMin']);
 
         var alarmRedisKey = getIllegalMoveKey(sn);
         redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
