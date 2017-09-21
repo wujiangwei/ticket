@@ -16,7 +16,7 @@
       <file leaf-file-name="leanObjectRedis.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/redis/leanObjectRedis.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
+            <state relative-caret-position="52">
               <caret line="36" column="29" lean-forward="false" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="29" />
               <folding />
             </state>
@@ -46,8 +46,8 @@
       <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2147">
-              <caret line="569" column="72" lean-forward="false" selection-start-line="569" selection-start-column="72" selection-end-line="569" selection-end-column="72" />
+            <state relative-caret-position="181">
+              <caret line="532" column="44" lean-forward="true" selection-start-line="532" selection-start-column="44" selection-end-line="532" selection-end-column="44" />
               <folding />
             </state>
           </provider>
@@ -66,8 +66,8 @@
       <file leaf-file-name="httpUtil.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mimaBike/httpUtil.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="237">
-              <caret line="36" column="26" lean-forward="false" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
+            <state relative-caret-position="306">
+              <caret line="21" column="27" lean-forward="false" selection-start-line="21" selection-start-column="8" selection-end-line="21" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -77,8 +77,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>redisUtil.getSimpleValueFromRedis</find>
-      <find>switch</find>
       <find>LogType</find>
       <find>getSatelliteKey</find>
       <find>SourceType</find>
@@ -107,6 +105,8 @@
       <find>bikeID</find>
       <find>setSimpleValueToRedis</find>
       <find>illegalityMovePoliceCountInMin</find>
+      <find>httpGetBicycleState</find>
+      <find>PartnerCellPhone</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -241,7 +241,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Node.js.bikeActionsAndLogs.js">
+  <component name="RunManager" selected="Node.js.server.js">
     <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="server.js" working-dir="$PROJECT_DIR$">
       <EXTENSION ID="com.jetbrains.nodejs.remote.docker.NodeJSDockerRunConfigurationExtension">
         <option name="envVars">
@@ -341,8 +341,8 @@
     </list>
     <recent_temporary>
       <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="Node.js.bikeActionsAndLogs.js" />
-        <item index="1" class="java.lang.String" itemvalue="Node.js.server.js" />
+        <item index="0" class="java.lang.String" itemvalue="Node.js.server.js" />
+        <item index="1" class="java.lang.String" itemvalue="Node.js.bikeActionsAndLogs.js" />
         <item index="2" class="java.lang.String" itemvalue="Node.js.bikeHistoryLogs.js" />
       </list>
     </recent_temporary>
@@ -368,12 +368,12 @@
       <workItem from="1505868363939" duration="60000" />
       <workItem from="1505868427696" duration="5897000" />
       <workItem from="1505905232751" duration="17243000" />
-      <workItem from="1505925272856" duration="3188000" />
+      <workItem from="1505925272856" duration="5481000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71970000" />
+    <option name="totallyTimeSpent" value="74263000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="709" extended-state="0" />
@@ -382,6 +382,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25416997" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32899022" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -393,7 +394,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -412,7 +412,7 @@
           <option name="timeStamp" value="57" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="207" />
+      <option name="time" value="208" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="NodeJSConfigurationType">
@@ -806,14 +806,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/leanObjectRedis.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="36" column="29" lean-forward="false" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/alarmSms.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -824,16 +816,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/httpUtil.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="36" column="26" lean-forward="false" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
+        <state relative-caret-position="306">
+          <caret line="21" column="27" lean-forward="false" selection-start-line="21" selection-start-column="8" selection-end-line="21" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/redis/leanObjectRedis.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="36" column="29" lean-forward="false" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="29" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2147">
-          <caret line="569" column="72" lean-forward="false" selection-start-line="569" selection-start-column="72" selection-end-line="569" selection-end-column="72" />
+        <state relative-caret-position="181">
+          <caret line="532" column="44" lean-forward="true" selection-start-line="532" selection-start-column="44" selection-end-line="532" selection-end-column="44" />
           <folding />
         </state>
       </provider>
