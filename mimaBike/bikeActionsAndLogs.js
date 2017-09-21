@@ -59,6 +59,9 @@ router.post('/', function(req, res) {
             newEBikeLog.set('Remark', LogParam.Remark);
             newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
 
+            // 监控socket服务器正常否
+
+
             structLogContent(newEBikeLog);
 
             //update bike time in redis
@@ -171,6 +174,30 @@ router.post('/getBikeLatestLogTime',function (req, res) {
         }
     })
 })
+
+function monitorSocketServiceByLogState(Remark) {
+    var monitorTimeSpaceSecond = parseInt(process.env['monitorTimeSpaceMin']) * 60;
+
+    if(Remark == '鉴权'){
+        //5min内必然有1次鉴权  —— 鉴权异常记录
+        redisUtil.getSimpleValueFromRedis('monitorServiceByAuthTime', function (authTime) {
+            if(authTime == undefined){
+                authTime = 0;
+            }
+
+            redisUtil.setSimpleValueToRedis('monitorServiceByAuthTime', authTime + 1, monitorTimeSpaceSecond);
+        })
+    }
+
+    //全量日志记录
+    redisUtil.getSimpleValueFromRedis('monitorServiceByLogTime', function (logTime) {
+        if(logTime == undefined){
+            logTime = 0;
+        }
+
+        redisUtil.setSimpleValueToRedis('monitorServiceByLogTime', logTime + 1, monitorTimeSpaceSecond);
+    })
+}
 
 
 function setBikeMapWithRedis(bikeSN, bikeID) {
@@ -540,6 +567,13 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
                                 //递归
                                 function alarmToPhone() {
+
+                                    if(phoneList[sendPhoneIndex] == undefined){
+                                        console.error('phoneList length is ' + phoneList.length);
+                                        console.error('sendPhoneIndex is ' + sendPhoneIndex);
+                                        return;
+                                    }
+
                                     // return;
                                     var sendSmsData = {
                                         mobilePhoneNumber: phoneList[sendPhoneIndex],
