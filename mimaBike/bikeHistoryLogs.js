@@ -156,12 +156,14 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
-    // ebikeHistoryLogQuery.contains('Content', '"cmdID":6');
+    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
+    // ebikeHistoryLogQuery.contains('Content', 'longitudeMinute');
+
+    ebikeHistoryLogQuery.startsWith('bikeID', '000');
 
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
 
-    // var queryDate = new Date("2017-09-9 21:10:00");
+    var queryDate = new Date("2017-09-16 04:47:00");
     // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
 
     ebikeHistoryLogQuery.ascending('createdAt');
@@ -183,7 +185,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
         for(var t = 0; t < xMinBeforeLogs.length; t++){
 
-            console.log(t + ' ------- ' + xMinBeforeLogs[t].get('Content'));
+            console.log(t + ': ' + xMinBeforeLogs[t].createdAt + ' ------- ' + xMinBeforeLogs[t].get('Content'));
 
             var xMinBeforeLogObject = xMinBeforeLogs[t];
             var isExist = false;
@@ -216,7 +218,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
             }
 
             if(bikeCount > 1){
-                // console.log(bikeSns[i] + ' : ' + bikeCount + '次')
+                console.log(bikeSns[i] + ' : ' + bikeCount + '次')
             }
 
             if(manyTimeSy.length < bikeCount){
@@ -241,7 +243,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-09-18 11:44:00");
+var queryDate = new Date("2017-09-21 12:00:00");
 // testLink(queryDate, 1, 1000, []);
 
 module.exports = router
