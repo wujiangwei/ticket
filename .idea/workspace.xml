@@ -46,8 +46,8 @@
       <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="532" column="44" lean-forward="true" selection-start-line="532" selection-start-column="44" selection-end-line="532" selection-end-column="44" />
+            <state relative-caret-position="243">
+              <caret line="528" column="113" lean-forward="false" selection-start-line="528" selection-start-column="113" selection-end-line="528" selection-end-column="113" />
               <folding />
             </state>
           </provider>
@@ -368,12 +368,12 @@
       <workItem from="1505868363939" duration="60000" />
       <workItem from="1505868427696" duration="5897000" />
       <workItem from="1505905232751" duration="17243000" />
-      <workItem from="1505925272856" duration="5481000" />
+      <workItem from="1505925272856" duration="6884000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="74263000" />
+    <option name="totallyTimeSpent" value="75666000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="709" extended-state="0" />
@@ -411,8 +411,14 @@
           <line>261</line>
           <option name="timeStamp" value="57" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js</url>
+          <line>528</line>
+          <properties />
+          <option name="timeStamp" value="208" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="208" />
+      <option name="time" value="209" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="NodeJSConfigurationType">
@@ -832,8 +838,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="532" column="44" lean-forward="true" selection-start-line="532" selection-start-column="44" selection-end-line="532" selection-end-column="44" />
+        <state relative-caret-position="243">
+          <caret line="528" column="113" lean-forward="false" selection-start-line="528" selection-start-column="113" selection-end-line="528" selection-end-column="113" />
           <folding />
         </state>
       </provider>
