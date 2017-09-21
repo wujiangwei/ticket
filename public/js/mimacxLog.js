@@ -417,7 +417,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         if(serviceData.Content.messageBody.ctrlState != undefined) {
                             switch (serviceData.Content.messageBody.ctrlState) {
                                 case 1:
-                                    serviceData.Content.messageBody.ctrlStateDes = "车辆无电";
+                                    serviceData.Content.messageBody.ctrlStateDes = "车辆未通电";
                                     break;
                                 case 2:
                                     serviceData.Content.messageBody.ctrlStateDes = "工作";
