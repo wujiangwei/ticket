@@ -13,7 +13,7 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(compression())
 
 // 设置默认超时时间
-app.use(timeout('15s'));
+app.use(timeout('15s'))
 
 // 加载云引擎中间件
 app.use(AV.express())
@@ -26,21 +26,21 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // angularjs views
-var mimacxLog = require('./routes/mimacxLog');
-var mimacxEBike = require('./routes/mimacxEBike');
-var mimacxProducts = require('./routes/mimacxProduct');
+var mimacxLog = require('./routes/mimacxLog')
+var mimacxEBike = require('./routes/mimacxEBike')
+var mimacxProducts = require('./routes/mimacxProduct')
 
-app.set('views', path.join(__dirname, 'views'));
-app.engine('.html', ejs.__express);
-app.set('view engine', 'html');
+app.set('views', path.join(__dirname, 'views'))
+app.engine('.html', ejs.__express)
+app.set('view engine', 'html')
 
-app.use('/static', express.static('public'));
-app.use(express.static('bower_components'));
+app.use('/static', express.static('public'))
+app.use(express.static('bower_components'))
 
 // 觅马出行
-app.use('/mimacxLog', mimacxLog);
-app.use('/mimacxEBike', mimacxEBike);
-app.use('/mimacxProducts', mimacxProducts);
+app.use('/mimacxLog', mimacxLog)
+app.use('/mimacxEBike', mimacxEBike)
+app.use('/mimacxProducts', mimacxProducts)
 
 //end angularjs
 

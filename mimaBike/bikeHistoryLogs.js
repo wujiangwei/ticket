@@ -4,6 +4,8 @@
 const router = require('express').Router()
 var AV = require('leanengine');
 
+var redisUtil = require('../redis/leanObjectRedis');
+
 var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
 
 //暂时为车辆日志网站使用的接口
@@ -106,6 +108,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
             var battery = retEBikeLogObject.get('battery');
 
             var gpstype = retEBikeLogObject.get('gpstype');
+
             var gpsRemark = '';
             switch (parseInt(gpstype)){
                 case 1:
@@ -116,8 +119,17 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
                     break;
             }
 
-            res.json({'errorCode':0, 'bikeEState' : '','totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
-                'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
+            redisUtil.getSimpleValueFromRedis(req.body.SN + '_BikeEState', function (bikeLatest) {
+                if(bikeLatest != undefined || bikeLatest != null){
+                    console.log('哦' + bikeLatest)
+                    res.json({'errorCode':0, 'bikeEState' :bikeLatest,'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
+                        'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
+                }else {
+                    //exist in redis , update
+                    res.json({'errorCode':0, 'bikeEState' :undefined,'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
+                        'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
+                }
+            })
         }
 
         if(ebikeHistoryLogObjects.length == 0) {
