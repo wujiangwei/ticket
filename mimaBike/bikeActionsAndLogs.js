@@ -568,7 +568,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 //递归
                                 function alarmToPhone() {
 
-                                    if(phoneList[sendPhoneIndex] == undefined){
+                                    if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == ''){
                                         console.error('phoneList length is ' + phoneList.length);
                                         console.error('sendPhoneIndex is ' + sendPhoneIndex);
                                         return;
