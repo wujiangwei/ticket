@@ -385,7 +385,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
                         //argument 设置
                         if(serviceData.Content.argument != undefined){
-                            serviceData.cmdSource = serviceData.cmdSource + "Argument: " + JSON.stringify(serviceData.Content.argument);
+                            serviceData.cmdSource = serviceData.cmdSource + "Argument: "// + JSON.stringify(serviceData.Content.argument);
                         }else if(serviceData.Content.result != undefined){
                             serviceData.cmdSource = "响应结果Result: " + (serviceData.Content.result == 0 ? '成功' : ('失败' + serviceData.Content.result));
                             if(serviceData.Content.result != 0){

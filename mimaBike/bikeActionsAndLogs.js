@@ -554,7 +554,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 }
                                 //其次是负责人
                                 if(ownerData != null && (ownerData.PartnerCellPhone != null || ownerData.PartnerCellPhone != undefined) && phoneList.indexOf(ownerData.PartnerCellPhone) == -1){
-                                    console.log('看看值：' + ownerData.PartnerCellPhone)
+
                                     phoneList.push(ownerData.PartnerCellPhone);
                                 }
                                 //最后是不接受短信的人
