@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="34041dad-6a6b-4269-8ecd-e6f8db444a9c" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" afterPath="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/mimacxLog.js" afterPath="$PROJECT_DIR$/public/js/mimacxLog.js" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -91,20 +90,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mimacxLog.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="mimacxLog.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/js/mimacxLog.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5805">
-              <caret line="387" column="88" lean-forward="true" selection-start-line="387" selection-start-column="88" selection-end-line="387" selection-end-column="88" />
+            <state relative-caret-position="196">
+              <caret line="389" column="77" lean-forward="false" selection-start-line="389" selection-start-column="77" selection-end-line="389" selection-end-column="77" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="bikeActionsAndLogs.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="519">
+            <state relative-caret-position="497">
               <caret line="556" column="0" lean-forward="false" selection-start-line="556" selection-start-column="0" selection-end-line="556" selection-end-column="0" />
               <folding />
             </state>
@@ -171,9 +170,9 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/cloud.js" />
         <option value="$PROJECT_DIR$/mimaBike/bikeHistoryLogs.js" />
-        <option value="$PROJECT_DIR$/public/js/mimacxLog.js" />
         <option value="$PROJECT_DIR$/views/mimacxLog.html" />
         <option value="$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js" />
+        <option value="$PROJECT_DIR$/public/js/mimacxLog.js" />
       </list>
     </option>
   </component>
@@ -213,8 +212,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -242,6 +239,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -459,11 +458,12 @@
       <workItem from="1505925272856" duration="6884000" />
       <workItem from="1505998669633" duration="1176000" />
       <workItem from="1506166735570" duration="465000" />
+      <workItem from="1506174647928" duration="609000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="84420000" />
+    <option name="totallyTimeSpent" value="85029000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="709" extended-state="6" />
@@ -477,7 +477,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32899022" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27918783" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27918783" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -865,18 +865,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/js/mimacxLog.js">
+    <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5805">
-          <caret line="387" column="88" lean-forward="true" selection-start-line="387" selection-start-column="88" selection-end-line="387" selection-end-column="88" />
+        <state relative-caret-position="497">
+          <caret line="556" column="0" lean-forward="false" selection-start-line="556" selection-start-column="0" selection-end-line="556" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mimaBike/bikeActionsAndLogs.js">
+    <entry file="file://$PROJECT_DIR$/public/js/mimacxLog.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="519">
-          <caret line="556" column="0" lean-forward="false" selection-start-line="556" selection-start-column="0" selection-end-line="556" selection-end-column="0" />
+        <state relative-caret-position="196">
+          <caret line="389" column="77" lean-forward="false" selection-start-line="389" selection-start-column="77" selection-end-line="389" selection-end-column="77" />
           <folding />
         </state>
       </provider>
