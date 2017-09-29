@@ -83,10 +83,10 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
     if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
         var queryDateTime = new Date(req.body.queryDate).getTime();
         var queryDateTimeBigger = new Date(queryDateTime + 20*60*1000);
-        var queryDateTimeLower = new Date(queryDateTime - 2*60*1000);
+        var queryDateTimeLower = new Date(queryDateTime - 30*1000);
 
         ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
-        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTimeBigger);
+        // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTime);
     }
 
     ebikeHistoryLogQuery.ascending('createdAt');
