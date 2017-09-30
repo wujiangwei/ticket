@@ -381,7 +381,16 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         // serviceData.isActive = true;
                         if(serviceData.LogType == 5){
                             //服务器发送命令
-                            serviceData.firstMessageTag = '发送' + serviceData.firstMessageTag;
+                            if(serviceDataContent.indexOf("转发命令请求失败") != -1){
+                                //截取请求失败后的原因
+                                var cmdIndex = serviceDataContent.indexOf("转发命令请求失败");
+                                var cmdEndIndex = serviceDataContent.indexOf(")", msgSeqIndex);
+                                var cmdSendResult = Number(serviceDataContent.substring(cmdIndex + 4, cmdEndIndex));
+                                serviceData.firstMessageTag = contentObject.cmdID + cmdSendResult;
+                            }else {
+                                serviceData.firstMessageTag = '发送' + serviceData.firstMessageTag + '成功';
+                            }
+
                         }else {
                             serviceData.firstMessageTag = serviceData.firstMessageTag + '响应';
                         }
