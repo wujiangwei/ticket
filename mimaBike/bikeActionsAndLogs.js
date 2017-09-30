@@ -53,6 +53,9 @@ router.post('/', function(req, res) {
             //SN LogType Content Remark OperationTime SourceType
             var newEBikeLog = new NewEBikeLogSql();
 
+            var SNList = LogParam.SN.split('_');
+            LogParam.SN = SNList[0];
+
             newEBikeLog.set('SN', LogParam.SN);
             newEBikeLog.set('LogType', parseInt(LogParam.LogType));
             newEBikeLog.set('Content', LogParam.Content);
