@@ -121,9 +121,10 @@
             ng-class="{true:'positive',false:'negative'}[messageDateObject.isActive]">
             <td>{{$index + 1}}</td>
             <td>
-                <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
                 {{messageDateObject.Content.messageType != undefined ? messageDateObject.Content.messageType :
-                (messageDateObject.Content.cmdID != undefined ? messageDateObject.Content.cmdID : messageDateObject.messageType)}}
+                (messageDateObject.cmdDes != undefined ? messageDateObject.cmdDes : messageDateObject.Content.cmdID)}}
+                <br>
+                <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
             </td>
             <td>{{messageDateObject.OperationTime}}</td>
             <td>{{messageDateObject.SourceType == 1 ? "蓝牙" : "2G"}}</td>

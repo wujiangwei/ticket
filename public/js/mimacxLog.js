@@ -110,10 +110,10 @@ function translateBTMessageTypeToDes(messageType) {
     switch(messageType)
     {
         case 1:
-            return "蓝牙开锁后上报数据";
+            return "蓝牙开锁周期性报文";
             break;
         case 2:
-            return "蓝牙上锁后上报数据";
+            return "蓝牙上锁周期性报文";
             break;
 
         default:
@@ -286,6 +286,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                     }
 
                     if(serviceData.LogType == 1){
+                        serviceData.cmdDes = "车辆断线重连";
                         if(serviceData.Content.indexOf("成功") != -1){
                             serviceData.messageType = "登陆鉴权成功";
                             serviceData.isActive = false;
@@ -377,6 +378,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
                     //commend ID
                     if(contentObject.cmdID != undefined){
+                        serviceData.cmdDes = translatecmdIDToDes(contentObject.cmdID);
                         serviceData.firstMessageTag = translatecmdIDToDes(contentObject.cmdID);
                         // serviceData.isActive = true;
                         if(serviceData.LogType == 5){
@@ -384,16 +386,39 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                             if(serviceDataContent.indexOf("转发命令请求失败") != -1){
                                 //截取请求失败后的原因
                                 var cmdIndex = serviceDataContent.indexOf("转发命令请求失败");
-                                var cmdEndIndex = serviceDataContent.indexOf(")", cmdIndex);
+                                var cmdEndIndex = serviceDataContent.indexOf(",", cmdIndex);
                                 var cmdSendResult = serviceDataContent.substring(cmdIndex + 4, cmdEndIndex);
-                                serviceData.firstMessageTag = contentObject.cmdID + cmdSendResult;
+                                serviceData.firstMessageTag = cmdSendResult;
                                 serviceData.isActive = false;
                             }else {
-                                serviceData.firstMessageTag = '发送' + serviceData.firstMessageTag + '成功';
+                                serviceData.firstMessageTag = '发送命令成功';
                             }
 
                         }else {
-                            serviceData.firstMessageTag = serviceData.firstMessageTag + '响应';
+                            if(serviceData.Content.result != undefined){
+                                // serviceData.Content.result = 1;
+                                var resultStr = undefined;
+                                switch (serviceData.Content.result){
+                                    case 1:
+                                        resultStr = '车辆回复失败';
+                                        break;
+                                    case 2:
+                                        resultStr = '命令发送失败';
+                                        break;
+                                    default:
+                                        resultStr = '未知失败' + serviceData.Content.result
+                                        break;
+                                }
+                                serviceData.cmdSource = resultStr;
+                                if(serviceData.Content.result != 0){
+                                    serviceData.isActive = false;
+                                    serviceData.firstMessageTag = '响应失败';
+                                }else {
+                                    serviceData.firstMessageTag = '响应成功';
+                                }
+                            }else {
+                                // serviceData.firstMessageTag = 'resl';
+                            }
                         }
 
                         //argument 设置
@@ -406,11 +431,6 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                                 serviceData.cmdSource = serviceData.cmdSource + "Argument: " + JSON.stringify(serviceData.Content.argument);
                             }
 
-                        }else if(serviceData.Content.result != undefined){
-                            serviceData.cmdSource = "响应结果Result: " + (serviceData.Content.result == 0 ? '成功' : ('失败' + serviceData.Content.result));
-                            if(serviceData.Content.result != 0){
-                                serviceData.isActive = false;
-                            }
                         }
                     }
 
