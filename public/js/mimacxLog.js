@@ -305,7 +305,9 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                     var serviceDataContent = serviceData.Content;
                     if(serviceDataContent.indexOf("MsgSeq:") != -1){
                         //截取content中的MsgSeq后的数字
-                        var MsgSeq = Number(serviceDataContent.substring(serviceDataContent.indexOf("MsgSeq:") + 7, serviceDataContent.indexOf("MsgSeq:") + 10));
+                        var msgSeqIndex = serviceDataContent.indexOf("MsgSeq:");
+                        var msgSeqEndIndex = serviceDataContent.indexOf(",", msgSeqIndex);
+                        var MsgSeq = Number(serviceDataContent.substring(msgSeqIndex + 7, msgSeqEndIndex));
                         MsgSeq = MsgSeq%110;
                         switch (MsgSeq){
                             case 101:
