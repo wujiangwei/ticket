@@ -384,7 +384,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                             if(serviceDataContent.indexOf("转发命令请求失败") != -1){
                                 //截取请求失败后的原因
                                 var cmdIndex = serviceDataContent.indexOf("转发命令请求失败");
-                                var cmdEndIndex = serviceDataContent.indexOf(")", msgSeqIndex);
+                                var cmdEndIndex = serviceDataContent.indexOf(")", cmdIndex);
                                 var cmdSendResult = Number(serviceDataContent.substring(cmdIndex + 4, cmdEndIndex));
                                 serviceData.firstMessageTag = contentObject.cmdID + cmdSendResult;
                             }else {
