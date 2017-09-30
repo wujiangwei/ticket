@@ -171,12 +171,12 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
     // ebikeHistoryLogQuery.contains('Content', 'longitudeMinute');
 
-    ebikeHistoryLogQuery.startsWith('bikeID', '000');
+    // ebikeHistoryLogQuery.startsWith('bikeID', '000');
 
     ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
 
     var queryDate = new Date("2017-09-23 11:40:30");
-    ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
+    // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
 
     ebikeHistoryLogQuery.ascending('createdAt');
     ebikeHistoryLogQuery.limit(queryCountEatchBatch);
@@ -255,7 +255,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-09-23 11:38:30");
-testLink(queryDate, 1, 1000, []);
+var queryDate = new Date("2017-09-29 23:40:56");
+// testLink(queryDate, 1, 1000, []);
 
 module.exports = router
