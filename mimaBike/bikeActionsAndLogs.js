@@ -57,6 +57,10 @@ router.post('/', function(req, res) {
             LogParam.SN = SNList[0];
 
             newEBikeLog.set('SN', LogParam.SN);
+            if(SNList.length > 1){
+                newEBikeLog.set('SNIndex', SNList[1]);
+            }
+
             newEBikeLog.set('LogType', parseInt(LogParam.LogType));
             newEBikeLog.set('Content', LogParam.Content);
             newEBikeLog.set('Remark', LogParam.Remark);
