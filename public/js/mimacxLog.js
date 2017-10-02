@@ -138,6 +138,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
     var todayDate = new Date();
     $scope.justBikeOperationLog = false;
+    $scope.justBikeAlarm = false;
     // $scope.selectedBikeLogDate = todayDate.toLocaleDateString();
 
     $(".ebike-log-flatpickr").flatpickr({
@@ -265,7 +266,8 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             "pageIndex" : $scope.currentPage,
             "pageCount":$scope.pageDateCount,
             "selectedTime":$scope.selectedBikeLogDate,
-            "justBikeOperationLog" : $scope.justBikeOperationLog
+            "justBikeOperationLog" : $scope.justBikeOperationLog,
+            "justBikeAlarm": $scope.justBikeAlarm
         })
             .then(function(result) {
                 $scope.netRequestState = 'success';

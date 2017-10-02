@@ -28,6 +28,10 @@ router.post('/ebileLogList',function (req, res) {
         ebikeHistoryLogQuery.notEqualTo('Remark', '上报数据');
     }
 
+    if(req.body.justBikeAlarm != undefined && req.body.justBikeAlarm == true){
+        ebikeHistoryLogQuery.exists('bikeNState');
+    }
+
     if(req.body.selectedTime != undefined && req.body.selectedTime != null){
         //下一页，必须用时间才是准确的下一页
         var selectedDate = new Date(req.body.selectedTime);
