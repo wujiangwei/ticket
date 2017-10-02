@@ -65,6 +65,9 @@ router.post('/', function(req, res) {
             newEBikeLog.set('Content', LogParam.Content);
             newEBikeLog.set('Remark', LogParam.Remark);
             newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
+            if(LogParam.BicycleNo != undefined && LogParam.BicycleNo.length > 5){
+                newEBikeLog.set('bikeID', LogParam.BicycleNo);
+            }
 
             // 监控socket服务器正常否
 

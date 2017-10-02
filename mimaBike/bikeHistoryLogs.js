@@ -19,9 +19,14 @@ router.post('/ebileLogList',function (req, res) {
         req.body.pageCount = 60;
     }
 
+
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
     ebikeHistoryLogQuery.limit(req.body.pageCount);
+
+    if(req.body.justBikeOperationLog != undefined && req.body.justBikeOperationLog == true){
+        ebikeHistoryLogQuery.notEqualTo('Remark', '上报数据');
+    }
 
     if(req.body.selectedTime != undefined && req.body.selectedTime != null){
         //下一页，必须用时间才是准确的下一页

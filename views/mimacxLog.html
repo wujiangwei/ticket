@@ -60,6 +60,12 @@
                     <button class="ui blue submit button" id="getBikeLogBtn" ng-disabled="ebikeNumber.length >= 10" ng-click="getEBikeLog(0)">查看车辆日志</button>
                 </div>
             </div>
+            <div class="column">
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" name="public" ng-model="justBikeOperationLog">
+                    <label>只看车辆操作日志</label>
+                </div>
+            </div>
         </div>
 
         <div class="ui compact menu">
@@ -121,15 +127,28 @@
             ng-class="{true:'positive',false:'negative'}[messageDateObject.isActive]">
             <td>{{$index + 1}}</td>
             <td>
-                {{messageDateObject.Content.messageType != undefined ? messageDateObject.Content.messageType :
-                (messageDateObject.cmdDes != undefined ? messageDateObject.cmdDes : messageDateObject.Content.cmdID)}}
-                <br>
-                <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
+                <!--还车-->
+                <div ng-if="messageDateObject.LogType == 100">
+                    <!--查看其他报文-->
+                    {{messageDateObject.userPhone}}
+                    <br>
+                    <div ng-class="{true:'ui green ribbon label',false:'ui red ribbon label'}[messageDateObject.isSucceed == true]">{{messageDateObject.backResult}}</div>
+                </div>
+                <!--车辆报文-->
+                <div ng-if="messageDateObject.LogType != 100">
+                    {{messageDateObject.Content.messageType != undefined ? messageDateObject.Content.messageType :
+                    (messageDateObject.cmdDes != undefined ? messageDateObject.cmdDes : messageDateObject.Content.cmdID)}}
+                    <br>
+                    <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
+                </div>
             </td>
             <td>{{messageDateObject.OperationTime}}</td>
             <td>{{messageDateObject.SourceType == 1 ? "蓝牙" : "2G"}}</td>
             <td>
-                <div ng-if="messageDateObject.LogType != 1 && messageDateObject.LogType != 5 && messageDateObject.Content.messageBody != undefined && (messageDateObject.Content.result == undefined  || messageDateObject.Content.result == 0)">
+                <div ng-if="messageDateObject.LogType == 100">
+                    {{messageDateObject.backResultDes}}
+                </div>
+                <div ng-if="messageDateObject.LogType != 100 && messageDateObject.LogType != 1 && messageDateObject.LogType != 5 && messageDateObject.Content.messageBody != undefined && (messageDateObject.Content.result == undefined  || messageDateObject.Content.result == 0)">
 
                     <!--地图定位-->
                     <div class="ui label" ng-if="messageDateObject.Content.messageBody.gpsPointStr != undefined">
@@ -171,6 +190,7 @@
                            || (messageDateObject.LogType == 6 && messageDateObject.Content.messageBody != undefined && messageDateObject.Content.result != 0)" class="ui label">
                     {{messageDateObject.cmdSource}}
                 </div>
+
 
             </td>
             <td>{{messageDateObject.Content.messageBody.satellite}}</td>

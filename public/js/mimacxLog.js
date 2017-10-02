@@ -137,6 +137,7 @@ function toCoordinates(contentObject)
 app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
     var todayDate = new Date();
+    $scope.justBikeOperationLog = false;
     // $scope.selectedBikeLogDate = todayDate.toLocaleDateString();
 
     $(".ebike-log-flatpickr").flatpickr({
@@ -263,7 +264,8 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             "SN" : $scope.EBikeInfo.SN,
             "pageIndex" : $scope.currentPage,
             "pageCount":$scope.pageDateCount,
-            "selectedTime":$scope.selectedBikeLogDate
+            "selectedTime":$scope.selectedBikeLogDate,
+            "justBikeOperationLog" : $scope.justBikeOperationLog
         })
             .then(function(result) {
                 $scope.netRequestState = 'success';
@@ -285,7 +287,30 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         $scope.todayTotalMessageCount = Math.floor(serviceData.ID/$scope.pageDateCount) + 1;
                     }
 
-                    if(serviceData.LogType == 1){
+                    if(serviceData.LogType == 100){
+                        //还车
+                        //str to object
+                        var serviceDataContent = serviceData.Content;
+                        if(serviceDataContent.indexOf("失败") != -1){
+                            serviceData.isSucceed = true;
+                        }else {
+                            serviceData.isSucceed = false;
+                        }
+
+                        //截取content中的MsgSeq后的数字
+                        var Index1 = serviceDataContent.indexOf("]");
+                        var Index2 = serviceDataContent.indexOf("(");
+                        var userPhone = serviceDataContent.substring(1, Index1);
+                        var backResult = serviceDataContent.substring(Index1 + 1, Index2);
+                        var backResultDes = serviceDataContent.substring(Index2 + 1, serviceDataContent.length - 1);
+
+                        //前端显示
+                        serviceDataContent.userPhone = userPhone;
+                        serviceDataContent.backResult = backResult;
+                        serviceDataContent.backResultDes = backResultDes;
+                        continue;
+                    }
+                    else if(serviceData.LogType == 1){
                         serviceData.cmdDes = "车辆断线重连";
                         if(serviceData.Content.indexOf("成功") != -1){
                             serviceData.messageType = "登陆鉴权成功";
