@@ -46,7 +46,7 @@
             I'm a singer x-man
         </div>
 
-        <div class="five column centered row">
+        <div class="four column centered row">
             <div class="column">
                 <div class="ui left icon input">
                     <input class=ebike-log-flatpickr type="text" placeholder="选择日期(天)">
@@ -57,19 +57,7 @@
                 <div class="ui left icon action input">
                     <i class="bicycle icon"></i>
                     <input type="text" placeholder="输入正确车辆号" ng-model="ebikeNumber">
-                    <button class="ui blue submit button" id="getBikeLogBtn" ng-disabled="ebikeNumber.length >= 10" ng-click="getEBikeLog(0)">查看车辆日志</button>
-                </div>
-            </div>
-            <div class="column">
-                <div class="ui toggle checkbox">
-                    <input type="checkbox" name="public" ng-model="justBikeOperationLog">
-                    <label>只看车辆操作日志</label>
-                </div>
-            </div>
-            <div class="column">
-                <div class="ui toggle checkbox">
-                    <input type="checkbox" name="public" ng-model="justBikeAlarm">
-                    <label>只看车辆报警日志</label>
+                    <button class="ui blue submit button" id="getBikeLogBtn" ng-disabled="ebikeNumber.length < 8" ng-click="getEBikeLog(0)">查看车辆日志</button>
                 </div>
             </div>
         </div>
@@ -87,6 +75,18 @@
             <a class="item">
                 <i class="icon green spy"></i> {{EBikeInfo.PartnerAreaName}}
             </a>
+            <div class="item">
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" name="public" ng-model="justBikeOperationLog">
+                    <label>只看车辆操作日志</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" name="public" ng-model="justBikeAlarm">
+                    <label>只看车辆报警日志</label>
+                </div>
+            </div>
             <!--<a class="item" ng-show="EBikeInfo.PartnerAreaGuid != undefined">-->
                 <!--<div class="ui pink button" ng-click="seeThisAreaEBikes()">-->
                     <!--查看该区域所有车辆-->
