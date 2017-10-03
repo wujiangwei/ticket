@@ -132,14 +132,14 @@
             <td>{{$index + 1}}</td>
             <td>
                 <!--还车-->
-                <div ng-if="messageDateObject.LogType == 100">
+                <div ng-if="messageDateObject.LogType == 100 || messageDateObject.LogType == 99">
                     <!--查看其他报文-->
                     {{messageDateObject.userPhone}}
                     <br>
-                    <div ng-class="{true:'ui green ribbon label',false:'ui red ribbon label'}[messageDateObject.isSucceed == true]">{{messageDateObject.backResult}}</div>
+                    <div ng-class="{true:'ui green ribbon label',false:'ui red ribbon label'}[messageDateObject.isSucceed == true]">{{messageDateObject.bikeOperationResult}}</div>
                 </div>
                 <!--车辆报文-->
-                <div ng-if="messageDateObject.LogType != 100">
+                <div ng-if="messageDateObject.LogType != 100 && messageDateObject.LogType != 99">
                     {{messageDateObject.Content.messageType != undefined ? messageDateObject.Content.messageType :
                     (messageDateObject.cmdDes != undefined ? messageDateObject.cmdDes : messageDateObject.Content.cmdID)}}
                     <br>
@@ -149,10 +149,10 @@
             <td>{{messageDateObject.OperationTime}}</td>
             <td>{{messageDateObject.SourceType == 1 ? "蓝牙" : "2G"}}</td>
             <td>
-                <div ng-if="messageDateObject.LogType == 100">
-                    {{messageDateObject.backResultDes}}
+                <div ng-if="messageDateObject.LogType == 100 || messageDateObject.LogType == 99">
+                    {{messageDateObject.bikeOperationResultDes}}
                 </div>
-                <div ng-if="messageDateObject.LogType != 100 && messageDateObject.LogType != 1 && messageDateObject.LogType != 5 && messageDateObject.Content.messageBody != undefined && (messageDateObject.Content.result == undefined  || messageDateObject.Content.result == 0)">
+                <div ng-if="messageDateObject.LogType != 100 && messageDateObject.LogType != 99 && messageDateObject.LogType != 1 && messageDateObject.LogType != 5 && messageDateObject.Content.messageBody != undefined && (messageDateObject.Content.result == undefined  || messageDateObject.Content.result == 0)">
 
                     <!--地图定位-->
                     <div class="ui label" ng-if="messageDateObject.Content.messageBody.gpsPointStr != undefined">

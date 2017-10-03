@@ -289,8 +289,14 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         $scope.todayTotalMessageCount = Math.floor(serviceData.ID/$scope.pageDateCount) + 1;
                     }
 
-                    if(serviceData.LogType == 100){
-                        //还车
+                    if(serviceData.LogType == 100 || messageDateObject.LogType == 99){
+                        //借还车
+                        // [15656672077]用户还车BT费用计算接口成功,车辆号：077100157
+                        // [15656672077]用户还车成功(扣款成功),车辆号：077100157
+                        //
+                        // [18356610542]用户借车成功,车辆号：077100183
+                        // [15888642133]用户借车失败,车辆号：077100124,此车处于下线状态
+
                         //str to object
                         var serviceDataContent = serviceData.Content;
                         if(serviceDataContent.indexOf("失败") != -1){
@@ -302,14 +308,26 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         //截取content中的MsgSeq后的数字
                         var Index1 = serviceDataContent.indexOf("]");
                         var Index2 = serviceDataContent.indexOf("(");
+                        var Index2Ex = serviceDataContent.indexOf(")");
+                        var IndexEx = serviceDataContent.indexOf(",");
                         var userPhone = serviceDataContent.substring(1, Index1);
-                        var backResult = serviceDataContent.substring(Index1 + 1, Index2);
-                        var backResultDes = serviceDataContent.substring(Index2 + 1, serviceDataContent.length - 1);
+
+                        var bikeOperationResult;
+                        var bikeOperationResultDes;
+                        if(Index2 != -1){
+                            // 有()
+                            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
+                            bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex);
+                        }
+                        else if(IndexEx != -1){
+                            //无()
+                            bikeOperationResult = serviceDataContent.substring(Index1 + 1, IndexEx);
+                        }
 
                         //前端显示
                         serviceDataContent.userPhone = userPhone;
-                        serviceDataContent.backResult = backResult;
-                        serviceDataContent.backResultDes = backResultDes;
+                        serviceDataContent.bikeOperationResult = bikeOperationResult;
+                        serviceDataContent.bikeOperationResultDes = bikeOperationResultDes;
                         continue;
                     }
                     else if(serviceData.LogType == 1){
