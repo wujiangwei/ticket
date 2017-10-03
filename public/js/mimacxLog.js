@@ -22,7 +22,7 @@ function dateStringToNetParam(dateStr) {
 
 
 function translatecmdIDToDes(cmdID) {
-    switch(cmdID)
+    switch(parseInt(cmdID))
     {
         case 1:
             return "开锁命令";
@@ -72,7 +72,7 @@ function translatecmdIDToDes(cmdID) {
 }
 
 function translateMessageTypeToDes(messageType) {
-    switch(messageType)
+    switch(parseInt(messageType))
     {
         case 1:
             return "开锁周期报文";
@@ -107,7 +107,7 @@ function translateMessageTypeToDes(messageType) {
 }
 
 function translateBTMessageTypeToDes(messageType) {
-    switch(messageType)
+    switch(parseInt(messageType))
     {
         case 1:
             return "蓝牙开锁周期性报文";
