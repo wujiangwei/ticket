@@ -444,6 +444,9 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                                 // serviceData.Content.result = 1;
                                 var resultStr = undefined;
                                 switch (serviceData.Content.result){
+                                    case 0:
+                                        resultStr = '车辆回复成功';
+                                        break;
                                     case 1:
                                         resultStr = '车辆回复失败';
                                         break;
