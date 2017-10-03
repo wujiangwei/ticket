@@ -175,13 +175,11 @@ router.post('/getBikeLatestLogTime',function (req, res) {
     }
 
     var bikeSNKey = req.body.SN + '_Time';
-    redisUtil.getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
-        if(bikeLatestTime != undefined || bikeLatestTime != null){
-            res.json({'bikeLatestTime' : bikeLatestTime});
-        }else {
-            //exist in redis , update time
-            res.json({'bikeLatestTime' : '无效车'});
-        }
+
+    redisUtil.getSimpleValueFromRedis(req.body.SN + '_BikeEState', function (bikeLatest) {
+        redisUtil.getSimpleValueFromRedis(bikeSNKey, function (bikeLatestTime) {
+            res.json({'bikeLatestTime' : bikeLatestTime, 'bikeEState' :bikeLatest});
+        })
     })
 })
 
