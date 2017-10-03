@@ -289,7 +289,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         $scope.todayTotalMessageCount = Math.floor(serviceData.ID/$scope.pageDateCount) + 1;
                     }
 
-                    if(serviceData.LogType == 100 || messageDateObject.LogType == 99){
+                    if(serviceData.LogType == 100 || serviceData.LogType == 99){
                         //借还车
                         // [15656672077]用户还车BT费用计算接口成功,车辆号：077100157
                         // [15656672077]用户还车成功(扣款成功),车辆号：077100157
