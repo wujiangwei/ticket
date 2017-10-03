@@ -34,8 +34,12 @@ function getBikeStateKey(sn) {
 function sleep(milliSeconds) {
     var debugSwitch = parseInt(process.env['debugSwitch']);
     if(debugSwitch > 0){
+        console.log('---------- began debug');
         var startTime = new Date().getTime();
-        while (new Date().getTime() < startTime + milliSeconds);
+        while (new Date().getTime() < startTime + milliSeconds){
+
+        }
+        console.log('---------- end debug');;
     }
 };
 //end debug code
