@@ -30,6 +30,16 @@ function getBikeStateKey(sn) {
 }
 //Redis Key end
 
+//debug code
+function sleep(milliSeconds) {
+    var debugSwitch = parseInt(process.env['debugSwitch']);
+    if(debugSwitch > 0){
+        var startTime = new Date().getTime();
+        while (new Date().getTime() < startTime + milliSeconds);
+    }
+};
+//end debug code
+
 router.post('/', function(req, res) {
 
     var LogParam = req.body;
@@ -154,11 +164,13 @@ router.post('/', function(req, res) {
             MimaAction.save().then(function (savedMimaActionObject) {
                 lock++;
                 if(lock == unlock){
+                    sleep(60000);
                     return res.json({'errorCode':0});
                 }
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
+                    sleep(60000);
                     console.log(req.body.SN + ' save log failed:' + error);
                     return res.json({'errorCode': -1, 'errorMsg': error.message});
                 }
