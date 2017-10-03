@@ -94,11 +94,13 @@ router.post('/', function(req, res) {
             newEBikeLog.save().then(function (savedNewEBikeLog) {
                 lock++;
                 if(lock == unlock){
+                    sleep(60000);
                     return res.json({'errorCode':0});
                 }
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
+                    sleep(60000);
                     console.log(req.body.SN + ' save log failed:' + error);
                     return res.json({'errorCode': -1, 'errorMsg': error.message});
                 }
