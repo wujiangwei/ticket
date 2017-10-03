@@ -443,7 +443,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                             if(serviceData.Content.result != undefined){
                                 // serviceData.Content.result = 1;
                                 var resultStr = undefined;
-                                switch (serviceData.Content.result){
+                                switch (parseInt(serviceData.Content.result)){
                                     case 0:
                                         resultStr = '车辆回复成功';
                                         break;
