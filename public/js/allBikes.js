@@ -269,7 +269,6 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
             "SN" : eListBikeInfo.ControllerNo
         })
             .then(function(result) {
-                electric
                 eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
                 eListBikeInfo.bikeEState = result.data.bikeEState;
                 if(result.data.bikeLatestTime == undefined){
