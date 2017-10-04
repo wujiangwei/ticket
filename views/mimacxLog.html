@@ -54,10 +54,17 @@
                 </div>
             </div>
             <div class="column">
+                <div class="ui left icon input">
+                    <i class="mobile icon"></i>
+                    <input type="text" placeholder="用户手机号(试用装)" ng-model="ebikeUserPhone">
+                    <!--<button class="ui blue submit button" ng-disabled="ebikeUserPhone.length != 11" ng-click="getEBikeLog(0)">查看车辆日志</button>-->
+                </div>
+            </div>
+            <div class="column">
                 <div class="ui left icon action input">
                     <i class="bicycle icon"></i>
                     <input type="text" placeholder="输入正确车辆号" ng-model="ebikeNumber">
-                    <button class="ui blue submit button" id="getBikeLogBtn" ng-disabled="ebikeNumber.length < 8" ng-click="getEBikeLog(0)">查看车辆日志</button>
+                    <button class="ui blue submit button" ng-disabled="ebikeNumber.length < 8 && ebikeUserPhone.length != 11 " ng-click="getEBikeLog(0)">查看车辆日志</button>
                 </div>
             </div>
         </div>
@@ -70,14 +77,20 @@
                 <i class="icon blue bluetooth"></i> {{EBikeInfo.BluetoothNo}}
             </a>
             <a class="item">
-                <i class="icon red heartbeat"></i> {{"最近心跳时间 " + lastestContactTime}}
+                <i class="icon red heartbeat"></i> {{"最近心跳时间 " + EBikeInfo.lastestContactTime}}
             </a>
             <a class="item">
                 <i class="icon green spy"></i> {{EBikeInfo.PartnerAreaName}}
             </a>
             <div class="item">
                 <div class="ui toggle checkbox">
-                    <input type="checkbox" name="public" ng-model="justBikeOperationLog">
+                    <input type="checkbox" name="public" ng-model="justBikeGetReturn" ng-change="justBikeGetReturnClick()">
+                    <label>只看借车还车日志</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" name="public" ng-model="justBikeOperationLog" ng-change="justBikeOperationLogClick()">
                     <label>只看车辆操作日志</label>
                 </div>
             </div>

@@ -139,6 +139,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     var todayDate = new Date();
     $scope.justBikeOperationLog = false;
     $scope.justBikeAlarm = false;
+    $scope.justBikeGetReturn = false;
     // $scope.selectedBikeLogDate = todayDate.toLocaleDateString();
 
     $(".ebike-log-flatpickr").flatpickr({
@@ -153,7 +154,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
     $scope.bikeLogDateList = [];
     $scope.bikeDisplayLogDateList = [];
-    $scope.pageDateCount = 60;
+    $scope.pageDateCount = 100;
 
     $scope.currentPage = 0;
 
@@ -205,6 +206,8 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             }
 
             if($scope.EBikeInfo!= undefined && $scope.EBikeInfo.BicycleNo == $scope.ebikeNumber && $scope.EBikeInfo.SN != undefined){
+                getEBikeLogsFromMima();
+            }else if($scope.ebikeUserPhone.length == 11){
                 getEBikeLogsFromMima();
             }else {
                 $scope.netRequestState = 'start';
@@ -259,19 +262,36 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
         //TODO
     }
 
+    $scope.justBikeGetReturnClick = function () {
+        if($scope.justBikeGetReturn == true){
+            $scope.justBikeOperationLog = !$scope.justBikeGetReturn;
+        }
+    }
+    
+    $scope.justBikeOperationLogClick = function () {
+        if($scope.justBikeOperationLog == true){
+            $scope.justBikeGetReturn = !$scope.justBikeOperationLog;
+        }
+    }
+
     function getEBikeLogsFromMima(action) {
         //获取该辆车的日志信息
         $http.post("/logs/ebileLogList",{
-            "SN" : $scope.EBikeInfo.SN,
+            "SN" :($scope.EBikeInfo != undefined ? $scope.EBikeInfo.SN : undefined),
+            "userPhone" : $scope.ebikeUserPhone,
             "pageIndex" : $scope.currentPage,
             "pageCount":$scope.pageDateCount,
             "selectedTime":$scope.selectedBikeLogDate,
             "justBikeOperationLog" : $scope.justBikeOperationLog,
-            "justBikeAlarm": $scope.justBikeAlarm
+            "justBikeAlarm": $scope.justBikeAlarm,
+            "justBikeGetReturn": $scope.justBikeGetReturn
         })
             .then(function(result) {
                 $scope.netRequestState = 'success';
 
+                if(result.data.errorCode != 0){
+                    $scope.currentErrorMsg = result.data.errorMsg;
+                }
                 if(action == 0) {
                     //首次或者刷新
                     $scope.bikeLogDateList = [];

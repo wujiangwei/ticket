@@ -11,25 +11,33 @@ var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
 //暂时为车辆日志网站使用的接口
 router.post('/ebileLogList',function (req, res) {
 
-    if(req.body.SN == undefined || req.body.SN.length == 0){
-        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
+    if((req.body.SN == undefined || req.body.SN.length < 10) && (req.body.userPhone == undefined || req.body.userPhone.length != 11)){
+        return res.json({'errorCode':1, 'errorMsg':'SN is empty and Phone is empty/error'});
     }
 
     if(req.body.pageCount == undefined){
-        req.body.pageCount = 60;
+        req.body.pageCount = 100;
     }
-
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-    ebikeHistoryLogQuery.limit(req.body.pageCount);
+    if(req.body.SN != undefined && req.body.SN.length > 9){
+        ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
 
-    if(req.body.justBikeOperationLog != undefined && req.body.justBikeOperationLog == true){
-        ebikeHistoryLogQuery.notEqualTo('Remark', '上报数据');
+        if(req.body.justBikeGetReturn != undefined && req.body.justBikeGetReturn == true){
+            ebikeHistoryLogQuery.contains('Remark', '车');
+        }
+
+        if(req.body.justBikeOperationLog != undefined && req.body.justBikeOperationLog == true){
+            ebikeHistoryLogQuery.notEqualTo('Remark', '上报数据');
+        }
+
+        if(req.body.justBikeAlarm != undefined && req.body.justBikeAlarm == true){
+            ebikeHistoryLogQuery.exists('bikeNState');
+        }
     }
 
-    if(req.body.justBikeAlarm != undefined && req.body.justBikeAlarm == true){
-        ebikeHistoryLogQuery.exists('bikeNState');
+    if(req.body.userPhone != undefined && req.body.userPhone.length == 11){
+        ebikeHistoryLogQuery.contains('Content', req.body.userPhone);
     }
 
     if(req.body.selectedTime != undefined && req.body.selectedTime != null){
@@ -44,6 +52,7 @@ router.post('/ebileLogList',function (req, res) {
         ebikeHistoryLogQuery.skip(req.body.pageCount * req.body.pageIndex);
     }
 
+    ebikeHistoryLogQuery.limit(req.body.pageCount);
     ebikeHistoryLogQuery.descending('createdAt');
 
     // console.log('----- ebileLogList ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
@@ -178,7 +187,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
     // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
-    ebikeHistoryLogQuery.contains('Content', '线');
+    ebikeHistoryLogQuery.contains('Content', '15767758151');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
 
@@ -264,7 +273,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-10-2 22:30:00");
+var queryDate = new Date("2017-10-4 16:47:00");
 // testLink(queryDate, 1, 1000, []);
 
 module.exports = router
