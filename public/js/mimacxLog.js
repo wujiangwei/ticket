@@ -207,7 +207,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
             if($scope.EBikeInfo!= undefined && $scope.EBikeInfo.BicycleNo == $scope.ebikeNumber && $scope.EBikeInfo.SN != undefined){
                 getEBikeLogsFromMima();
-            }else if($scope.ebikeUserPhone.length == 11){
+            }else if($scope.ebikeUserPhone != undefined && $scope.ebikeUserPhone.length == 11){
                 getEBikeLogsFromMima();
             }else {
                 $scope.netRequestState = 'start';
