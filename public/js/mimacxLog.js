@@ -110,10 +110,10 @@ function translateBTMessageTypeToDes(messageType) {
     switch(parseInt(messageType))
     {
         case 1:
-            return "蓝牙开锁周期性报文";
+            return "蓝牙开锁周期报文";
             break;
         case 2:
-            return "蓝牙上锁周期性报文";
+            return "蓝牙上锁周期报文";
             break;
 
         default:
@@ -299,7 +299,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
 
                         //str to object
                         var serviceDataContent = serviceData.Content;
-                        if(serviceDataContent.indexOf("失败") != -1){
+                        if(serviceDataContent.indexOf("成功") != -1){
                             serviceData.isSucceed = true;
                         }else {
                             serviceData.isSucceed = false;
@@ -309,25 +309,30 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         var Index1 = serviceDataContent.indexOf("]");
                         var Index2 = serviceDataContent.indexOf("(");
                         var Index2Ex = serviceDataContent.indexOf(")");
-                        var IndexEx = serviceDataContent.indexOf(",");
+
                         var userPhone = serviceDataContent.substring(1, Index1);
+                        serviceData.userPhone = userPhone;
 
                         var bikeOperationResult;
-                        var bikeOperationResultDes;
                         if(Index2 != -1){
-                            // 有()
                             bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
-                            bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex);
-                        }
-                        else if(IndexEx != -1){
-                            //无()
-                            bikeOperationResult = serviceDataContent.substring(Index1 + 1, IndexEx);
+                            serviceData.bikeOperationResult = bikeOperationResult;
+                            // 有()
+                            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex);
+                            serviceData.bikeOperationResultDes = bikeOperationResultDes;
+                        }else {
+                            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, serviceDataContent.length);
+
+                            //for des logic
+                            if(bikeOperationResult.length > 8){
+                                serviceData.bikeOperationResult = bikeOperationResult.substring(0, 8);
+                                serviceData.bikeOperationResultDes = bikeOperationResult.substring(8, bikeOperationResult.length);
+                            }else {
+                                serviceData.bikeOperationResult = bikeOperationResult;
+                            }
                         }
 
-                        //前端显示
-                        serviceDataContent.userPhone = userPhone;
-                        serviceDataContent.bikeOperationResult = bikeOperationResult;
-                        serviceDataContent.bikeOperationResultDes = bikeOperationResultDes;
+                        $scope.bikeLogDateList.push(serviceData);
                         continue;
                     }
                     else if(serviceData.LogType == 1){
