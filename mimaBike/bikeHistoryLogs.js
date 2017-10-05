@@ -139,7 +139,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
             redisUtil.getSimpleValueFromRedis(req.body.SN + '_BikeEState', function (bikeLatest) {
                 if(bikeLatest != undefined || bikeLatest != null){
-                    console.log('哦' + bikeLatest)
+                    // console.log('哦' + bikeLatest)
                     res.json({'errorCode':0, 'bikeEState' :bikeLatest,'totalMileage':totalMileage ,'lat' : lat, 'lon' : lon, 'gpsRemark' :gpsRemark, 'satellite':satellite,
                         'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
                 }else {
