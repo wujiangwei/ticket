@@ -20,24 +20,27 @@ router.post('/ebileLogList',function (req, res) {
     }
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    if(req.body.SN != undefined && req.body.SN.length > 9){
-        ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-
-        if(req.body.justBikeGetReturn != undefined && req.body.justBikeGetReturn == true){
-            ebikeHistoryLogQuery.contains('Remark', '车');
-        }
-
-        if(req.body.justBikeOperationLog != undefined && req.body.justBikeOperationLog == true){
-            ebikeHistoryLogQuery.notEqualTo('Remark', '上报数据');
-        }
-
-        if(req.body.justBikeAlarm != undefined && req.body.justBikeAlarm == true){
-            ebikeHistoryLogQuery.exists('bikeNState');
-        }
-    }
 
     if(req.body.userPhone != undefined && req.body.userPhone.length == 11){
         ebikeHistoryLogQuery.equalTo('userPhone', req.body.userPhone);
+    }else {
+        if(req.body.SN != undefined && req.body.SN.length > 9){
+            ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
+
+            if(req.body.justBikeGetReturn != undefined && req.body.justBikeGetReturn == true){
+                ebikeHistoryLogQuery.contains('Remark', '车');
+            }
+
+            if(req.body.justBikeOperationLog != undefined && req.body.justBikeOperationLog == true){
+                ebikeHistoryLogQuery.notEqualTo('Remark', '上报数据');
+            }
+
+            if(req.body.justBikeAlarm != undefined && req.body.justBikeAlarm == true){
+                ebikeHistoryLogQuery.exists('bikeNState');
+            }
+        }else {
+            return res.json({'errorCode':1, 'errorMsg':'SN and Phone is invalid'});
+        }
     }
 
     if(req.body.selectedTime != undefined && req.body.selectedTime != null){
