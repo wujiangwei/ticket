@@ -72,6 +72,7 @@ router.post('/', function(req, res) {
 
             newEBikeLog.set('SN', LogParam.SN);
             if(SNList.length > 1){
+                console.log('-----' + LogParam.SN);
                 newEBikeLog.set('SNIndex', SNList[1]);
             }
 
@@ -316,6 +317,53 @@ function structLogContent(leanContentObject) {
             leanContentObject.set('authResult', false);
         }
 
+    }
+
+    // 处理借车和还车事宜
+    if(serviceData.LogType == 100 || serviceData.LogType == 99){
+        //借还车
+        // [15656672077]用户还车BT费用计算接口成功,车辆号：077100157
+        // [15656672077]用户还车成功(扣款成功),车辆号：077100157
+        //
+        // [18356610542]用户借车成功,车辆号：077100183
+        // [15888642133]用户借车失败,车辆号：077100124,此车处于下线状态
+
+        //str to object
+        var serviceDataContent = serviceData.Content;
+        if(serviceDataContent.indexOf("成功") != -1){
+            leanContentObject.set('cmdSucceed', true);
+        }else {
+            leanContentObject.set('cmdSucceed', false);
+        }
+
+        //截取content中的MsgSeq后的数字
+        var Index1 = serviceDataContent.indexOf("]");
+        var Index2 = serviceDataContent.indexOf("(");
+        var Index2Ex = serviceDataContent.indexOf(")");
+
+        var userPhone = serviceDataContent.substring(1, Index1);
+        leanContentObject.set('userPhone', userPhone);
+
+        var bikeOperationResult;
+        if(Index2 != -1){
+            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
+            leanContentObject.set('bikeOperationResult', bikeOperationResult);
+            // 有()
+            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex);
+            leanContentObject.set('bikeOperationResultDes', bikeOperationResultDes);
+
+        }else {
+            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, serviceDataContent.length);
+
+            //for des logic
+            if(bikeOperationResult.length > 8){
+                leanContentObject.set('bikeOperationResult', bikeOperationResult.substring(0, 8));
+                var bikeOperationResultDes = bikeOperationResult.substring(8, bikeOperationResult.length);
+                leanContentObject.set('bikeOperationResultDes', bikeOperationResultDes);
+            }else {
+                leanContentObject.set('bikeOperationResult', bikeOperationResult);
+            }
+        }
     }
 
     //处理操作者事宜
