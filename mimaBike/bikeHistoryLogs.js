@@ -37,7 +37,7 @@ router.post('/ebileLogList',function (req, res) {
     }
 
     if(req.body.userPhone != undefined && req.body.userPhone.length == 11){
-        ebikeHistoryLogQuery.contains('Content', req.body.userPhone);
+        ebikeHistoryLogQuery.equalTo('userPhone', req.body.userPhone);
     }
 
     if(req.body.selectedTime != undefined && req.body.selectedTime != null){
