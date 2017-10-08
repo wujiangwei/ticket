@@ -3,33 +3,9 @@
  */
 const router = require('express').Router()
 var AV = require('leanengine');
+var logSqlUtil = require('./logSqlUtil');
 
 var redisUtil = require('../redis/leanObjectRedis');
-
-var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
-
-function getEBikeLogSqlName(queryDate) {
-    if(queryDate == undefined){
-        queryDate = new Date();
-    }
-    var dataIndex = queryDate.getDate() % 6;
-    switch (dataIndex){
-        case 0:
-            return 'MimaEBikeLogsPartA';
-        case 1:
-            return 'MimaEBikeLogsPartB';
-        case 2:
-            return 'MimaEBikeLogsPartC';
-        case 3:
-            return 'MimaEBikeLogsPartD';
-        case 4:
-            return 'MimaEBikeLogsPartE';
-        default:
-            return 'MimaEBikeHistoryLogs';
-    }
-
-    return 'MimaEBikeHistoryLogs';
-}
 
 //暂时为车辆日志网站使用的接口
 router.post('/ebileLogList',function (req, res) {
@@ -45,7 +21,7 @@ router.post('/ebileLogList',function (req, res) {
     var ebikeHistoryLogQuery = undefined;
 
     var selectedDate = new Date(req.body.selectedTime);
-    ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(selectedDate));
+    ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(selectedDate));
     ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', selectedDate);
 
     if(req.body.userPhone != undefined && req.body.userPhone.length == 11){
@@ -117,7 +93,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
     if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
         queryDate = new Date(req.body.queryDate);
 
-        ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(queryDate));
+        ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(queryDate));
 
         var queryDateTime = new Date(req.body.queryDate).getTime();
         var queryDateTimeBigger = new Date(queryDateTime + 20*60*1000);
@@ -126,7 +102,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
         // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTime);
     }else {
-        ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(undefined));
+        ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
     }
 
     ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
@@ -181,7 +157,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
             if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
                 queryDate = new Date(req.body.queryDate);
 
-                ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(queryDate));
+                ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(queryDate));
 
                 var queryDateTime = new Date(req.body.queryDate).getTime();
                 var queryDateTimeBigger = new Date(queryDateTime + 20*60*1000);
@@ -190,7 +166,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
                 ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
                 // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTime);
             }else {
-                ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(undefined));
+                ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
             }
             ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
             ebikeHistoryLogQuery.exists('bikeGeo');
@@ -224,7 +200,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
-    var ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(undefined));
+    var ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
     ebikeHistoryLogQuery.contains('Content', '上报数据解析错误');
     ebikeHistoryLogQuery.equalTo('Remark', '数据上报');
     // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
@@ -325,7 +301,7 @@ var queryDate = new Date("2017-10-8 13:00:00");
 
 //应用内搜索示例
 function searchLogContent(searchKey) {
-    var query = new AV.SearchQuery(getEBikeLogSqlName(undefined));
+    var query = new AV.SearchQuery(logSqlUtil.getEBikeLogSqlName(undefined));
     query.queryString(searchKey);
     query.find().then(function(results) {
         console.log('Found %d objects', query.hits());

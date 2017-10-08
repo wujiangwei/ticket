@@ -5,6 +5,7 @@ const router = require('express').Router()
 var AV = require('leanengine');
 var httpUtil = require('./httpUtil');
 var alarmSms = require('./alarmSms');
+var logSqlUtil = require('./logSqlUtil');
 
 var redisUtil = require('../redis/leanObjectRedis');
 
@@ -72,7 +73,7 @@ router.post('/', function(req, res) {
             lock++;
         }else {
             //SN LogType Content Remark OperationTime SourceType
-            var newEBikeLog = new NewEBikeLogSql();
+            var newEBikeLog = new AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 
             var SNList = LogParam.SN.split('_');
             LogParam.SN = SNList[0];
@@ -764,58 +765,6 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 }
 
 //以下为测试debug代码
-
-//删除旧的日志
-function deleteOldDateLogs(maxTime, queryDateLess) {
-
-    maxTime--;
-    if(maxTime == 0){
-        console.log('delete end with maxTime');
-        return;
-    }else {
-        console.log('batch delete with maxTime ', maxTime);
-    }
-
-    var pageCount = 1000;
-    var tempQueryDateLess = queryDateLess;
-    if(tempQueryDateLess == undefined){
-        tempQueryDateLess = new Date("2017/09/6 01:00:00");
-    }
-
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', tempQueryDateLess);
-    ebikeHistoryLogQuery.limit(pageCount);
-    ebikeHistoryLogQuery.descending('createdAt');
-    ebikeHistoryLogQuery.find().then(function (objects) {
-
-        var count = objects.length;
-        var inEnd = (count == 0) ? true : (count%pageCount > 0 ? true : false);
-
-        if(inEnd == false){
-            tempQueryDateLess = objects[count - 1].createdAt;
-        }
-
-        // 批量删除
-        AV.Object.destroyAll(objects).then(function () {
-            // 成功
-            console.log('delete ' + objects.length + ' old logs : ', tempQueryDateLess.toLocaleString())
-            if(inEnd == false){
-                deleteOldDateLogs(maxTime, tempQueryDateLess);
-            }else {
-                console.log('end delete old logs');
-            }
-        }, function (error) {
-            // 异常处理
-            console.log('destroyAll objects error: ', error.message);
-        });
-
-    }, function (error) {
-        console.log('delete objects query error: ', error.message);
-    });
-}
-
-// deleteOldDateLogs(20);
-
 
 var newEBikeLog = new NewEBikeLogSql();
 
