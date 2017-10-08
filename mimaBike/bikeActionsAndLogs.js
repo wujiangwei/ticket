@@ -351,11 +351,12 @@ function structLogContent(leanContentObject) {
             //车辆报警，多少分钟内多次开锁/还车失败，则是异常开始
             //异常报警短信发送有时间间隔，防止一直报警短信发送
             redisUtil.getSimpleValueFromRedis(serviceMoniterSpaceKey(), function (serviceSwitch) {
-                if(serviceSwitch != 1){
+                if(parseInt(serviceSwitch) != 1){
                     redisUtil.getSimpleValueFromRedis(serviceMoniterKey(), function (failedTime) {
                         if(failedTime == undefined){
                             failedTime = 0;
                         }
+                        failedTime = parseInt(failedTime);
 
                         redisUtil.setSimpleValueToRedis(serviceMoniterKey(), failedTime + 1, alarmFailedMonitorMin * 60);
 
@@ -529,11 +530,13 @@ function structLogContent(leanContentObject) {
     //deal data
     if(serviceData.Content != undefined && serviceData.Content.messageBody != undefined){
         //1 锁车中，2 行使中，3 防盗中
-        leanContentObject.set('ctrlState', parseInt(serviceData.Content.messageBody.ctrlState));
+        if(serviceData.Content.messageBody.ctrlState != undefined && serviceData.Content.messageBody.ctrlState != null){
+            leanContentObject.set('ctrlState', parseInt(serviceData.Content.messageBody.ctrlState));
+        }
 
         //deal ebike job type
         if(serviceData.Content.messageBody.ctrlState != undefined) {
-            switch (serviceData.Content.messageBody.ctrlState) {
+            switch (parseInt(serviceData.Content.messageBody.ctrlState)) {
                 case 1:
                     leanContentObject.set('bikeEState', 'noElectric');
                     break;

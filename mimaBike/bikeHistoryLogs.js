@@ -202,8 +202,8 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
-    ebikeHistoryLogQuery.contains('Content', '上报数据解析错误');
-    ebikeHistoryLogQuery.equalTo('Remark', '数据上报');
+    ebikeHistoryLogQuery.contains('Content', '失败');
+    // ebikeHistoryLogQuery.equalTo('Remark', '数据上报');
     // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
@@ -296,8 +296,8 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-10-8 13:00:00");
-// testLink(queryDate, 1, 1000, []);
+var queryDate = new Date("2017-10-9 00:00:00");
+testLink(queryDate, 1, 1000, []);
 
 
 //应用内搜索示例
