@@ -189,8 +189,9 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+    ebikeHistoryLogQuery.contains('Content', '失败');
     // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
-    ebikeHistoryLogQuery.contains('Content', '15767758151');
+    // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
 
@@ -273,10 +274,27 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
         console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
 
+    }
+        , function (error) {
+        // 异常处理
+            console.error('testLink' + error.message);
     })
 }
 
-var queryDate = new Date("2017-10-4 16:47:00");
+var queryDate = new Date("2017-10-7 09:51:00");
 // testLink(queryDate, 1, 1000, []);
+
+
+//应用内搜索示例
+function searchLogContent(searchKey) {
+    var query = new AV.SearchQuery('MimaEBikeHistoryLogs');
+    query.queryString(searchKey);
+    query.find().then(function(results) {
+        console.log('Found %d objects', query.hits());
+        //Process results
+    });
+}
+
+// searchLogContent('15767758151')
 
 module.exports = router

@@ -72,7 +72,7 @@ router.post('/', function(req, res) {
 
             newEBikeLog.set('SN', LogParam.SN);
             if(SNList.length > 1){
-                console.log('-----' + SNList[1]);
+                // console.log('-----' + SNList[1]);
                 newEBikeLog.set('SNIndex', SNList[1]);
             }
 
@@ -642,10 +642,14 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 //递归
                                 function alarmToPhone() {
 
+                                    if(sendPhoneIndex >= phoneList.length){
+                                        console.log('---------- bike: ' + bikeId + ' shifting,and send error(no phone can send)');
+                                        return;
+                                    }
+
                                     if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == ''){
                                         console.error('phoneList length is ' + phoneList.length);
-                                        console.error('sendPhoneIndex is ' + sendPhoneIndex);
-                                        return;
+                                        console.error('sendPhoneIndex is ' + sendPhoneIndex + 'phoneList[sendPhoneIndex] is' + phoneList[sendPhoneIndex]);
                                     }
 
                                     // return;
@@ -676,77 +680,8 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
                                 var sendPhoneIndex = 0;
                                 //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
+                                console.log('---------- bike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                                 alarmToPhone(phoneList[sendPhoneIndex]);
-
-                                // httpUtil.httpGetBicycleState(bikeId,function (bicycleState) {
-                                //     if (bicycleState == true){
-                                //         return
-                                //     }
-                                //     else {
-                                //         var areaData = getResponseBody.data;
-                                //         var ownerData = areaData.PartnerinfoModel;
-                                //         var operateDatas = areaData.PerationuserModel;
-                                //
-                                //
-                                //         var phoneList = [];
-                                //         for(var i = 0; i < operateDatas.length; i++){
-                                //             var perationUser = operateDatas[i];
-                                //             if(perationUser.NeedWaring == 1){
-                                //                 phoneList.push(perationUser.UserPhone)
-                                //             }
-                                //         }
-                                //         //老总放到最后提示，无视他是不是接受短信
-                                //         for(var i = 0; i < operateDatas.length; i++){
-                                //             var perationUser = operateDatas[i];
-                                //             if(perationUser.UserRealName.indexOf('总') != -1 && phoneList.indexOf(perationUser.UserPhone) == -1){
-                                //                 phoneList.push(perationUser.UserPhone)
-                                //             }
-                                //         }
-                                //         //其次是负责人
-                                //         if(ownerData.PartnerCellPhone != undefined && phoneList.indexOf(ownerData.PartnerCellPhone) == -1){
-                                //             phoneList.push(ownerData.PartnerCellPhone);
-                                //         }
-                                //         //最后是不接受短信的人
-                                //         for (var i = 0; i < operateDatas.length; i++) {
-                                //             var perationUser = operateDatas[i];
-                                //             if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
-                                //                 phoneList.push(perationUser.UserPhone)
-                                //             }
-                                //         }
-                                //
-                                //         //递归
-                                //         function alarmToPhone() {
-                                //             // return;
-                                //             var sendSmsData = {
-                                //                 mobilePhoneNumber: phoneList[sendPhoneIndex],
-                                //                 template: 'bikeAlarm',
-                                //                 bikeNumber: bikeId,
-                                //                 alarmTime: process.env['illegalityMovePoliceMin'],
-                                //                 touches: illegalTouch,
-                                //                 illegalityMove: illegalMove
-                                //             };
-                                //             alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
-                                //                 sendPhoneIndex++;
-                                //                 if(Ret == 0 && sendPhoneIndex < phoneList.length){
-                                //                     //发送失败，且有人在，继续发送
-                                //                     alarmToPhone();
-                                //                 }else {
-                                //                     //报警成功，删掉这个key，reset
-                                //                     redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
-                                //                         if(err != null){
-                                //                             console.error('alarmBike del in redis error, ', err.message);
-                                //                             return;
-                                //                         }
-                                //                     });
-                                //                 }
-                                //             })
-                                //         }
-                                //
-                                //         var sendPhoneIndex = 0;
-                                //         //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
-                                //         alarmToPhone(phoneList[sendPhoneIndex]);
-                                //     }
-                                // })
 
                             })
                         }
