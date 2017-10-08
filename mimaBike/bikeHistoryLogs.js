@@ -8,6 +8,29 @@ var redisUtil = require('../redis/leanObjectRedis');
 
 var NewEBikeLogSql = AV.Object.extend('MimaEBikeHistoryLogs');
 
+function getEBikeLogSqlName(queryDate) {
+    if(queryDate == undefined){
+        queryDate = new Date();
+    }
+    var dataIndex = queryDate.getDate() % 6;
+    switch (dataIndex){
+        case 0:
+            return 'MimaEBikeLogsPartA';
+        case 1:
+            return 'MimaEBikeLogsPartB';
+        case 2:
+            return 'MimaEBikeLogsPartC';
+        case 3:
+            return 'MimaEBikeLogsPartD';
+        case 4:
+            return 'MimaEBikeLogsPartE';
+        default:
+            return 'MimaEBikeHistoryLogs';
+    }
+
+    return 'MimaEBikeHistoryLogs';
+}
+
 //暂时为车辆日志网站使用的接口
 router.post('/ebileLogList',function (req, res) {
 
@@ -19,7 +42,11 @@ router.post('/ebileLogList',function (req, res) {
         req.body.pageCount = 100;
     }
 
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+    var ebikeHistoryLogQuery = undefined;
+
+    var selectedDate = new Date(req.body.selectedTime);
+    ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(selectedDate));
+    ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', selectedDate);
 
     if(req.body.userPhone != undefined && req.body.userPhone.length == 11){
         ebikeHistoryLogQuery.equalTo('userPhone', req.body.userPhone);
@@ -41,18 +68,6 @@ router.post('/ebileLogList',function (req, res) {
         }else {
             return res.json({'errorCode':1, 'errorMsg':'SN and Phone is invalid'});
         }
-    }
-
-    if(req.body.selectedTime != undefined && req.body.selectedTime != null){
-        //下一页，必须用时间才是准确的下一页
-        var selectedDate = new Date(req.body.selectedTime);
-        ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', selectedDate);
-    }else {
-        //若未传时间，则用分页的index
-        if(req.body.pageIndex == undefined){
-            req.body.pageIndex = 0;
-        }
-        ebikeHistoryLogQuery.skip(req.body.pageCount * req.body.pageIndex);
     }
 
     ebikeHistoryLogQuery.limit(req.body.pageCount);
@@ -97,19 +112,25 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
     }
 
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-    ebikeHistoryLogQuery.exists('bikeGeo');
-
+    var ebikeHistoryLogQuery;
+    var queryDate = new Date();
     if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
+        queryDate = new Date(req.body.queryDate);
+
+        ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(queryDate));
+
         var queryDateTime = new Date(req.body.queryDate).getTime();
         var queryDateTimeBigger = new Date(queryDateTime + 20*60*1000);
         var queryDateTimeLower = new Date(queryDateTime - 30*1000);
 
         ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
         // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTime);
+    }else {
+        ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(undefined));
     }
 
+    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
+    ebikeHistoryLogQuery.exists('bikeGeo');
     ebikeHistoryLogQuery.ascending('createdAt');
     ebikeHistoryLogQuery.limit(1);
 
@@ -155,7 +176,22 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
         if(ebikeHistoryLogObjects.length == 0) {
             //获取一个最新位置返回
-            var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
+            var ebikeHistoryLogQuery;
+            var queryDate = new Date();
+            if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
+                queryDate = new Date(req.body.queryDate);
+
+                ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(queryDate));
+
+                var queryDateTime = new Date(req.body.queryDate).getTime();
+                var queryDateTimeBigger = new Date(queryDateTime + 20*60*1000);
+                var queryDateTimeLower = new Date(queryDateTime - 30*1000);
+
+                ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
+                // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTime);
+            }else {
+                ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(undefined));
+            }
             ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
             ebikeHistoryLogQuery.exists('bikeGeo');
             ebikeHistoryLogQuery.descending('createdAt');
@@ -188,9 +224,9 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
-    var ebikeHistoryLogQuery = new AV.Query('MimaEBikeHistoryLogs');
-    ebikeHistoryLogQuery.contains('Content', '失败');
-    // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
+    var ebikeHistoryLogQuery = new AV.Query(getEBikeLogSqlName(undefined));
+    ebikeHistoryLogQuery.contains('Content', '上报数据解析错误');
+    ebikeHistoryLogQuery.equalTo('Remark', '数据上报');
     // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
@@ -203,6 +239,8 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     ebikeHistoryLogQuery.ascending('createdAt');
     ebikeHistoryLogQuery.limit(queryCountEatchBatch);
     ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
+
+        console.log('数据返回个数:' + xMinBeforeLogs.length);
 
         bachCount--;
         if(xMinBeforeLogs.length != 0) {
@@ -281,13 +319,13 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-10-7 09:51:00");
+var queryDate = new Date("2017-10-8 13:00:00");
 // testLink(queryDate, 1, 1000, []);
 
 
 //应用内搜索示例
 function searchLogContent(searchKey) {
-    var query = new AV.SearchQuery('MimaEBikeHistoryLogs');
+    var query = new AV.SearchQuery(getEBikeLogSqlName(undefined));
     query.queryString(searchKey);
     query.find().then(function(results) {
         console.log('Found %d objects', query.hits());

@@ -140,7 +140,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     $scope.justBikeOperationLog = false;
     $scope.justBikeAlarm = false;
     $scope.justBikeGetReturn = false;
-    // $scope.selectedBikeLogDate = todayDate.toLocaleDateString();
+    $scope.selectedBikeLogDate = todayDate.toLocaleDateString();
 
     $(".ebike-log-flatpickr").flatpickr({
         defaultDate:todayDate,
@@ -212,8 +212,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             }else {
                 $scope.netRequestState = 'start';
                 $http.post("https://api.mimacx.com/BatteryCar/GetControllerInfoByBicycleNo",{
-                    "BicycleNo" : $scope.ebikeNumber,
-                    "pageIndex" : $scope.currentPage
+                    "BicycleNo" : $scope.ebikeNumber
                 })
                     .then(function (result) {
                         var response = result.data;
@@ -279,7 +278,6 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
         $http.post("/logs/ebileLogList",{
             "SN" :($scope.EBikeInfo != undefined ? $scope.EBikeInfo.SN : undefined),
             "userPhone" : $scope.ebikeUserPhone,
-            "pageIndex" : $scope.currentPage,
             "pageCount":$scope.pageDateCount,
             "selectedTime":$scope.selectedBikeLogDate,
             "justBikeOperationLog" : $scope.justBikeOperationLog,

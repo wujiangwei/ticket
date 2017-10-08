@@ -16,6 +16,13 @@ var MimaActionSql = AV.Object.extend('MimaAction');
 var openBatteryMin = parseInt(process.env['openBatteryMin']);
 
 //Redis Key
+function serviceMoniterKey() {
+    return'wujiangweiMonitor';
+}
+function serviceMoniterSpaceKey() {
+    return'wujiangweiMonitorSpace';
+}
+
 function getOpenBatteryKey(sn) {
     return sn + '_' + 'openBattery';
 }
@@ -334,6 +341,52 @@ function structLogContent(leanContentObject) {
             leanContentObject.set('cmdSucceed', true);
         }else {
             leanContentObject.set('cmdSucceed', false);
+
+            var alarmFailedMonitorMin = parseInt(process.env['alarmFailedMonitorMin']);
+            var alarmFailedMonitorTime = parseInt(process.env['alarmFailedMonitorTime']);
+            var alarmSpaceMin = parseInt(process.env['alarmSpaceMin']);
+
+            //车辆报警，多少分钟内多次开锁/还车失败，则是异常开始
+            //异常报警短信发送有时间间隔，防止一直报警短信发送
+            redisUtil.getSimpleValueFromRedis(serviceMoniterSpaceKey(), function (serviceSwitch) {
+                if(serviceSwitch != 1){
+                    redisUtil.getSimpleValueFromRedis(serviceMoniterKey(), function (failedTime) {
+                        if(failedTime == undefined){
+                            failedTime = 0;
+                        }
+
+                        redisUtil.setSimpleValueToRedis(serviceMoniterKey(), failedTime + 1, alarmFailedMonitorMin * 60);
+
+                        if(failedTime > alarmFailedMonitorTime){
+                            //暂时用getBikeBack + bikeNumber
+                            //ServiceMonitor + ServiceMonitorDes
+                            var sendSmsData = {
+                                mobilePhoneNumber: '17601528908',
+                                template: 'getBikeBack',
+                                bikeNumber: 'Socket服务器异常',
+                                ServiceMonitorDes: 'Socket服务器异常'
+                            };
+                            alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
+                                sendPhoneIndex++;
+                                if(Ret == true){
+                                    //报警成功，不再报警，等手动重置报警
+                                    console.error('Socket 服务器异常，发送短信成功');
+
+                                    redisUtil.setSimpleValueToRedis(serviceMoniterSpaceKey(), 1, alarmSpaceMin * 60);
+                                    redisUtil.redisClient.del(serviceMoniterKey(), function (err, reply) {
+                                        if(err != null){
+                                            console.error('Socket 服务器异常，重置redis信息失败 ', err.message);
+                                        }
+                                    });
+                                }else {
+                                    //发送失败
+                                    console.error('Socket 服务器异常，发送短信失败 error');
+                                }
+                            })
+                        }
+                    })
+                }
+            });
         }
 
         //截取content中的MsgSeq后的数字
@@ -646,7 +699,6 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                         //无用户手机号时发这样几个手机号
                                         phoneList.push('15850101846');
                                         phoneList.push('15852580112');
-                                        phoneList.push('17625348507');
                                         phoneList.push('18379606803');
                                         phoneList.push('17601528908');
                                     }
