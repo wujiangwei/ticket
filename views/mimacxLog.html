@@ -64,7 +64,7 @@
             <div class="column">
                 <div class="ui left icon action input">
                     <i class="mobile icon"></i>
-                    <input type="text" placeholder="用户手机(仍在开发中)" ng-model="ebikeUserPhone">
+                    <input type="text" placeholder="用户手机(试用)" ng-model="ebikeUserPhone">
                     <button class="ui blue submit button" ng-disabled="ebikeUserPhone.length != 11" ng-click="getEBikeLog(0)">查看车辆日志</button>
                 </div>
             </div>
@@ -77,9 +77,9 @@
             <a class="item">
                 <i class="icon blue bluetooth"></i> {{EBikeInfo.BluetoothNo}}
             </a>
-            <a class="item">
-                <i class="icon red heartbeat"></i> {{"最近心跳时间 " + EBikeInfo.lastestContactTime}}
-            </a>
+            <!--<a class="item">-->
+                <!--<i class="icon red heartbeat"></i> {{"最近心跳时间 " + EBikeInfo.lastestContactTime}}-->
+            <!--</a>-->
             <a class="item">
                 <i class="icon green spy"></i> {{EBikeInfo.PartnerAreaName}}
             </a>
@@ -167,6 +167,8 @@
             <td>
                 <div ng-if="messageDateObject.LogType == 100 || messageDateObject.LogType == 99">
                     {{messageDateObject.bikeOperationResultDes}}
+                    <br>
+                    {{"车号 " + messageDateObject.bikeID}}
                 </div>
                 <div ng-if="messageDateObject.LogType != 100 && messageDateObject.LogType != 99 && messageDateObject.LogType != 1 && messageDateObject.LogType != 5 && messageDateObject.Content.messageBody != undefined && (messageDateObject.Content.result == undefined  || messageDateObject.Content.result == 0)">
 

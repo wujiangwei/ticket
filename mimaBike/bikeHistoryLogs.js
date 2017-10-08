@@ -58,6 +58,7 @@ router.post('/ebileLogList',function (req, res) {
         for(var i = 0; i < ebikeHistoryLogObjects.length; i++){
             var historyLogObject = Object();
             historyLogObject.SN = ebikeHistoryLogObjects[i].get('SN');
+            historyLogObject.bikeID = ebikeHistoryLogObjects[i].get('bikeID');
             historyLogObject.Content = ebikeHistoryLogObjects[i].get('Content');
             historyLogObject.LogType = ebikeHistoryLogObjects[i].get('LogType');
             historyLogObject.Remark = ebikeHistoryLogObjects[i].get('Remark');
