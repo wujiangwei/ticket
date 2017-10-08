@@ -360,29 +360,26 @@ function structLogContent(leanContentObject) {
                         if(failedTime > alarmFailedMonitorTime){
                             //暂时用getBikeBack + bikeNumber
                             //ServiceMonitor + ServiceMonitorDes
-                            var sendSmsData = {
-                                mobilePhoneNumber: '17601528908',
-                                template: 'getBikeBack',
-                                bikeNumber: 'Socket服务器异常',
-                                ServiceMonitorDes: 'Socket服务器异常'
-                            };
-                            alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
-                                sendPhoneIndex++;
-                                if(Ret == true){
-                                    //报警成功，不再报警，等手动重置报警
-                                    console.error('Socket 服务器异常，发送短信成功');
+                            var sendMonitorBugList = alarmSms.getServiceMonitorMembers();
+                            for(var sendTData in sendMonitorBugList){
+                                alarmSms.sendAlarmSms(sendTData, function (Ret) {
+                                    sendPhoneIndex++;
+                                    if(Ret == true){
+                                        //报警成功，不再报警，等手动重置报警
+                                        console.error('Socket 服务器异常，发送短信成功');
 
-                                    redisUtil.setSimpleValueToRedis(serviceMoniterSpaceKey(), 1, alarmSpaceMin * 60);
-                                    redisUtil.redisClient.del(serviceMoniterKey(), function (err, reply) {
-                                        if(err != null){
-                                            console.error('Socket 服务器异常，重置redis信息失败 ', err.message);
-                                        }
-                                    });
-                                }else {
-                                    //发送失败
-                                    console.error('Socket 服务器异常，发送短信失败 error');
-                                }
-                            })
+                                        redisUtil.setSimpleValueToRedis(serviceMoniterSpaceKey(), 1, alarmSpaceMin * 60);
+                                        redisUtil.redisClient.del(serviceMoniterKey(), function (err, reply) {
+                                            if(err != null){
+                                                console.error('Socket 服务器异常，重置redis信息失败 ', err.message);
+                                            }
+                                        });
+                                    }else {
+                                        //发送失败
+                                        console.error('Socket 服务器异常，发送短信失败 error');
+                                    }
+                                })
+                            }
                         }
                     })
                 }
@@ -708,7 +705,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                         return;
                                     }
 
-                                    if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == ''){
+                                    if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == '' || phoneList[sendPhoneIndex].length < 10){
                                         console.error('phoneList length is ' + phoneList.length);
                                         console.error('sendPhoneIndex is ' + sendPhoneIndex + 'phoneList[sendPhoneIndex] is' + phoneList[sendPhoneIndex]);
                                         sendPhoneIndex++;
