@@ -73,7 +73,8 @@ router.post('/', function(req, res) {
             lock++;
         }else {
             //SN LogType Content Remark OperationTime SourceType
-            var newEBikeLog = new AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
+            var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
+            var newEBikeLog = new newEBikeLogSql();
 
             var SNList = LogParam.SN.split('_');
             LogParam.SN = SNList[0];
@@ -766,7 +767,8 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
 //以下为测试debug代码
 
-var newEBikeLog = new NewEBikeLogSql();
+var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
+var newEBikeLog = new newEBikeLogSql();
 
 newEBikeLog.set('SN', 'mimacx0000000052');
 newEBikeLog.set('LogType', '3');
