@@ -10,7 +10,7 @@ exports.getEBikeLogSqlName = function(queryDate) {
     var monthDate = parseInt(queryDate.getMonth());
 
     //老日志
-    if(dayDate < 9 && monthDate == 10){
+    if(dayDate < 9 && monthDate == 9){
         return 'MimaEBikeHistoryLogs';
     }
 

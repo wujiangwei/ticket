@@ -140,12 +140,14 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     $scope.justBikeOperationLog = false;
     $scope.justBikeAlarm = false;
     $scope.justBikeGetReturn = false;
-    $scope.selectedBikeLogDate = todayDate.toLocaleDateString();
+    //todayDate == 2017/10/09
+    $scope.userSelectedOriginalTime = todayDate.toLocaleDateString() + ' 23:59:59';
 
     $(".ebike-log-flatpickr").flatpickr({
         defaultDate:todayDate,
         // maxDate: todayDate,
         onChange: function(selectedDates, dateStr, instance) {
+            //dateStr == 2017-10-09
             $scope.userSelectedOriginalTime = dateStr + ' 23:59:59';
             $scope.selectedBikeLogDate = $scope.userSelectedOriginalTime;
             console.log($scope.userSelectedOriginalTime);
