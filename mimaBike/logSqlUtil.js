@@ -6,7 +6,15 @@ exports.getEBikeLogSqlName = function(queryDate) {
     if(queryDate == undefined){
         queryDate = new Date();
     }
-    var dataIndex = queryDate.getDate() % 6;
+    var dayDate = parseInt(queryDate.getDate());
+    var monthDate = parseInt(queryDate.getMonth());
+
+    //老日志
+    if(dayDate < 9 && monthDate == 10){
+        return 'MimaEBikeHistoryLogs';
+    }
+
+    var dataIndex = dayDate % 6;
     switch (dataIndex){
         case 0:
             return 'MimaEBikeLogsPartA';
