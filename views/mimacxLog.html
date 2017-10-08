@@ -168,7 +168,8 @@
                 <div ng-if="messageDateObject.LogType == 100 || messageDateObject.LogType == 99">
                     {{messageDateObject.bikeOperationResultDes}}
                     <br>
-                    {{"车号 " + messageDateObject.bikeID}}
+                    <div class="ui pointing grey basic label">{{"车号 " + messageDateObject.bikeID}}</div>
+
                 </div>
                 <div ng-if="messageDateObject.LogType != 100 && messageDateObject.LogType != 99 && messageDateObject.LogType != 1 && messageDateObject.LogType != 5 && messageDateObject.Content.messageBody != undefined && (messageDateObject.Content.result == undefined  || messageDateObject.Content.result == 0)">
 
