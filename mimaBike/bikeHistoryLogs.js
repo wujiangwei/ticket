@@ -297,7 +297,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 }
 
 var queryDate = new Date("2017-10-9 00:00:00");
-testLink(queryDate, 1, 1000, []);
+// testLink(queryDate, 1, 1000, []);
 
 
 //应用内搜索示例
