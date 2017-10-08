@@ -588,7 +588,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             redisUtil.getSimpleValueFromRedis(getSatelliteKey(sn), function (redisSatellite) {
                 if(redisSatellite != undefined && redisSatellite < 6)
                 {
-                    console.log('sn is not illegal shifting, because of lastest gps number is ', redisSatellite);
+                    // console.log('sn is not illegal shifting, because of lastest gps number is ', redisSatellite);
                     return;
                 }
 
@@ -642,6 +642,15 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 //递归
                                 function alarmToPhone() {
 
+                                    if(phoneList.length == 0){
+                                        //无用户手机号时发这样几个手机号
+                                        phoneList.push('15850101846');
+                                        phoneList.push('15852580112');
+                                        phoneList.push('17625348507');
+                                        phoneList.push('18379606803');
+                                        phoneList.push('17601528908');
+                                    }
+
                                     if(sendPhoneIndex >= phoneList.length){
                                         console.log('---------- bike: ' + bikeId + ' shifting,and send error(no phone can send)');
                                         return;
@@ -650,6 +659,9 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                     if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == ''){
                                         console.error('phoneList length is ' + phoneList.length);
                                         console.error('sendPhoneIndex is ' + sendPhoneIndex + 'phoneList[sendPhoneIndex] is' + phoneList[sendPhoneIndex]);
+                                        sendPhoneIndex++;
+                                        alarmToPhone();
+                                        return;
                                     }
 
                                     // return;
@@ -766,7 +778,7 @@ newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
 
-// alarmBike('mimacx0000000052', 10, 3, newEBikeLog);
+// alarmBike('mimacx0000001939', 10, 3, newEBikeLog);
 
 // redisUtil.getSimpleValueFromRedis('testKey', function (bikeLatestTime) {
 //     if(bikeLatestTime != undefined || bikeLatestTime != null){

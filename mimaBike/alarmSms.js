@@ -10,7 +10,7 @@ exports.sendAlarmSms = function (requestSmsData, callback) {
     AV.Cloud.requestSmsCode(requestSmsData).then(function(){
         //发送成功
         callback(true);
-        console.log(requestSmsData['template'] + ': send sms succeed, alarmBike :' + requestSmsData['bikeNumber'] + ' , send sms to ' + requestSmsData['alarmPhone']);
+        console.log(requestSmsData['template'] + ': send sms succeed, alarmBike :' + requestSmsData['bikeNumber'] + ' , send sms to ' + requestSmsData['mobilePhoneNumber']);
     }, function(err){
         //发送失败
         callback(false);
