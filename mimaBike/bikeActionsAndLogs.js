@@ -322,24 +322,22 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
 function serviceMonitor(serviceDataContent) {
     if(serviceDataContent.indexOf("离线") != -1 || serviceDataContent.indexOf("断线") != -1){
         var alarmFailedMonitorMin = parseInt(process.env['alarmFailedMonitorMin']);
-        var
-            alarmFailedMonitorTime = parseInt(process.env['alarmFailedMonitorTime']);
+        var alarmFailedMonitorTime = parseInt(process.env['alarmFailedMonitorTime']);
         var alarmSpaceMin = parseInt(process.env['alarmSpaceMin']);
-        console.log('alarmFailedMonitorTime = ' + alarmFailedMonitorTime + ', alarmSpaceMin = ' + alarmSpaceMin);
 
         //车辆报警，多少分钟内多次开锁/还车失败，则是异常开始
         //异常报警短信发送有时间间隔，防止一直报警短信发送
         redisUtil.getSimpleValueFromRedis(serviceMoniterSpaceKey(), function (serviceSwitch) {
-            console.log('serviceSwitch = ' + serviceSwitch +  ' , alarmFailedMonitorTime = ' + alarmFailedMonitorTime + ' , alarmSpaceMin = ' + alarmSpaceMin);
+            console.log('serviceSwitch = ' + serviceSwitch +  ' , alarmFailedMonitorMin = ' + alarmFailedMonitorMin + ' , alarmFailedMonitorTime = ' + alarmFailedMonitorTime);
 
             if(parseInt(serviceSwitch) != 1){
                 redisUtil.getSimpleValueFromRedis(serviceMoniterKey(), function (failedTime) {
                     if(failedTime == undefined){
                         failedTime = 0;
                     }
-                    failedTime = parseInt(failedTime);
+                    failedTime = parseInt(failedTime) + 1;
 
-                    redisUtil.setSimpleValueToRedis(serviceMoniterKey(), failedTime + 1, alarmFailedMonitorMin * 60);
+                    redisUtil.setSimpleValueToRedis(serviceMoniterKey(), failedTime, alarmFailedMonitorMin * 60);
 
                     console.log('failedTime = ' + failedTime +  ' , alarmFailedMonitorTime = ' + alarmFailedMonitorTime);
                     if(failedTime > alarmFailedMonitorTime){
@@ -348,7 +346,6 @@ function serviceMonitor(serviceDataContent) {
                         var sendMonitorBugList = alarmSms.getServiceMonitorMembers();
                         for(var sendTData in sendMonitorBugList){
                             alarmSms.sendAlarmSms(sendTData, function (Ret) {
-                                sendPhoneIndex++;
                                 if(Ret == true){
                                     //报警成功，不再报警，等手动重置报警
                                     console.error('Socket 服务器异常，发送短信成功');
