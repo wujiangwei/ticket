@@ -7,6 +7,17 @@ var logSqlUtil = require('./logSqlUtil');
 
 var redisUtil = require('../redis/leanObjectRedis');
 
+//debug code
+function sleep(milliSeconds) {
+    console.log('---------- began debug');
+    var startTime = new Date().getTime();
+    while (new Date().getTime() < startTime + milliSeconds){
+
+    }
+    console.log('---------- end debug');;
+};
+//end debug code
+
 //暂时为车辆日志网站使用的接口
 router.post('/ebileLogList',function (req, res) {
 
@@ -17,6 +28,8 @@ router.post('/ebileLogList',function (req, res) {
     if(req.body.pageCount == undefined){
         req.body.pageCount = 100;
     }
+
+    // sleep(60000);
 
     var ebikeHistoryLogQuery = undefined;
 
@@ -89,33 +102,77 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
         return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
     }
 
-    var ebikeHistoryLogQuery;
     var queryDate = new Date();
     if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
         queryDate = new Date(req.body.queryDate);
+    }
+    
+    function getTimeQuery(isBefore) {
+        var ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(queryDate));
+        if(isBefore == true){
+            ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
+            ebikeHistoryLogQuery.descending('createdAt');
+        }else {
+            ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
+            ebikeHistoryLogQuery.ascending('createdAt');
+        }
 
-        ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(queryDate));
+        ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
+        ebikeHistoryLogQuery.exists('bikeGeo');
 
-        var queryDateTime = new Date(req.body.queryDate).getTime();
-        var queryDateTimeBigger = new Date(queryDateTime + 20*60*1000);
-        var queryDateTimeLower = new Date(queryDateTime - 30*1000);
-
-        ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
-        // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTime);
-    }else {
-        ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
+        ebikeHistoryLogQuery.limit(1);
+        return ebikeHistoryLogQuery;
     }
 
-    ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-    ebikeHistoryLogQuery.exists('bikeGeo');
-    ebikeHistoryLogQuery.ascending('createdAt');
-    ebikeHistoryLogQuery.limit(1);
+    var ebikeHistoryLogQueryBefore = getTimeQuery(true);
+    var ebikeHistoryLogQueryLater = getTimeQuery(false);
 
-    // console.log('----- ebikeHistoryLocationBySnAndTime ----- start: ' + new Date() + ':' + new Date().getMilliseconds());
+    var lockIndex = 0;
+    var queryTotalLogObjects = [];
+    ebikeHistoryLogQueryBefore.find().then(function(ebikeHistoryLogObjects) {
+        lockIndex++;
+        if(ebikeHistoryLogObjects != undefined && ebikeHistoryLogObjects.length > 0){
+            queryTotalLogObjects = queryTotalLogObjects.concat(ebikeHistoryLogObjects);
+        }
+        dealSelectedLogDate();
+    }).catch(function(err) {
+        lockIndex++;
+        console.error('ebikeHistoryLocationBySnAndTime error ', err.message);
+        dealSelectedLogDate();
+    });
+    ebikeHistoryLogQueryLater.find().then(function(ebikeHistoryLogObjects) {
+        lockIndex++;
+        if(ebikeHistoryLogObjects != undefined && ebikeHistoryLogObjects.length > 0){
+            queryTotalLogObjects = queryTotalLogObjects.concat(ebikeHistoryLogObjects);
+        }
+        dealSelectedLogDate();
+    }).catch(function(err) {
+        lockIndex++;
+        console.error('ebikeHistoryLocationBySnAndTime error ', err.message);
+        dealSelectedLogDate();
+    });
 
-    ebikeHistoryLogQuery.find().then(function(ebikeHistoryLogObjects) {
+    function dealSelectedLogDate() {
 
-        // console.log('----- ebikeHistoryLocationBySnAndTime ----- end: ' + new Date() + ':' + new Date().getMilliseconds());
+        if(lockIndex != 2){
+            return;
+        }
+
+        if(queryTotalLogObjects.length == 0){
+            return res.json({'errorCode': 1, 'message': 'can not find location anytime'});
+        }
+
+        if(queryTotalLogObjects.length == 1){
+            return retToClinet(queryTotalLogObjects[0]);
+        }else {
+            //看before和after的时间哪个距离 想要的时间最近（且不是用车中报文）
+            var logFObject = queryTotalLogObjects[0];
+            var logSObject = queryTotalLogObjects[1];
+
+            var targetLogObject = logFObject.createdAt > logSObject.createdAt ? logFObject : logSObject;
+
+            return retToClinet(targetLogObject);
+        }
 
         function retToClinet(retEBikeLogObject) {
             var bikeGeo = retEBikeLogObject.get('bikeGeo');
@@ -150,50 +207,7 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
                 }
             })
         }
-
-        if(ebikeHistoryLogObjects.length == 0) {
-            //获取一个最新位置返回
-            var ebikeHistoryLogQuery;
-            var queryDate = new Date();
-            if(req.body.queryDate != undefined && req.body.queryDate.length > 0){
-                queryDate = new Date(req.body.queryDate);
-
-                ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(queryDate));
-
-                var queryDateTime = new Date(req.body.queryDate).getTime();
-                var queryDateTimeBigger = new Date(queryDateTime + 20*60*1000);
-                var queryDateTimeLower = new Date(queryDateTime - 30*1000);
-
-                ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDateTimeLower);
-                // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDateTime);
-            }else {
-                ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
-            }
-            ebikeHistoryLogQuery.equalTo('SN', req.body.SN);
-            ebikeHistoryLogQuery.exists('bikeGeo');
-            ebikeHistoryLogQuery.descending('createdAt');
-            ebikeHistoryLogQuery.limit(1);
-            ebikeHistoryLogQuery.find().then(function(latestEbikeHistoryLogObjects) {
-                if(latestEbikeHistoryLogObjects.length == 0) {
-                    res.json({'errorCode': 1, 'message': 'can not find location anytime'});
-                }
-
-                retToClinet(latestEbikeHistoryLogObjects[0]);
-            }, function (err) {
-                res.status(500).json({
-                    error: err.message
-                });
-            })
-            return;
-        }
-
-        retToClinet(ebikeHistoryLogObjects[0]);
-
-    }).catch(function(err) {
-        res.status(500).json({
-            error: err.message
-        });
-    });
+    }
 })
 
 
