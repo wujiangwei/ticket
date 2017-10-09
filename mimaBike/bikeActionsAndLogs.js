@@ -346,7 +346,8 @@ function structLogContent(leanContentObject) {
 
             if(serviceData.LogType == 100){
                 var alarmFailedMonitorMin = parseInt(process.env['alarmFailedMonitorMin']);
-                var alarmFailedMonitorTime = parseInt(process.env['alarmFailedMonitorTime']);
+                var
+                    alarmFailedMonitorTime = parseInt(process.env['alarmFailedMonitorTime']);
                 var alarmSpaceMin = parseInt(process.env['alarmSpaceMin']);
 
                 //车辆报警，多少分钟内多次开锁/还车失败，则是异常开始
@@ -473,8 +474,9 @@ function structLogContent(leanContentObject) {
                     redisUtil.setSimpleValueToRedis(getSatelliteKey(serviceData.SN), parseInt(contentObject.messageBody.satellite), 600);
                 }
 
-                if(contentObject.messageBody.charging != undefined && contentObject.messageBody.charging != null && contentObject.messageBody.charging != 'null'){
-                    leanContentObject.set('charging', parseInt(contentObject.messageBody.charging));
+                var charging = parseInt(contentObject.messageBody.charging);
+                if(charging == false || charging == true){
+                    leanContentObject.set('charging', charging);
                 }
 
                 if(contentObject.messageBody.chargeCount != undefined && contentObject.messageBody.chargeCount != null && contentObject.messageBody.chargeCount != 'null'){
@@ -517,10 +519,10 @@ function structLogContent(leanContentObject) {
     if(contentObject != undefined && contentObject.cmdID != undefined){
         //LogType(5:发起请求，6请求响应)
         //保存请求的参数 和 响应的结果
-        if(serviceData.Content.argument != undefined){
+        if(serviceData.Content.argument != undefined && serviceData.Content.argument != null && serviceData.Content.argument != ''){
             leanContentObject.set('cmdRequestArgument', serviceData.Content.argument);
-        }else if(serviceData.Content.result != undefined){
-            leanContentObject.set('cmdResponseResult', serviceData.Content.result != undefined);
+        }else if(serviceData.Content.result != undefined && serviceData.Content.result != null && serviceData.Content.result != ''){
+            leanContentObject.set('cmdResponseResult', parseInt(serviceData.Content.result));
         }
 
         leanContentObject.set('cmdId', parseInt(contentObject.cmdID));
