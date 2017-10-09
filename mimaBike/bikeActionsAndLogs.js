@@ -39,7 +39,7 @@ function getBikeStateKey(sn) {
 //Redis Key end
 
 //debug code
-function sleep(milliSeconds) {
+function monitorServiceError(milliSeconds) {
     var debugSwitch = parseInt(process.env['debugSwitch']);
     if(debugSwitch > 0){
         console.log('---------- began debug');
@@ -55,16 +55,19 @@ function sleep(milliSeconds) {
 router.post('/', function(req, res) {
 
     var resTag = 0;
+
+    monitorServiceError(60);
+
     //超时直接回调，防止长时间不会掉导致车辆服务器出现问题
-    res.setTimeout(1900, function(){
-        console.error("响应超时.");
-    });
-    setTimeout(function(){
-        if(resTag == 0){
-            resTag = 1;
-            res.sendStatus(503);
-        }
-    }, 2000);
+    // res.setTimeout(1900, function(){
+    //     console.error("响应超时.");
+    // });
+    // setTimeout(function(){
+    //     if(resTag == 0){
+    //         resTag = 1;
+    //         res.sendStatus(503);
+    //     }
+    // }, 2000);
 
 
     var LogParam = req.body;
@@ -117,7 +120,6 @@ router.post('/', function(req, res) {
             newEBikeLog.save().then(function (savedNewEBikeLog) {
                 lock++;
                 if(lock == unlock){
-                    sleep(60000);
                     if(resTag == 0){
                         resTag = 1;
                         return res.json({'errorCode':0});
@@ -126,7 +128,6 @@ router.post('/', function(req, res) {
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
-                    sleep(60000);
                     console.log(req.body.SN + ' save log failed:' + error);
 
                     if(resTag == 0){
@@ -201,7 +202,6 @@ router.post('/', function(req, res) {
             MimaAction.save().then(function (savedMimaActionObject) {
                 lock++;
                 if(lock == unlock){
-                    sleep(60000);
 
                     if(resTag == 0){
                         resTag = 1;
@@ -212,7 +212,6 @@ router.post('/', function(req, res) {
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
-                    sleep(60000);
                     console.log(req.body.SN + ' save log failed:' + error);
 
                     if(resTag == 0){
