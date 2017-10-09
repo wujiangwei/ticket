@@ -130,7 +130,7 @@ router.post('/', function(req, res) {
                 if(lock == unlock){
                     if(resTag == 0){
                         resTag = 1;
-                        return res.json({'errorCode':0});
+                        // return res.json({'errorCode':0});
                     }
                 }
             }, function (error) {
