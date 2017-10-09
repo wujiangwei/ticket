@@ -344,8 +344,8 @@ function serviceMonitor(serviceDataContent) {
                         //暂时用getBikeBack + bikeNumber
                         //ServiceMonitor + ServiceMonitorDes
                         var sendMonitorBugList = alarmSms.getServiceMonitorMembers();
-                        for(var sendTData in sendMonitorBugList){
-                            alarmSms.sendAlarmSms(sendTData, function (Ret) {
+                        for(var sendTDataIndex in sendMonitorBugList){
+                            alarmSms.sendAlarmSms(sendMonitorBugList[sendTDataIndex], function (Ret) {
                                 if(Ret == true){
                                     //报警成功，不再报警，等手动重置报警
                                     console.error('Socket 服务器异常，发送短信成功');
