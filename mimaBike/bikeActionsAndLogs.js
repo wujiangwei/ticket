@@ -74,6 +74,8 @@ router.post('/', function(req, res) {
                 res.sendStatus(503);
             }
         }, 2000);
+    }else {
+        console.log('---------- debugSwitch = ' + debugSwitch);
     }
 
     var LogParam = req.body;
