@@ -328,7 +328,7 @@ function serviceMonitor(serviceDataContent) {
         //车辆报警，多少分钟内多次开锁/还车失败，则是异常开始
         //异常报警短信发送有时间间隔，防止一直报警短信发送
         redisUtil.getSimpleValueFromRedis(serviceMoniterSpaceKey(), function (serviceSwitch) {
-            console.log('serviceSwitch = ' + serviceSwitch +  ' , alarmFailedMonitorMin = ' + alarmFailedMonitorMin + ' , alarmFailedMonitorTime = ' + alarmFailedMonitorTime);
+            // console.log('serviceSwitch = ' + serviceSwitch +  ' , alarmFailedMonitorMin = ' + alarmFailedMonitorMin + ' , alarmFailedMonitorTime = ' + alarmFailedMonitorTime);
 
             if(parseInt(serviceSwitch) != 1){
                 redisUtil.getSimpleValueFromRedis(serviceMoniterKey(), function (failedTime) {
@@ -339,7 +339,7 @@ function serviceMonitor(serviceDataContent) {
 
                     redisUtil.setSimpleValueToRedis(serviceMoniterKey(), failedTime, alarmFailedMonitorMin * 60);
 
-                    console.log('failedTime = ' + failedTime +  ' , alarmFailedMonitorTime = ' + alarmFailedMonitorTime);
+                    // console.log('failedTime = ' + failedTime +  ' , alarmFailedMonitorTime = ' + alarmFailedMonitorTime);
                     if(failedTime > alarmFailedMonitorTime){
                         //暂时用getBikeBack + bikeNumber
                         //ServiceMonitor + ServiceMonitorDes
