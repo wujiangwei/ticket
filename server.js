@@ -9,6 +9,19 @@ const uuid = require('uuid/v4')
 const AV = require('leanengine')
 
 const app = express()
+// 设置默认超时时间
+app.use(timeout('15s'))
+app.use(haltOnTimedout)
+
+function haltOnTimedout (req, res, next) {
+    if (!req.timedout) {
+        next()
+    }else {
+        console.error('timeout ,url is ' + req.originalUrl);
+        res.sendStatus(504);
+    }
+}
+
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(compression())
 
@@ -21,10 +34,6 @@ app.use(AV.Cloud.HttpsRedirect())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-
-// 设置默认超时时间
-app.use(timeout('15s'))
-app.use(haltOnTimedout)
 
 // angularjs views
 var mimacxLog = require('./routes/mimacxLog')
@@ -102,15 +111,6 @@ const getIndexPage = (uuid) => {
 app.get('*', function (req, res) {
   res.send(getIndexPage(uuid()))
 })
-
-function haltOnTimedout (req, res, next) {
-    if (!req.timedout) {
-        next()
-    }else {
-        console.error('timeout ,url is ' + req.originalUrl);
-        res.sendStatus(504);
-    }
-}
 
 var PORT = parseInt(process.env.LEANCLOUD_APP_PORT || process.env.PORT || 8080)
 app.listen(PORT, function() {

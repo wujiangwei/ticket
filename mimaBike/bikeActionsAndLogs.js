@@ -54,6 +54,15 @@ function sleep(milliSeconds) {
 
 router.post('/', function(req, res) {
 
+    //超时直接回调，防止长时间不会掉导致车辆服务器出现问题
+    res.setTimeout(1900, function(){
+        console.error("响应超时.");
+    });
+    setTimeout(function(){
+        res.sendStatus(503);
+    }, 2000);
+
+
     var LogParam = req.body;
     var ActionParam = req.body;
 

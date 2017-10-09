@@ -20,7 +20,6 @@ function sleep(milliSeconds) {
 
 //暂时为车辆日志网站使用的接口
 router.post('/ebileLogList',function (req, res) {
-
     if((req.body.SN == undefined || req.body.SN.length < 10) && (req.body.userPhone == undefined || req.body.userPhone.length != 11)){
         return res.json({'errorCode':1, 'errorMsg':'SN is empty and Phone is empty/error'});
     }
@@ -29,7 +28,7 @@ router.post('/ebileLogList',function (req, res) {
         req.body.pageCount = 100;
     }
 
-    // sleep(60000);
+    // sleep(8000);
 
     var ebikeHistoryLogQuery = undefined;
 
