@@ -118,14 +118,22 @@ router.post('/', function(req, res) {
                 lock++;
                 if(lock == unlock){
                     sleep(60000);
-                    return res.json({'errorCode':0});
+                    if(resTag == 0){
+                        resTag = 1;
+                        return res.json({'errorCode':0});
+                    }
                 }
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
                     sleep(60000);
                     console.log(req.body.SN + ' save log failed:' + error);
-                    return res.json({'errorCode': -1, 'errorMsg': error.message});
+
+                    if(resTag == 0){
+                        resTag = 1;
+                        return res.json({'errorCode': -1, 'errorMsg': error.message});
+                    }
+
                 }
             });
         }
