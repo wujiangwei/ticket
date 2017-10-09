@@ -11,16 +11,16 @@ const AV = require('leanengine')
 const app = express()
 // 设置默认超时时间
 app.use(timeout('15s'))
-app.use(haltOnTimedout)
-
-function haltOnTimedout (req, res, next) {
-    if (!req.timedout) {
-        next()
-    }else {
-        console.error('timeout ,url is ' + req.originalUrl);
-        res.sendStatus(504);
-    }
-}
+// app.use(haltOnTimedout)
+//
+// function haltOnTimedout (req, res, next) {
+//     if (!req.timedout) {
+//         next()
+//     }else {
+//         console.error('timeout ,url is ' + req.originalUrl);
+//         res.sendStatus(504);
+//     }
+// }
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(compression())
