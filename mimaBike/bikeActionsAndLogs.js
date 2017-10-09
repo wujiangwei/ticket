@@ -54,12 +54,16 @@ function sleep(milliSeconds) {
 
 router.post('/', function(req, res) {
 
+    var resTag = 0;
     //超时直接回调，防止长时间不会掉导致车辆服务器出现问题
     res.setTimeout(1900, function(){
         console.error("响应超时.");
     });
     setTimeout(function(){
-        res.sendStatus(503);
+        if(resTag == 0){
+            resTag = 1;
+            res.sendStatus(503);
+        }
     }, 2000);
 
 
@@ -190,14 +194,23 @@ router.post('/', function(req, res) {
                 lock++;
                 if(lock == unlock){
                     sleep(60000);
-                    return res.json({'errorCode':0});
+
+                    if(resTag == 0){
+                        resTag = 1;
+                        return res.json({'errorCode':0});
+                    }
+
                 }
             }, function (error) {
                 lock++;
                 if(lock == unlock) {
                     sleep(60000);
                     console.log(req.body.SN + ' save log failed:' + error);
-                    return res.json({'errorCode': -1, 'errorMsg': error.message});
+
+                    if(resTag == 0){
+                        resTag = 1;
+                        return res.json({'errorCode': -1, 'errorMsg': error.message});
+                    }
                 }
             });
         }
