@@ -39,10 +39,8 @@ function getBikeStateKey(sn) {
 //Redis Key end
 
 //debug code
-var debugErrorIndex = 0;
-var debugSwitch = parseInt(process.env['debugSwitch']);
-
 function monitorServiceError(milliSeconds) {
+    var debugSwitch = parseInt(process.env['debugSwitch']);
     if(debugSwitch > 0){
         var tempDebugErrorIndex = debugErrorIndex;
         debugErrorIndex++;
@@ -61,22 +59,16 @@ router.post('/', function(req, res) {
 
     var resTag = 0;
 
-    monitorServiceError(60);
-
     //超时直接回调，防止长时间不会掉导致车辆服务器出现问题
-    if(debugSwitch != 1){
-        res.setTimeout(1900, function(){
-            console.error("响应超时.");
-        });
-        setTimeout(function(){
-            if(resTag == 0){
-                resTag = 1;
-                res.sendStatus(503);
-            }
-        }, 2000);
-    }else {
-        console.log('---------- debugSwitch = ' + debugSwitch);
-    }
+    res.setTimeout(1900, function(){
+        console.error("响应超时.");
+    });
+    setTimeout(function(){
+        if(resTag == 0){
+            resTag = 1;
+            res.sendStatus(503);
+        }
+    }, 2000);
 
     var LogParam = req.body;
     var ActionParam = req.body;
@@ -130,7 +122,7 @@ router.post('/', function(req, res) {
                 if(lock == unlock){
                     if(resTag == 0){
                         resTag = 1;
-                        // return res.json({'errorCode':0});
+                        return res.json({'errorCode':0});
                     }
                 }
             }, function (error) {
