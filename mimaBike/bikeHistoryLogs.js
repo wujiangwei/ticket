@@ -214,7 +214,7 @@ router.post('/lookVehicleIsNoElectric', function (req, res) {
     if(req.body.SN == undefined || req.body.SN.length == 0){
         return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
     }
-    
+
     redisUtil.getSimpleValueFromRedis(req.body.SN + '_BikeEState', function (bikeLatest) {
         if(bikeLatest != undefined || bikeLatest != null){
             // console.log('哦' + bikeLatest)
