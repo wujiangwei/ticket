@@ -30,17 +30,17 @@ exports.getServiceMonitorMembers = function () {
         ServiceMonitorDes: 'Socket服务器异常(截屏异常时的log)'
     };
     var sendSmsData_Sk = {
-        mobilePhoneNumber: '18362627616',
+        mobilePhoneNumber: '13815990855',
         template: 'ServiceMonitor',
         ServiceMonitorDes: 'Socket服务器异常(截屏异常时的log)'
     };
     var sendSmsData_Wcl = {
-        mobilePhoneNumber: '18362627616',
+        mobilePhoneNumber: '15852580112',
         template: 'ServiceMonitor',
         ServiceMonitorDes: 'Socket服务器异常(电话相关人)'
     };
     var sendSmsData_Lym = {
-        mobilePhoneNumber: '18362627616',
+        mobilePhoneNumber: '18379606803',
         template: 'ServiceMonitor',
         ServiceMonitorDes: 'Socket服务器异常(电话相关人)'
     };

@@ -216,8 +216,8 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
     // ebikeHistoryLogQuery.equalTo('LogType', 100);
-    ebikeHistoryLogQuery.contains('Content', '断线');
-    // ebikeHistoryLogQuery.equalTo('Remark', '数据上报');
+    // ebikeHistoryLogQuery.contains('Content', '断线');
+    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
     // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
@@ -310,7 +310,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-10-9 00:28:00");
+var queryDate = new Date("2017-10-10 02:06:32");
 // testLink(queryDate, 1, 1000, []);
 
 
