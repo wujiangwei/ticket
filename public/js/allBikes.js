@@ -3,7 +3,7 @@
  */
 var app = angular.module('allBikesApp',[
 
-]);
+])
 
 function toCoordinates(contentObject)
 {
@@ -43,7 +43,7 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
 
     //目前测试区域
     //Tbit,颐和盛世小区,苏州度假区测试,东凤镇,江苏大学，三峡大学
-    var validAreasNames = ['度假区', '池州', '东凤镇', '颐和盛世小区', '江苏', '三峡大学', '测试'];
+    $scope.validAreasNames = ['度假区', '池州', '东凤镇', '颐和盛世小区', '江苏', '三峡大学', '测试'];
 
     function getAllOperationArea() {
         $scope.netRequestState = 'start';
@@ -58,8 +58,8 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
                     for (var i = 0; i < response.Data.length; i++){
                         var tempArea = response.Data[i];
 
-                        for(var j = 0; j < validAreasNames.length; j++){
-                            var areaNameStr = validAreasNames[j];
+                        for(var j = 0; j < $scope.validAreasNames.length; j++){
+                            var areaNameStr = $scope.validAreasNames[j];
                             if(tempArea.PartnerAreaName.indexOf(areaNameStr) != -1){
                                 $scope.allMimaAreas.push(tempArea);
                                 break;
@@ -187,7 +187,7 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
         window.open("https://mimacx.leanapp.cn/mimacxLog/" + $scope.inputBikeNo);
     };
 
-    toastr.info("请先登录运维帐号");
+    // toastr.info("请先登录运维帐号");
 
     $scope.getBikeParamValue = function (eListBikeInfo) {
 
@@ -223,6 +223,17 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
             .finally(function () {
                 eListBikeInfo.isGetting = false;
             })
+    }
+
+    $scope.getUnLockVehicle = function () {
+        if($scope.yunweiAccountSession == undefined){
+            toastr.error("请先登录运维帐号");
+            return;
+        }
+        else {
+            window.open("http://localhost:8080/traverseUnLockVehicle/" + $scope.yunweiAccountSession);
+        }
+
     }
 
     $scope.setBikeParamValue = function (eListBikeInfo) {
@@ -281,5 +292,4 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
             .finally(function () {
             })
     }
-
 });

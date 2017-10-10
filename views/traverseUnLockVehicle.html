@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>所有未上锁车辆</title>
+
+    <!-- 引入 AngularJS Mini 文件 -->
+    <script src="/angular/angular.js"></script>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--需要遵守react的目录结构，日了狗-->
+    <link rel="stylesheet" href="/css/semantic.min.css">
+    <script src="/js/semantic.min.js"></script>
+
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr.min.js"></script>
+
+    <script src="/js/toastr.min.js"></script>
+    <link rel="text/html" href="/js/toastr.min.css">
+    <!--end-->
+
+    <!--网站内部js-->
+    <!--<script src="/static/js/allBikes.js"></script>-->
+    <script src="/static/js/unLockVehicle.js"></script>
+</head>
+<body ng-app="unLockVehicleApp" ng-controller="unLockVehicleCtrl">
+<div>
+    <div>
+        <h2 class="ui small center aligned icon header">
+            <i class="bicycle icon"></i>
+            显示所有未上锁车辆信息，并可操作上锁
+        </h2>
+    </div>
+
+    <div class="ui horizontal divider" style="margin-top: 20px;margin-bottom: 20px">
+        我好黑，我是分割线
+    </div>
+
+    <!--所有运维区域-->
+    <div class="ui secondary pointing menu">
+        <a ng-repeat="areaInfo in allMimaAreas" ng-click="seeAllBikeInSelectedArea($index, areaInfo.PartnerAreaGuid)"
+           ng-class="{true:'active item',false:'item'}[selecetedAreaIndex == $index]" >
+            {{areaInfo.PartnerAreaName}}
+        </a>
+
+        <div class="right menu">
+            <a class="ui item">
+                区域被吴过滤过
+            </a>
+        </div>
+    </div>
+
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>车辆号</th>
+            <th>SN号</th>
+            <th>蓝牙号</th>
+
+            <th>车辆在线检测</th>
+            <th>上锁操作</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="eListBikeInfo in selectedAreaEBikes">
+            <td>{{$index + 1}}</td>
+            <td>{{eListBikeInfo.BicycleNo}}</td>
+            <td>{{eListBikeInfo.ControllerNo}}</td>
+            <td>{{eListBikeInfo.ControllerBluetoothNo}}</td>
+
+            <td>
+                <button class="ui blue submit button" ng-click="bikeOnlineDetection(eListBikeInfo)">检测</button>
+                <div class="ui pointing green basic label">
+                    {{eListBikeInfo.bikeEState}}
+                </div>
+            </td>
+
+            <td>
+                <button class="ui blue submit button">上锁</button>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

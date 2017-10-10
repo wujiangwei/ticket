@@ -76,6 +76,10 @@
         <div class="item">
             <button class="ui blue submit button" ng-disabled="inputBikeNo.length >= 10" ng-click="getInputEBikeLog()">查看车辆日志</button>
         </div>
+
+        <div class="item" style="margin-left: 600px">
+            <button class="ui blue submit button" ng-click="getUnLockVehicle(yunweiAccountSession)">查看所有未上锁车辆</button>
+        </div>
     </div>
 
     <div class="ui horizontal divider">
@@ -107,9 +111,7 @@
             <th>录入者</th>
             <th>录入时间</th>
             <th>查看日志</th>
-
             <th>车辆在线检测</th>
-
             <th>车辆参数查看</th>
             <th>设置车辆参数</th>
         </tr>

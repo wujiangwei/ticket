@@ -209,6 +209,23 @@ router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
     }
 })
 
+// 按照车辆SN号查询车辆是否上锁
+router.post('/lookVehicleIsNoElectric', function (req, res) {
+    if(req.body.SN == undefined || req.body.SN.length == 0){
+        return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
+    }
+    
+    redisUtil.getSimpleValueFromRedis(req.body.SN + '_BikeEState', function (bikeLatest) {
+        if(bikeLatest != undefined || bikeLatest != null){
+            // console.log('哦' + bikeLatest)
+            res.json({'errorCode':0, 'isBikeEState' :bikeLatest, 'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
+        }else {
+            //exist in redis , update
+            res.json({'errorCode':0, 'isBikeEState' :undefined, 'locationTime': new Date(retEBikeLogObject.createdAt.getTime() + 8*60*60*1000)});
+        }
+    })
+})
+
 
 //以下为测试代码
 
