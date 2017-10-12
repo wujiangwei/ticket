@@ -40,6 +40,8 @@ var mimacxLog = require('./routes/mimacxLog')
 var mimacxEBike = require('./routes/mimacxEBike')
 var mimacxProducts = require('./routes/mimacxProduct')
 var liveQuery = require('./routes/liveQuery')
+var traverseUnLockVehicle = require('./routes/traverseUnLockVehicle')
+
 
 app.set('views', path.join(__dirname, 'views'))
 app.engine('.html', ejs.__express)
@@ -53,6 +55,7 @@ app.use('/mimacxLog', mimacxLog)
 app.use('/mimacxEBike', mimacxEBike)
 app.use('/mimacxProducts', mimacxProducts)
 app.use('/liveQuery', liveQuery)
+app.use('/traverseUnLockVehicle', traverseUnLockVehicle)
 
 //end angularjs
 
