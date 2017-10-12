@@ -26,6 +26,8 @@ exports.getEBikeLogSqlName = function(queryDate) {
             return 'MimaEBikeLogsPartD';
         case 4:
             return 'MimaEBikeLogsPartE';
+        // case 5:
+        //     return 'MimaEBikeLogsPartF';
         default:
             return 'MimaEBikeHistoryLogs';
     }

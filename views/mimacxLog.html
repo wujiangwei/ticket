@@ -157,7 +157,7 @@
                 <!--车辆报文-->
                 <div ng-if="messageDateObject.LogType != 100 && messageDateObject.LogType != 99">
                     {{messageDateObject.Content.messageType != undefined ? messageDateObject.Content.messageType :
-                    (messageDateObject.cmdDes != undefined ? messageDateObject.cmdDes : messageDateObject.Content.cmdID)}}
+                    (messageDateObject.cmdDes != undefined ? messageDateObject.cmdDes : (messageDateObject.Content.cmdID != undefined ? messageDateObject.Content.cmdID : messageDateObject.Remark))}}
                     <br>
                     <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
                 </div>
@@ -191,6 +191,7 @@
                         <i class="map icon"></i>
                     </button>
                 </div>
+
                 <div ng-if="messageDateObject.seeContent == true">
                     <!--查看其他报文-->
                     <div class="ui label">
@@ -209,7 +210,7 @@
                         <i class="unlinkify icon"></i>
                     </button>
                 </div>
-                <div ng-if="messageDateObject.LogType == 5 || (messageDateObject.LogType == 6 && messageDateObject.Content.messageBody == undefined)
+                <div ng-if="messageDateObject.LogType == 18 || messageDateObject.LogType == 20 || messageDateObject.LogType == 5 || (messageDateObject.LogType == 6 && messageDateObject.Content.messageBody == undefined)
                            || (messageDateObject.LogType == 6 && messageDateObject.Content.messageBody != undefined && messageDateObject.Content.result != 0)" class="ui label">
                     {{messageDateObject.cmdSource}}
                 </div>
@@ -309,10 +310,10 @@
                 <li>3：由车辆开始充电触发的上报信息</li>
                 <li>4：由车辆断开充电触发的上报信息</li>
                 <li>5：由车辆报警触发的上报信息</li>
-                <li>6：由车辆自动上锁触发的上报信息</li>
                 <li>7：蓝牙成功开锁触发的上报信息</li>
-                <li>8：历史位置数据上报信息</li>
                 <li>9：低功耗模式下周期上报消息</li>
+                <li>8：历史位置数据上报信息(待移除)</li>
+                <li>6：由车辆自动上锁触发的上报信息(废弃)</li>
             </ul>
         </div>
         <div class="ui green segment message">

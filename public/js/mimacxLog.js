@@ -309,6 +309,12 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         $scope.todayTotalMessageCount = Math.floor(serviceData.ID/$scope.pageDateCount) + 1;
                     }
 
+                    //报文类型
+                    if(serviceData.SourceType == 1){
+                        serviceData.isActive = true;
+                    }
+
+                    //2个特殊报文
                     if(serviceData.LogType == 100 || serviceData.LogType == 99){
                         //借还车
                         // [15656672077]用户还车BT费用计算接口成功,车辆号：077100157
@@ -368,11 +374,8 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         continue;
                     }
 
-                    if(serviceData.SourceType == 1){
-                        serviceData.isActive = true;
-                    }
 
-                    //str to object
+                    //其他报文
                     var serviceDataContent = serviceData.Content;
                     if(serviceDataContent.indexOf("MsgSeq:") != -1){
                         //截取content中的MsgSeq后的数字
@@ -409,6 +412,12 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                                 contentObject.messageBody.gpsPointStr = toCoordinates(contentObject);
                             }
 
+                            if(serviceData.SourceType == 1){
+                                serviceData.firstMessageTag = translateBTMessageTypeToDes(contentObject.messageType);
+                            }else {
+                                serviceData.firstMessageTag = translateMessageTypeToDes(contentObject.messageType);
+                            }
+
                         }catch(err) {
                             //other message
                             // serviceData.isActive = true;
@@ -417,82 +426,86 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                             continue;
                         }
                         serviceData.Content = contentObject;
-
-                        //next str to object(refine)
-                        var serviceDataNext = i != bikeLogList.length - 1 ? bikeLogList[i + 1] : undefined;
-                        var contentObjectNext = undefined;
-                        if(serviceDataNext != undefined && serviceDataNext.LogType != 1 && serviceDataNext.LogType != 6){
-                            var serviceDataContentNext = serviceDataNext.Content;
-                            var payloadIndexNext = serviceDataContentNext.indexOf("payload:");
-                            var contentStrNext = serviceDataContent.substring(payloadIndexNext + 8, serviceDataContentNext.length);
-                            try{
-                                contentObjectNext = JSON.parse(contentStrNext);
-                            }catch(err) {
-                                contentObjectNext = undefined;
-                            }
-                        }
-
-                        if(i == 0 || contentObjectNext == undefined || contentObject.messageType != contentObjectNext.messageType){
-                            if(serviceData.SourceType == 1){
-                                serviceData.firstMessageTag = translateBTMessageTypeToDes(contentObject.messageType);
-                            }else {
-                                serviceData.firstMessageTag = translateMessageTypeToDes(contentObject.messageType);
-                            }
+                        //车辆参数设置
+                        if(serviceData.Content != undefined && serviceData.Content.paramname != undefined){
+                            serviceData.cmdSource = serviceData.Content.paramname + '=' + serviceData.Content.paramvalue;
                         }
                     }else {
-                        // serviceData.isActive = true;
-                        serviceData.seeContent = true;
-                        $scope.bikeLogDateList.push(serviceData);
-                        continue;
+                        var leftBracket = serviceDataContent.indexOf("{");
+                        if(leftBracket != -1){
+
+                            var contentStr = serviceDataContent.substring(leftBracket, serviceDataContent.length);
+                            var contentObject = undefined;
+                            try{
+                                contentObject = JSON.parse(contentStr);
+                            }catch(err) {
+                                //other message
+                                // serviceData.isActive = true;
+                                serviceData.seeContent = true;
+                                $scope.bikeLogDateList.push(serviceData);
+                                continue;
+                            }
+                            serviceData.Content = contentObject;
+
+                            //车辆参数设置
+                            if(serviceData.Content != undefined && serviceData.Content.paramname != undefined){
+                                serviceData.cmdSource = serviceData.Content.paramname + '=' + serviceData.Content.paramvalue;
+                            }
+
+                        }else {
+                            serviceData.seeContent = true;
+                            $scope.bikeLogDateList.push(serviceData);
+                            continue;
+                        }
+                    }
+
+                    if(serviceData.LogType == 5){
+                        //服务器发送命令
+                        if(serviceDataContent.indexOf("转发命令请求失败") != -1){
+                            //截取请求失败后的原因
+                            var cmdIndex = serviceDataContent.indexOf("转发命令请求失败");
+                            var cmdEndIndex = serviceDataContent.indexOf(",", cmdIndex);
+                            var cmdSendResult = serviceDataContent.substring(cmdIndex + 4, cmdEndIndex);
+                            serviceData.firstMessageTag = cmdSendResult;
+                            serviceData.isActive = false;
+                        }else {
+                            serviceData.firstMessageTag = '发送命令成功';
+                        }
+
+                    }else if(serviceData.LogType == 6){
+                        if(serviceData.Content.result != undefined){
+                            // serviceData.Content.result = 1;
+                            var resultStr = undefined;
+                            switch (parseInt(serviceData.Content.result)){
+                                case 0:
+                                    resultStr = '车辆回复成功';
+                                    break;
+                                case 1:
+                                    resultStr = '车辆回复失败';
+                                    break;
+                                case 2:
+                                    resultStr = '命令发送失败';
+                                    break;
+                                default:
+                                    resultStr = '未知失败' + serviceData.Content.result
+                                    break;
+                            }
+                            serviceData.cmdSource = resultStr;
+                            if(serviceData.Content.result != 0){
+                                serviceData.isActive = false;
+                                serviceData.firstMessageTag = '响应失败';
+                            }else {
+                                serviceData.firstMessageTag = '响应成功';
+                            }
+                        }else {
+                            // serviceData.firstMessageTag = 'resl';
+                        }
                     }
 
                     //commend ID
                     if(contentObject.cmdID != undefined){
                         serviceData.cmdDes = translatecmdIDToDes(contentObject.cmdID);
-                        serviceData.firstMessageTag = translatecmdIDToDes(contentObject.cmdID);
                         // serviceData.isActive = true;
-                        if(serviceData.LogType == 5){
-                            //服务器发送命令
-                            if(serviceDataContent.indexOf("转发命令请求失败") != -1){
-                                //截取请求失败后的原因
-                                var cmdIndex = serviceDataContent.indexOf("转发命令请求失败");
-                                var cmdEndIndex = serviceDataContent.indexOf(",", cmdIndex);
-                                var cmdSendResult = serviceDataContent.substring(cmdIndex + 4, cmdEndIndex);
-                                serviceData.firstMessageTag = cmdSendResult;
-                                serviceData.isActive = false;
-                            }else {
-                                serviceData.firstMessageTag = '发送命令成功';
-                            }
-
-                        }else {
-                            if(serviceData.Content.result != undefined){
-                                // serviceData.Content.result = 1;
-                                var resultStr = undefined;
-                                switch (parseInt(serviceData.Content.result)){
-                                    case 0:
-                                        resultStr = '车辆回复成功';
-                                        break;
-                                    case 1:
-                                        resultStr = '车辆回复失败';
-                                        break;
-                                    case 2:
-                                        resultStr = '命令发送失败';
-                                        break;
-                                    default:
-                                        resultStr = '未知失败' + serviceData.Content.result
-                                        break;
-                                }
-                                serviceData.cmdSource = resultStr;
-                                if(serviceData.Content.result != 0){
-                                    serviceData.isActive = false;
-                                    serviceData.firstMessageTag = '响应失败';
-                                }else {
-                                    serviceData.firstMessageTag = '响应成功';
-                                }
-                            }else {
-                                // serviceData.firstMessageTag = 'resl';
-                            }
-                        }
 
                         //argument 设置
                         if(serviceData.Content.argument != undefined){

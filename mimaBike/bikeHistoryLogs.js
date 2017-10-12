@@ -216,8 +216,8 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
     // ebikeHistoryLogQuery.equalTo('LogType', 100);
-    // ebikeHistoryLogQuery.contains('Content', '断线');
-    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
+    ebikeHistoryLogQuery.contains('Content', '离线');
+    // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
     // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
