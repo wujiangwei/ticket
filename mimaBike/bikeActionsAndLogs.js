@@ -240,6 +240,7 @@ router.post('/getBikeLatestLogTime',function (req, res) {
     })
 })
 
+//未使用
 function monitorSocketServiceByLogState(Remark) {
     var monitorTimeSpaceSecond = parseInt(process.env['monitorTimeSpaceMin']) * 60;
 

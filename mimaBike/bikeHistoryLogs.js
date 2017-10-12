@@ -94,7 +94,7 @@ router.post('/ebileLogList',function (req, res) {
     });
 })
 
-//暂时为客服系统查询车辆状态使用的接口
+//暂时为客服系统查询车辆状态使用的接口【废弃】
 router.post('/ebikeHistoryLocationBySnAndTime',function (req, res) {
 
     if(req.body.SN == undefined || req.body.SN.length == 0){
