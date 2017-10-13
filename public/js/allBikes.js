@@ -43,7 +43,7 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
 
     //目前测试区域
     //Tbit,颐和盛世小区,苏州度假区测试,东凤镇,江苏大学，三峡大学
-    $scope.validAreasNames = ['度假区', '池州', '东凤镇', '颐和盛世小区', '江苏', '三峡大学', '测试'];
+    $scope.validAreasNames = ['度假区', '池州', '东凤镇', '颐和盛世小区', '江苏', '三峡大学', '测试', '渭南', '合肥', '枣庄'];
 
     function getAllOperationArea() {
         $scope.netRequestState = 'start';
