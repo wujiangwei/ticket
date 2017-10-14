@@ -67,16 +67,6 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
                     $scope.selectedAreaEBikes = response.Data;
                     $scope.selectedAreaEBikes.sort(by('BicycleNo',by('ControllerNo')));
 
-                    for(var i = 0; i < $scope.allMimaAreas.length ; i++){
-                        if($scope.allMimaAreas[i].PartnerAreaGuid == selectedAreaGuid){
-                            if($scope.allMimaAreas[i].PartnerAreaNameOrignal == undefined){
-                                $scope.allMimaAreas[i].PartnerAreaNameOrignal = $scope.allMimaAreas[i].PartnerAreaName;
-                            }
-
-                            $scope.allMimaAreas[i].PartnerAreaName = $scope.allMimaAreas[i].PartnerAreaNameOrignal + '(' +$scope.selectedAreaEBikes.length + '辆车)';
-                        }
-                    }
-
                     for (var j = 0; j < $scope.selectedAreaEBikes.ControllerNo.length; j++){
                         if ($scope.selectedAreaEBikes.ControllerNo[j] == undefined){
                             continue
@@ -98,6 +88,16 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
                                 })
                                 .finally(function () {
                                 })
+                        }
+                    }
+
+                    for(var i = 0; i < $scope.allMimaAreas.length ; i++){
+                        if($scope.allMimaAreas[i].PartnerAreaGuid == selectedAreaGuid){
+                            if($scope.allMimaAreas[i].PartnerAreaNameOrignal == undefined){
+                                $scope.allMimaAreas[i].PartnerAreaNameOrignal = $scope.allMimaAreas[i].PartnerAreaName;
+                            }
+
+                            $scope.allMimaAreas[i].PartnerAreaName = $scope.allMimaAreas[i].PartnerAreaNameOrignal + '(' +$scope.selectedAreaEBikes.length + '辆车)';
                         }
                     }
 
