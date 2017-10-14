@@ -44,7 +44,7 @@
 
     <!--所有运维区域-->
     <div class="ui secondary pointing menu">
-        <a ng-repeat="areaInfo in allMimaAreas" ng-click="seeAllBikeInSelectedArea($index, areaInfo.PartnerAreaGuid)"
+        <a ng-repeat="areaInfo in allMimaAreas" ng-click="seeAllBikeInSelectedAre($index, areaInfo.PartnerAreaGuid)"
            ng-class="{true:'active item',false:'item'}[selecetedAreaIndex == $index]" >
             {{areaInfo.PartnerAreaName}}
         </a>

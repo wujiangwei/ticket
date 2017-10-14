@@ -48,7 +48,7 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
     getAllOperationArea();
 
     //某运维区域的所有车辆
-    $scope.seeAllBikeInSelectedArea = function (selecetedIndex, selectedAreaGuid) {
+    $scope.seeAllBikeInSelectedAre = function (selecetedIndex, selectedAreaGuid) {
 
         $scope.selecetedAreaIndex = selecetedIndex;
 
