@@ -4,7 +4,7 @@ var app = angular.module('unLockVehicleApp',[
 
 app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout,$interval) {
 
-    $scope.validAreasNames = ['度假区', '池州', '东凤镇', '颐和盛世小区', '江苏大学', '三峡大学'];
+    $scope.validAreasNames = ['度假区', '池州', '东凤镇', '颐和盛世小区', '江苏大学', '三峡大学','陕西渭南','陕西三原'];
 
     function getAllOperationArea() {
         $scope.netRequestState = 'start';
@@ -53,6 +53,7 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
         $scope.selecetedAreaIndex = selecetedIndex;
 
         $scope.selectedAreaEBikes = [];
+
         $scope.netRequestState = 'start';
         $http.post("https://api.mimacx.com/BatteryCar/GetBicycleInfoByAreaGuid",{
             "AreaGuid" : selectedAreaGuid,
@@ -76,6 +77,30 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
                         }
                     }
 
+                    for (var j = 0; j < $scope.selectedAreaEBikes.ControllerNo.length; j++){
+                        if ($scope.selectedAreaEBikes.ControllerNo[j] == undefined){
+                            continue
+                        }
+                        else {
+                            $http.post("/bikeActionsAndLogs/getBikeLatestLogTime",{
+                                "SN" : $scope.selectedAreaEBikes.ControllerNo[j]
+                            })
+                                .then(function(result) {
+                                    // eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
+                                    eListBikeInfo.bikeEState = result.data.bikeEState;
+                                    if(result.data.bikeLatestTime == undefined){
+                                        eListBikeInfo.lastestOnlineTime = 'undefine';
+                                    }
+                                })
+                                .catch(function (result) {
+                                    //error
+                                    eListBikeInfo.lastestOnlineTime = '网络错误';
+                                })
+                                .finally(function () {
+                                })
+                        }
+                    }
+
                 }else {
                     //error
                     $scope.selectedAreaEBikesError = response.returnMsg;
@@ -93,5 +118,25 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
             });
     };
 
+
+    $scope.bikeOnlineDetection = function (eListBikeInfo) {
+
+        $http.post("/bikeActionsAndLogs/getBikeLatestLogTime",{
+            "SN" : eListBikeInfo.ControllerNo
+        })
+            .then(function(result) {
+                eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
+                eListBikeInfo.bikeEState = result.data.bikeEState;
+                if(result.data.bikeLatestTime == undefined){
+                    eListBikeInfo.lastestOnlineTime = 'undefine';
+                }
+            })
+            .catch(function (result) {
+                //error
+                eListBikeInfo.lastestOnlineTime = '网络错误';
+            })
+            .finally(function () {
+            })
+    }
 
 })
