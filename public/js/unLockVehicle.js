@@ -65,30 +65,26 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
                 if(response.returnCode == 0){
 
                     $scope.selectedAreaEBikes = response.Data;
+                    $scope.bikeOnlineDetectionList = [];
                     $scope.selectedAreaEBikes.sort(by('BicycleNo',by('ControllerNo')));
 
                     for (var j = 0; j < $scope.selectedAreaEBikes.length; j++){
-                        if ($scope.selectedAreaEBikes[j].ControllerNo == undefined){
-                            continue
-                        }
-                        else {
-                            $http.post("/bikeActionsAndLogs/getBikeLatestLogTime",{
-                                "SN" : $scope.selectedAreaEBikes[j].ControllerNo
+                        $http.post("/bikeActionsAndLogs/getBikeLatestLogTime",{
+                            "SN" : $scope.selectedAreaEBikes[j].ControllerNo
+                        })
+                            .then(function(result) {
+                                // eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
+                                $scope.bikeEState = result.data.bikeEState;
+                                if(result.data.bikeLatestTime == undefined){
+                                    eListBikeInfo.lastestOnlineTime = 'undefine';
+                                }
                             })
-                                .then(function(result) {
-                                    // eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
-                                    eListBikeInfo.bikeEState = result.data.bikeEState;
-                                    if(result.data.bikeLatestTime == undefined){
-                                        eListBikeInfo.lastestOnlineTime = 'undefine';
-                                    }
-                                })
-                                .catch(function (result) {
-                                    //error
-                                    eListBikeInfo.lastestOnlineTime = '网络错误';
-                                })
-                                .finally(function () {
-                                })
-                        }
+                            .catch(function (result) {
+                                //error
+                                eListBikeInfo.lastestOnlineTime = '网络错误';
+                            })
+                            .finally(function () {
+                            })
                     }
 
                     for(var i = 0; i < $scope.allMimaAreas.length ; i++){
