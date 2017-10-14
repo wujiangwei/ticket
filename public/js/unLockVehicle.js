@@ -67,13 +67,13 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
                     $scope.selectedAreaEBikes = response.Data;
                     $scope.selectedAreaEBikes.sort(by('BicycleNo',by('ControllerNo')));
 
-                    for (var j = 0; j < $scope.selectedAreaEBikes.ControllerNo.length; j++){
-                        if ($scope.selectedAreaEBikes.ControllerNo[j] == undefined){
+                    for (var j = 0; j < $scope.selectedAreaEBikes.length; j++){
+                        if ($scope.selectedAreaEBikes[j].ControllerNo == undefined){
                             continue
                         }
                         else {
                             $http.post("/bikeActionsAndLogs/getBikeLatestLogTime",{
-                                "SN" : $scope.selectedAreaEBikes.ControllerNo[j]
+                                "SN" : $scope.selectedAreaEBikes[j].ControllerNo
                             })
                                 .then(function(result) {
                                     // eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
