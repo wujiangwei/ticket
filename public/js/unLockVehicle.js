@@ -98,6 +98,7 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
     };
 
     function getUnLockVehicleInfo() {
+        $scope.eListBikeInfo = ''
         for (var j = 0; j < $scope.selectedAreaEBikes.length; j++){
             if ($scope.selectedAreaEBikes.length > 0){
                 $http.post("/bikeActionsAndLogs/getBikeLatestLogTime",{
@@ -105,7 +106,7 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
                 })
                     .then(function(result) {
                         // eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
-                        $scope.bikeEState = result.data.bikeEState;
+                        eListBikeInfo.bikeEState = result.data.bikeEState;
                         if(result.data.bikeLatestTime == undefined){
                             eListBikeInfo.lastestOnlineTime = 'undefine';
                         }
