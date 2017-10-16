@@ -44,14 +44,14 @@
 
     <!--所有运维区域-->
     <div class="ui secondary pointing menu">
-        <a ng-repeat="areaInfo in allMimaAreas" ng-click="seeAllBikeInSelectedArea($index, areaInfo.PartnerAreaGuid)"
+        <a ng-repeat="areaInfo in allMimaAreas" ng-click="seeAllBikeInSelectedAre($index, areaInfo.PartnerAreaGuid)"
            ng-class="{true:'active item',false:'item'}[selecetedAreaIndex == $index]" >
             {{areaInfo.PartnerAreaName}}
         </a>
 
         <div class="right menu">
             <a class="ui item">
-                区域被吴过滤过
+                区域后面增加
             </a>
         </div>
     </div>
@@ -62,8 +62,6 @@
             <th>序号</th>
             <th>车辆号</th>
             <th>SN号</th>
-            <th>蓝牙号</th>
-
             <th>车辆在线检测</th>
             <th>上锁操作</th>
 
@@ -74,8 +72,6 @@
             <td>{{$index + 1}}</td>
             <td>{{eListBikeInfo.BicycleNo}}</td>
             <td>{{eListBikeInfo.ControllerNo}}</td>
-            <td>{{eListBikeInfo.ControllerBluetoothNo}}</td>
-
             <td>
                 <button class="ui blue submit button" ng-click="bikeOnlineDetection(eListBikeInfo)">检测</button>
                 <div class="ui pointing green basic label">
@@ -90,6 +86,10 @@
         </tr>
         </tbody>
     </table>
+
+    <div class="ui active dimmer" ng-show="netRequestState == 'start'">
+        <div class="ui medium text loader">Loading</div>
+    </div>
 
 </div>
 </body>

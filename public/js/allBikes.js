@@ -230,8 +230,8 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
             toastr.error("请先登录运维帐号");
             return;
         }
-        else {
-            window.open("http://localhost:8080/traverseUnLockVehicle/" + $scope.yunweiAccountSession);
+        else {https:    //  http://localhost:8080
+            window.open("https://mimacx.leanapp.cn/traverseUnLockVehicle/" + $scope.yunweiAccountSession);
         }
 
     }
