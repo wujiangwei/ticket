@@ -214,7 +214,8 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             }else {
                 $scope.netRequestState = 'start';
                 $http.post("https://api.mimacx.com/BatteryCar/GetControllerInfoByBicycleNo",{
-                    "BicycleNo" : $scope.ebikeNumber
+                    "BicycleNo" : $scope.ebikeNumber,
+                    "AppVersion" : "1.3.0"
                 })
                     .then(function (result) {
                         var response = result.data;

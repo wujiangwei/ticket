@@ -232,19 +232,25 @@ router.post('/lookVehicleIsNoElectric', function (req, res) {
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
-    // ebikeHistoryLogQuery.equalTo('LogType', 100);
-    ebikeHistoryLogQuery.contains('Content', '离线');
+    // ebikeHistoryLogQuery.equalTo('LogType', 99);
+    // ebikeHistoryLogQuery.contains('bikeOperationResult', '失败');
     // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
     // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
+    ebikeHistoryLogQuery.contains('Content', 'Redis');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
 
-    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
+    if(queryDate == undefined){
+        ebikeHistoryLogQuery.descending('createdAt');
+    }else {
+        ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', queryDate);
+        ebikeHistoryLogQuery.ascending('createdAt');
+    }
 
     // var queryDate = new Date("2017-09-23 11:40:30");
     // ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', queryDate);
 
-    ebikeHistoryLogQuery.ascending('createdAt');
+
     ebikeHistoryLogQuery.limit(queryCountEatchBatch);
     ebikeHistoryLogQuery.find().then(function (xMinBeforeLogs) {
 
@@ -263,9 +269,20 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
         console.log('最后一个鉴权时间:' + xMinBeforeLogs[xMinBeforeLogs.length - 1].createdAt);
         console.log('total 鉴权次数:' + xMinBeforeLogs.length);
 
+        var bikeList = [];
         for(var t = 0; t < xMinBeforeLogs.length; t++){
 
-            console.log(t + ': ' + xMinBeforeLogs[t].createdAt + ' ------- ' + xMinBeforeLogs[t].get('Content'));
+
+            var tBikeID = xMinBeforeLogs[t].get('bikeID');
+            if(tBikeID != undefined){
+
+                if(!bikeList.indexOf(tBikeID)){
+                    bikeList.push(tBikeID);
+                }
+                console.log(xMinBeforeLogs[t].createdAt + ', bike : ' + tBikeID + ', ' + xMinBeforeLogs[t].get('bikeOperationResultDes'));
+            }else {
+                console.log(t + ': ' + xMinBeforeLogs[t].createdAt + ' ------- ' + xMinBeforeLogs[t].get('Content'));
+            }
 
             var xMinBeforeLogObject = xMinBeforeLogs[t];
             var isExist = false;
@@ -320,6 +337,7 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
         console.log('共' + totalEBkke + '辆车，重复分布为:' + xMinBeforeLogs.length);
 
+        console.log(bikeList);
     }
         , function (error) {
         // 异常处理

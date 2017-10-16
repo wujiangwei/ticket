@@ -71,162 +71,50 @@ router.post('/', function(req, res) {
     }, 2000);
 
     var LogParam = req.body;
-    var ActionParam = req.body;
 
-    if(LogParam == undefined && ActionParam == undefined){
-        return res.json({'errorCode': 1, 'errorMsg': 'LogParam and ActionParam is all empty'});
+    if(LogParam == undefined || LogParam.SN == undefined){
+        return res.json({'errorCode': 1, 'errorMsg': 'LogParam is all empty'});
     }
 
-    if(LogParam.SN == undefined || ActionParam.SN == undefined){
-        return res.json({'errorCode': 1, 'errorMsg': 'SN is empty'});
+    //SN LogType Content Remark OperationTime SourceType
+    var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
+    var newEBikeLog = new newEBikeLogSql();
+
+    var SNList = LogParam.SN.split('_');
+    LogParam.SN = SNList[0];
+
+    newEBikeLog.set('SN', LogParam.SN);
+    if(SNList.length > 1){
+        newEBikeLog.set('SNIndex', SNList[1]);
     }
 
-    var lock = 0;
-    var unlock = 2;
-    {
-        //Log
-        if(LogParam == undefined){
-            lock++;
-        }else {
-            //SN LogType Content Remark OperationTime SourceType
-            var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
-            var newEBikeLog = new newEBikeLogSql();
+    newEBikeLog.set('LogType', parseInt(LogParam.LogType));
+    newEBikeLog.set('Content', LogParam.Content);
+    newEBikeLog.set('Remark', LogParam.Remark);
+    newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
+    if(LogParam.BicycleNo != undefined && LogParam.BicycleNo.length > 5){
+        newEBikeLog.set('bikeID', LogParam.BicycleNo);
+    }
+    // 监控socket服务器正常否
+    structLogContent(newEBikeLog);
 
-            var SNList = LogParam.SN.split('_');
-            LogParam.SN = SNList[0];
+    //update bike time in redis
+    redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
 
-            newEBikeLog.set('SN', LogParam.SN);
-            if(SNList.length > 1){
-                // console.log('-----' + SNList[1]);
-                newEBikeLog.set('SNIndex', SNList[1]);
-            }
+    newEBikeLog.save().then(function (savedNewEBikeLog) {
+        return res.json({'errorCode':0});
+    }, function (error) {
+        console.log(req.body.SN + ' save log failed:' + error);
 
-            newEBikeLog.set('LogType', parseInt(LogParam.LogType));
-            newEBikeLog.set('Content', LogParam.Content);
-            newEBikeLog.set('Remark', LogParam.Remark);
-            newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
-            if(LogParam.BicycleNo != undefined && LogParam.BicycleNo.length > 5){
-                newEBikeLog.set('bikeID', LogParam.BicycleNo);
-            }
-
-            // 监控socket服务器正常否
-
-
-            structLogContent(newEBikeLog);
-
-            //update bike time in redis
-            redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
-
-            newEBikeLog.save().then(function (savedNewEBikeLog) {
-                lock++;
-                if(lock == unlock){
-                    if(resTag == 0){
-                        resTag = 1;
-                        return res.json({'errorCode':0});
-                    }
-                }
-            }, function (error) {
-                lock++;
-                if(lock == unlock) {
-                    console.log(req.body.SN + ' save log failed:' + error);
-
-                    if(resTag == 0){
-                        resTag = 1;
-                        return res.json({'errorCode': -1, 'errorMsg': error.message});
-                    }
-
-                }
-            });
+        if(resTag == 0){
+            resTag = 1;
+            return res.json({'errorCode': -1, 'errorMsg': error.message});
         }
-    }
-
-    {
-        //Action
-        //角色，角色ID，角色名
-        //role : user,operator,bike,service(by me)
-        //roleGuid : 这些角色在觅马数据库里的Guid
-        //rolePhone : userPhone,operatorPhone,SN,servicePhone
-        //roleName : userName,operatorName,bikeNumber,serviceName
-
-        //action(录入车辆，预约，借车，锁车，开锁，还车，电池仓，上线，下线，报警):
-        //  depositSucceed,depositRefundSubmit,depositRefundSucceed
-
-        //  bindBikeToSystem
-
-        //  （可以根据车辆报文得到success的话，一些success就不用传）
-        //  appointmentFailed,appointmentSucceed
-        //  tryTakeCar,takeCarSucceed,takeCarFailed
-        //  tryUnlockCar,unlockCarSucceed,unlockCarFailed
-        //  tryLockCar,lockCarSucceed,lockCarFailed
-        //  tryReturnBike,returnBikeSucceed,returnBikeFailed,returnBikeByPic
-
-        // tryOpenBatteryHouse,openBatteryHouseSucceed,openBatteryHouseFailed
-
-        // takeBikeOnline,takeBikeOffline
-
-        // changeBikeAlarm
-
-        // 觅马用户和客服交互的行为
-        // reportUseBikeOrder
-
-        // 其他低优先级行为(觅马出行App内)
-        // reportBike,feedbackBike
-
-        //actionMethod:(Bike:2G,BlueTooth)(Other:System,Phone)
-
-        //actionMessage:(some string)
-        //  bindBikeToSystem(车辆录入到X区域成功)
-        //  reportBike,feedbackBike (用户提交的文案)
-        //  reportUseBikeOrder(客服的处理结果：无效，退款X元，现金退款X元)
-
-        //actionPicUrl(for action:returnBikeByPic,reportBike,feedbackBike)
-
-        if(ActionParam.role == undefined || ActionParam.SN == undefined){
-            lock++;
-        }else {
-            var MimaAction = new MimaActionSql();
-            MimaAction.set('role', ActionParam.role);
-            MimaAction.set('roleGuid', ActionParam.roleGuid);
-            MimaAction.set('rolePhone', ActionParam.rolePhone);
-            MimaAction.set('roleName', ActionParam.roleName);
-            MimaAction.set('action', ActionParam.action);
-            MimaAction.set('actionMethod', ActionParam.actionMethod);
-            MimaAction.set('SN', ActionParam.SN);
-            MimaAction.set('bikeId', ActionParam.bikeNo);
-
-            //开电池仓，用于报警逻辑
-            if(ActionParam.action == 'openBatteryHouseSucceed'){
-                redisUtil.setSimpleValueToRedis(getOpenBatteryKey(ActionParam.SN), 1, openBatteryMin * 60);
-            }
-
-            MimaAction.save().then(function (savedMimaActionObject) {
-                lock++;
-                if(lock == unlock){
-
-                    if(resTag == 0){
-                        resTag = 1;
-                        return res.json({'errorCode':0});
-                    }
-
-                }
-            }, function (error) {
-                lock++;
-                if(lock == unlock) {
-                    console.log(req.body.SN + ' save log failed:' + error);
-
-                    if(resTag == 0){
-                        resTag = 1;
-                        return res.json({'errorCode': -1, 'errorMsg': error.message});
-                    }
-                }
-            });
-        }
-    }
+    });
 })
 
 
 router.post('/getBikeLatestLogTime',function (req, res) {
-
     if(req.body.SN == undefined || req.body.SN.length == 0){
         return res.json({'errorCode':1, 'errorMsg':'SN is empty'});
     }
@@ -379,7 +267,7 @@ function structLogContent(leanContentObject) {
 
     var serviceDataContent = serviceData.Content;
 
-    //报警事宜
+    //服务器监控报警事宜
     serviceMonitor(serviceDataContent);
 
     //处理鉴权事宜
