@@ -104,7 +104,10 @@ router.post('/', function(req, res) {
     redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
 
     newEBikeLog.save().then(function (savedNewEBikeLog) {
-        return res.json({'errorCode':0});
+        if(resTag == 0) {
+            resTag = 1;
+            return res.json({'errorCode': 0});
+        }
     }, function (error) {
         console.log(req.body.SN + ' save log failed:' + error);
 
