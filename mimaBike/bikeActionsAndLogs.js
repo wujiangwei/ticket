@@ -73,6 +73,8 @@ router.post('/', function(req, res) {
     var LogParam = req.body;
 
     if(LogParam == undefined || LogParam.SN == undefined){
+        resTag = 1;
+        console.error("LogParam is all empty.");
         return res.json({'errorCode': 1, 'errorMsg': 'LogParam is all empty'});
     }
 
