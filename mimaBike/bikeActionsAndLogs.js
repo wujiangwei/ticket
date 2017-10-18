@@ -462,7 +462,7 @@ function structLogContent(leanContentObject) {
         }
     }
 
-    if (contentObject.messageBody != undefined || contentObject.messageBody != ''){
+    if (contentObject != undefined && contentObject.messageBody != undefined){
         if (contentObject.messageBody.actionMethod == 'BlueTooth' && contentObject.messageBody.role == 'operator'){
             redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
         }
