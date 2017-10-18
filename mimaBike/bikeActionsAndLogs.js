@@ -654,48 +654,44 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                     }
 
                                     redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
+                                        var sendSmsData='';
                                         if(openBattery != 1){
                                             //not opened battery in 10 min
-                                            var bikeNumber = sn;
-                                            redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-                                                if(bikeId != null){
-                                                    bikeNumber = bikeId;
-                                                }
-
-                                                var smsData = {
-                                                    mobilePhoneNumber: phoneList[sendPhoneIndex],
-                                                    template: 'batteryAlarm',
-                                                    bikeNumber: bikeId
-                                                };
-                                                alarmSms.sendAlarmSms(smsData);
-                                            })
+                                            sendSmsData = {
+                                                mobilePhoneNumber: phoneList[sendPhoneIndex],
+                                                template: 'batteryAlarm',
+                                                bikeNumber: bikeId
+                                            };
                                         }
+                                        else {
+                                            sendSmsData = {
+                                                mobilePhoneNumber: phoneList[sendPhoneIndex],
+                                                template: 'bikeAlarm',
+                                                bikeNumber: bikeId,
+                                                alarmTime: process.env['illegalityMovePoliceMin'],
+                                                touches: illegalTouch,
+                                                illegalityMove: illegalMove
+                                            };
+                                        }
+
+                                        alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
+                                            sendPhoneIndex++;
+                                            if(Ret == 0 && sendPhoneIndex < phoneList.length){
+                                                //发送失败，且有人在，继续发送
+                                                alarmToPhone();
+                                            }else {
+                                                //报警成功，删掉这个key，reset
+                                                redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
+                                                    if(err != null){
+                                                        console.error('alarmBike del in redis error, ', err.message);
+                                                        return;
+                                                    }
+                                                });
+                                            }
+                                        })
                                     })
 
                                     // return;
-                                    var sendSmsData = {
-                                        mobilePhoneNumber: phoneList[sendPhoneIndex],
-                                        template: 'bikeAlarm',
-                                        bikeNumber: bikeId,
-                                        alarmTime: process.env['illegalityMovePoliceMin'],
-                                        touches: illegalTouch,
-                                        illegalityMove: illegalMove
-                                    };
-                                    alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
-                                        sendPhoneIndex++;
-                                        if(Ret == 0 && sendPhoneIndex < phoneList.length){
-                                            //发送失败，且有人在，继续发送
-                                            alarmToPhone();
-                                        }else {
-                                            //报警成功，删掉这个key，reset
-                                            redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
-                                                if(err != null){
-                                                    console.error('alarmBike del in redis error, ', err.message);
-                                                    return;
-                                                }
-                                            });
-                                        }
-                                    })
                                 }
 
                                 var sendPhoneIndex = 0;
