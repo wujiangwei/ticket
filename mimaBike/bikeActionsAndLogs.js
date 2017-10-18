@@ -495,7 +495,13 @@ function structLogContent(leanContentObject) {
 
         //车辆报警
         if(serviceData.Content.messageBody.alarmType != undefined) {
-            alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
+            if (serviceData.Content.messageBody.alarmType == 4){
+                batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
+            }
+            else {
+                alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
+            }
+
         }
     }
 }
@@ -586,12 +592,7 @@ function getUserPhoneNumber(sn) {
                                 alarmToPhone();
                             }else {
                                 //报警成功，删掉这个key，reset
-                                redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
-                                    if(err != null){
-                                        console.error('alarmBike del in redis error, ', err.message);
-                                        return;
-                                    }
-                                });
+
                             }
                         })
                     })
@@ -608,6 +609,18 @@ function getUserPhoneNumber(sn) {
 
         }
     })
+}
+
+function batteryOff(sn, alarmType) {
+    if (alarmType == 4){
+        redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
+            if(openBattery != 1){
+                //not opened battery in 10 min
+                getUserPhoneNumber(sn)
+            }
+        })
+    }
+    
 }
 
 // 处理车辆非法位移和非法触碰报警
@@ -639,15 +652,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
         case 4:
             leanContentObject.set('bikeNState', 'powerOff');
             // serviceData.Content.messageBody.alarmTypeDes = "电源断电";
-
-            redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
-                if(openBattery != 1){
-                    //not opened battery in 10 min
-                    getUserPhoneNumber(sn)
-                }
-
-                return;
-            })
+            break
 
         case 9:
             leanContentObject.set('bikeNState', 'vertical');
@@ -820,7 +825,7 @@ newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjgzMDAwMDAwMHhjYW1pbQ
 newEBikeLog.set('Remark', '上报数据');
 newEBikeLog.set('SourceType', 0);
 
-// structLogContent(newEBikeLog)
+structLogContent(newEBikeLog)
 
 // alarmBike('mimacx0000000382', 10, 4, newEBikeLog);
 
