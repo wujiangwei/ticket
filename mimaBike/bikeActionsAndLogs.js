@@ -446,7 +446,7 @@ function structLogContent(leanContentObject) {
     }
 
     //commend ID
-    if((contentObject != undefined && contentObject.cmdID != undefined) || contentObject.messageBody != undefined){
+    if(contentObject != undefined && contentObject.cmdID != undefined){
         //LogType(5:发起请求，6请求响应)
         //保存请求的参数 和 响应的结果
         if(serviceData.Content.argument != undefined && serviceData.Content.argument != null && serviceData.Content.argument != ''){
@@ -456,11 +456,17 @@ function structLogContent(leanContentObject) {
         }
 
         leanContentObject.set('cmdId', parseInt(contentObject.cmdID));
-        if(parseInt(contentObject.cmdID) == 6 ||
-            (contentObject.messageBody.actionMethod == 'BlueTooth' && contentObject.messageBody.role == 'operator')){
+        if(parseInt(contentObject.cmdID) == 6 ){
             //处理打开电池仓
             redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
         }
+    }
+
+    if (contentObject.messageBody != undefined){
+        if (contentObject.messageBody.actionMethod == 'BlueTooth' && contentObject.messageBody.role == 'operator'){
+            redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
+        }
+
     }
 
     //deal data
