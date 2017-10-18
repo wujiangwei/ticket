@@ -543,12 +543,12 @@ function getUserPhoneNumber(sn) {
                     phoneList.push(ownerData.PartnerCellPhone);
                 }
                 //最后是不接受短信的人
-                for (var i = 0; i < operateDatas.length; i++) {
-                    var perationUser = operateDatas[i];
-                    if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
-                        phoneList.push(perationUser.UserPhone)
-                    }
-                }
+                // for (var i = 0; i < operateDatas.length; i++) {
+                //     var perationUser = operateDatas[i];
+                //     if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
+                //         phoneList.push(perationUser.UserPhone)
+                //     }
+                // }
 
                 //递归
                 function alarmToPhone() {
@@ -825,7 +825,7 @@ newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjgzMDAwMDAwMHhjYW1pbQ
 newEBikeLog.set('Remark', '上报数据');
 newEBikeLog.set('SourceType', 0);
 
-structLogContent(newEBikeLog)
+// structLogContent(newEBikeLog)
 
 // alarmBike('mimacx0000000382', 10, 4, newEBikeLog);
 
