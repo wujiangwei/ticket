@@ -816,7 +816,7 @@ newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
 
-alarmBike('mimacx0000000382', 10, 4, newEBikeLog);
+// alarmBike('mimacx0000000382', 10, 4, newEBikeLog);
 
 // redisUtil.getSimpleValueFromRedis('testKey', function (bikeLatestTime) {
 //     if(bikeLatestTime != undefined || bikeLatestTime != null){
