@@ -383,12 +383,14 @@ function structLogContent(leanContentObject) {
                     contentObject.messageType == 7){
 
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
+                    redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',contentObject.messageBody.battery,0)
                 }
 
                 if (contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0) ||
                         contentObject.messageType == 5 || contentObject.messageType == 6){
                     
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
+                    redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',contentObject.messageBody.battery,0)
                 }
 
 
@@ -444,7 +446,7 @@ function structLogContent(leanContentObject) {
     }
 
     //commend ID
-    if(contentObject != undefined && contentObject.cmdID != undefined){
+    if(contentObject != undefined && contentObject.cmdID != undefined || contentObject.messageBody != undefined){
         //LogType(5:发起请求，6请求响应)
         //保存请求的参数 和 响应的结果
         if(serviceData.Content.argument != undefined && serviceData.Content.argument != null && serviceData.Content.argument != ''){
@@ -454,7 +456,8 @@ function structLogContent(leanContentObject) {
         }
 
         leanContentObject.set('cmdId', parseInt(contentObject.cmdID));
-        if(parseInt(contentObject.cmdID) == 6){
+        if(parseInt(contentObject.cmdID) == 6 ||
+            (contentObject.messageBody.actionMethod == 'BlueTooth' && contentObject.messageBody.role == 'operator')){
             //处理打开电池仓
             redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
         }
@@ -660,7 +663,8 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                             sendSmsData = {
                                                 mobilePhoneNumber: phoneList[sendPhoneIndex],
                                                 template: 'batteryAlarm',
-                                                bikeNumber: bikeId
+                                                bikeNumber: bikeId,
+                                                bikePower:redisUtil.getSimpleValueFromRedis(sn + ' _batteryPower')
                                             };
                                         }
                                         else {
@@ -723,11 +727,11 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 var newEBikeLog = new newEBikeLogSql();
 
-newEBikeLog.set('SN', 'mimacx0000000052');
+newEBikeLog.set('SN', 'mimacx0000000382');
 newEBikeLog.set('LogType', '3');
-newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"NTI1MDAwMDAwMHhjYW1pbQ==","messageType":2,"messageBody":{"latitudeDegree":31,"latitudeMinute":13.480080,"longitudeDegree":120,"longitudeMinute":25.231680,"totalMileage":200.344000,"battery":91,"satellite":6,"chargeCount":3,"charging":false,"errorCode":"000000000","ctrlState":1,"kickstand":0,"gpstype":1,"timeStamp":"2017-09-19 22:12:39","cellId":"460.00.20831.19043"}}');
+newEBikeLog.set('Content', 'protocolCmId: 3,payload:{"sn":"mimacx0000000382","messageType":2,"messageBody":{"action":"openBatteryHouseSucceed","roleGuid":"bb927cdf-0769-43b0-9f91-f164b08185db","SN":"mimacx0000000382","roleName":"吴才龙","bikeNo":"00000617","actionMethod":"BlueTooth","role":"operator","rolePhone":"15852580112"}}');
 newEBikeLog.set('Remark', '上报数据');
-newEBikeLog.set('SourceType', 0);
+newEBikeLog.set('SourceType', 1);
 
 // structLogContent(newEBikeLog)
 
