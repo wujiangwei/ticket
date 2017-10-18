@@ -446,7 +446,7 @@ function structLogContent(leanContentObject) {
     }
 
     //commend ID
-    if(contentObject != undefined && contentObject.cmdID != undefined || contentObject.messageBody != undefined){
+    if((contentObject != undefined && contentObject.cmdID != undefined) || contentObject.messageBody != undefined){
         //LogType(5:发起请求，6请求响应)
         //保存请求的参数 和 响应的结果
         if(serviceData.Content.argument != undefined && serviceData.Content.argument != null && serviceData.Content.argument != ''){
