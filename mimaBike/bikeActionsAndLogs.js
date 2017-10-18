@@ -496,6 +496,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
     var illegalTouch = 0;
     var illegalMove = 0;
+    var illegaOutage = 0;
 
     switch (alarmType) {
         case 1:
@@ -541,7 +542,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             //     }
             // })
         }
-            illegalMove++;
+            illegaOutage++;
             break;
         case 9:
             leanContentObject.set('bikeNState', 'vertical');
@@ -551,7 +552,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             break;
     }
 
-    if(illegalMove == 1 || illegalTouch == 1){
+    if(illegalMove == 1 || illegalTouch == 1 || illegaOutage == 1){
         //非法位移触发报警
         //配置参数
         var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
@@ -651,6 +652,25 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                         alarmToPhone();
                                         return;
                                     }
+
+                                    redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
+                                        if(openBattery != 1){
+                                            //not opened battery in 10 min
+                                            var bikeNumber = sn;
+                                            redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+                                                if(bikeId != null){
+                                                    bikeNumber = bikeId;
+                                                }
+
+                                                var smsData = {
+                                                    mobilePhoneNumber: phoneList[sendPhoneIndex],
+                                                    template: 'batteryAlarm',
+                                                    bikeNumber: bikeId
+                                                };
+                                                alarmSms.sendAlarmSms(smsData);
+                                            })
+                                        }
+                                    })
 
                                     // return;
                                     var sendSmsData = {
