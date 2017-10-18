@@ -522,25 +522,26 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             // serviceData.Content.messageBody.alarmTypeDes = "电源断电";
         {
             //TODO 查看打开电池仓何时成功的，10分钟内，则断电是正常的，否则不正常。发送报警短信。
-            // redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
-            //     if(openBattery != 1){
-            //         //not opened battery in 10 min
-            //         var bikeNumber = sn;
-            //         redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-            //             if(bikeId != null){
-            //                 bikeNumber = bikeId;
-            //             }
-            //
-            //             var smsData = {
-            //                 mobilePhoneNumber: alarmPhone,
-            //                 template: 'batteryAlarm',
-            //                 bikeNumber: bikeNumber
-            //             };
-            //             alarmSms.sendAlarmSms(smsData);
-            //         })
-            //     }
-            // })
+            redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
+                if(openBattery != 1){
+                    //not opened battery in 10 min
+                    var bikeNumber = sn;
+                    redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+                        if(bikeId != null){
+                            bikeNumber = bikeId;
+                        }
+
+                        var smsData = {
+                            mobilePhoneNumber: alarmPhone,
+                            template: 'batteryAlarm',
+                            bikeNumber: bikeNumber
+                        };
+                        alarmSms.sendAlarmSms(smsData);
+                    })
+                }
+            })
         }
+            illegalMove++;
             break;
         case 9:
             leanContentObject.set('bikeNState', 'vertical');
