@@ -383,14 +383,25 @@ function structLogContent(leanContentObject) {
                     contentObject.messageType == 7){
 
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
-                    redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',contentObject.messageBody.battery,0)
+                    if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
+                        console.log('电池未装获已断电')
+                    }
+                    else {
+                        redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
+                    }
+
                 }
 
                 if (contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0) ||
                         contentObject.messageType == 5 || contentObject.messageType == 6){
                     
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
-                    redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',contentObject.messageBody.battery,0)
+                    if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
+                        console.log('电池未装获已断电')
+                    }
+                    else {
+                        redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
+                    }
                 }
 
 
@@ -562,7 +573,7 @@ function getUserPhoneNumber(sn) {
                     }
 
                     if(sendPhoneIndex >= phoneList.length){
-                        console.log('---------- bike: ' + bikeId + ' shifting,and send error(no phone can send)');
+                        console.log('---------- bike: ' + bikeId + ' powerOff,and send error(no phone can send)');
                         return;
                     }
 
@@ -617,6 +628,9 @@ function batteryOff(sn, alarmType) {
             if(openBattery != 1){
                 //not opened battery in 10 min
                 getUserPhoneNumber(sn)
+            }
+            else {
+                console.log('运维人员打开电池仓更换电池');
             }
         })
     }
