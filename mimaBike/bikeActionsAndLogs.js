@@ -384,7 +384,7 @@ function structLogContent(leanContentObject) {
 
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
                     if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
-                        console.log('电池未装获已断电1' + contentObject.messageBody.SN)
+                        console.log('电池未装获已断电1' + serviceData.SN)
                     }
                     else {
                         redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
@@ -397,7 +397,7 @@ function structLogContent(leanContentObject) {
                     
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
                     if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
-                        console.log('电池未装获已断电2' + contentObject.messageBody.SN)
+                        console.log('电池未装获已断电2' + serviceData.SN)
                     }
                     else {
                         redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
