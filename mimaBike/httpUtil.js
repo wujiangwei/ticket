@@ -39,6 +39,32 @@ exports.httpGetBicycleState = function(bikeId, callback){
     });
 };
 
+var http=require('http');
+
+var request=require('request');
+
+// var a = {BicycleNo:"999999982" + " | " + "2", Message:"99999982非法位移咯"}
+
+exports.httpPost = function (bodyInfo) {
+    var options = {
+        // headers: {"Connection": "close"},
+        url: 'http://120.27.221.91:2000/Operations/InsertLegalMove',
+        method: 'POST',
+        json:true,
+        body: bodyInfo
+    };
+
+    function callback(error, response, data) {
+        if (!error && response.statusCode == 200) {
+            console.log('----info------',data);
+        }
+    }
+
+    request(options, callback);
+}
+
+// httpPost(a)
+
 exports.httpPostRequest = function (url, port, path, reqData, callback) {
     //BUGBUG 不知道为何参数无效
     return;

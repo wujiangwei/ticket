@@ -652,6 +652,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             leanContentObject.set('bikeNState', 'touches');
             illegalTouch++;
             // serviceData.Content.messageBody.alarmTypeDes = "非法触碰";
+
             break;
         case 3:
             leanContentObject.set('bikeNState', 'shifting');
@@ -720,6 +721,14 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 if(bikeId == null){
                                     bikeId = sn;
                                 }
+
+                                if (alarmType == 2 || alarmType == 3){
+                                    httpUtil.httpPost({BicycleNo:bikeId + " | " + alarmType})
+                                }
+                                else if (alarmType == 4){
+                                    httpUtil.httpPost({BicycleNo:bikeId + " | " + alarmType})
+                                }
+
 
                                 var areaData = getResponseBody.data;
                                 var ownerData = areaData.PartnerinfoModel;
@@ -846,7 +855,7 @@ newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
 
-// alarmBike('mimacx0000000382', 10, 4, newEBikeLog);
+// alarmBike('mimacx0000000382', 10, 3, newEBikeLog);
 
 // redisUtil.getSimpleValueFromRedis('testKey', function (bikeLatestTime) {
 //     if(bikeLatestTime != undefined || bikeLatestTime != null){
