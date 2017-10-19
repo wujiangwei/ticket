@@ -95,7 +95,6 @@ router.post('/', function(req, res) {
     newEBikeLog.set('Remark', LogParam.Remark);
     newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
     if(LogParam.BicycleNo != undefined && LogParam.BicycleNo.length > 5){
-        console.log('看看是什么错误，车号是否正确' + LogParam.BicycleNo);
         newEBikeLog.set('bikeID', LogParam.BicycleNo);
     }
     // 监控socket服务器正常否
@@ -385,7 +384,7 @@ function structLogContent(leanContentObject) {
 
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
                     if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
-                        console.log('电池未装获已断电')
+                        console.log('电池未装获已断电1' + contentObject.messageBody.SN)
                     }
                     else {
                         redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
@@ -398,7 +397,7 @@ function structLogContent(leanContentObject) {
                     
                     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
                     if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
-                        console.log('电池未装获已断电')
+                        console.log('电池未装获已断电2' + contentObject.messageBody.SN)
                     }
                     else {
                         redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
