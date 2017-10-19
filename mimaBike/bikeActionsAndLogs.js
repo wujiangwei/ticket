@@ -120,7 +120,6 @@ router.post('/', function(req, res) {
     newEBikeLog.set('Remark', LogParam.Remark);
     newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
     if(LogParam.BicycleNo != undefined && LogParam.BicycleNo.length > 5){
-        console.log('sad' + LogParam)
         console.log('查看车辆号是否正确' + LogParam.BicycleNo)
         newEBikeLog.set('bikeID', LogParam.BicycleNo);
     }
