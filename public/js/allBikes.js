@@ -225,17 +225,6 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
             })
     }
 
-    $scope.getUnLockVehicle = function () {
-        if($scope.yunweiAccountSession == undefined){
-            toastr.error("请先登录运维帐号");
-            return;
-        }
-        else {   //  http://localhost:8080
-            window.open("https://mimacx.leanapp.cn/traverseUnLockVehicle/" + $scope.yunweiAccountSession);
-        }
-
-    }
-
     $scope.setBikeParamValue = function (eListBikeInfo) {
         if($scope.yunweiAccountSession == undefined){
             toastr.error("请先登录运维帐号");
