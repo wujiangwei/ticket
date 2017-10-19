@@ -20,26 +20,26 @@ var MimaActionSql = AV.Object.extend('MimaAction');
 var openBatteryMin = parseInt(process.env['openBatteryMin']);
 
 
-var options = {
-    host: '10.11.442.33',
-    port: 80,
-    path: '/ww1',
-    method: 'POST'
-};
-
-
-var req = http.request(options, function(res) {
-    console.log('STATUS: ' + res.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(res.headers));
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-    });
-});
-
-// write data to request body
-req.write(post_data + "\n");
-req.end();
+// var options = {
+//     host: '10.11.442.33',
+//     port: 80,
+//     path: '/ww1',
+//     method: 'POST'
+// };
+//
+//
+// var req = http.request(options, function(res) {
+//     console.log('STATUS: ' + res.statusCode);
+//     console.log('HEADERS: ' + JSON.stringify(res.headers));
+//     res.setEncoding('utf8');
+//     res.on('data', function (chunk) {
+//         console.log('BODY: ' + chunk);
+//     });
+// });
+//
+// // write data to request body
+// req.write(post_data + "\n");
+// req.end();
 
 //Redis Key
 function serviceMoniterKey() {
