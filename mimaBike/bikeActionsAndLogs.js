@@ -507,9 +507,11 @@ function structLogContent(leanContentObject) {
         if(serviceData.Content.messageBody.alarmType != undefined) {
             if (serviceData.Content.messageBody.alarmType == 4){
                 batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
+                sendTextMessages(serviceData.SN,serviceData.Content.messageBody.alarmType)
             }
             else {
                 alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
+                sendTextMessages(serviceData.SN,serviceData.Content.messageBody.alarmType)
             }
 
         }
@@ -637,6 +639,23 @@ function batteryOff(sn, alarmType) {
     
 }
 
+// 车辆有报警发送信息到谢志佳的服务器
+function sendTextMessages(sn, alarmType) {
+    redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+        if (bikeId == null) {
+            bikeId = sn;
+        }
+
+        if (alarmType == 2 || alarmType == 3){
+            httpUtil.httpPost({BicycleNo:bikeId + " | " + alarmType})
+        }
+        else if (alarmType == 4){
+            httpUtil.httpPost({BicycleNo:bikeId + " | " + alarmType})
+        }
+
+    })
+}
+
 // 处理车辆非法位移和非法触碰报警
 function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
@@ -721,14 +740,6 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 if(bikeId == null){
                                     bikeId = sn;
                                 }
-
-                                if (alarmType == 2 || alarmType == 3){
-                                    httpUtil.httpPost({BicycleNo:bikeId + " | " + alarmType})
-                                }
-                                else if (alarmType == 4){
-                                    httpUtil.httpPost({BicycleNo:bikeId + " | " + alarmType})
-                                }
-
 
                                 var areaData = getResponseBody.data;
                                 var ownerData = areaData.PartnerinfoModel;
