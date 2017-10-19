@@ -97,6 +97,8 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
             });
     };
 
+    $scope.eListBikeInfo = [];
+
     function getUnLockVehicleInfo() {
         for (var j = 0; j < $scope.selectedAreaEBikes.length; j++){
             if ($scope.selectedAreaEBikes.length > 0){
@@ -105,7 +107,7 @@ app.controller('unLockVehicleCtrl', function ($scope, $http, $location, $timeout
                 })
                     .then(function(result) {
                         // eListBikeInfo.lastestOnlineTime = result.data.bikeLatestTime;
-                        $scope.bikeEState = result.data.bikeEState;
+                        eListBikeInfo.bikeEState = result.data.bikeEState;
                         if(result.data.bikeLatestTime == undefined){
                             $scope.lastestOnlineTime = 'undefine';
                         }
