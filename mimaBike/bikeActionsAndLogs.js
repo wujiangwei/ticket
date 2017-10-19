@@ -95,6 +95,7 @@ router.post('/', function(req, res) {
     newEBikeLog.set('Remark', LogParam.Remark);
     newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
     if(LogParam.BicycleNo != undefined && LogParam.BicycleNo.length > 5){
+        console.log('看看是什么错误，车号是否正确' + LogParam.BicycleNo);
         newEBikeLog.set('bikeID', LogParam.BicycleNo);
     }
     // 监控socket服务器正常否
@@ -834,9 +835,9 @@ var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 var newEBikeLog = new newEBikeLogSql();
 
 newEBikeLog.set('SN', 'mimacx0000000382');
-newEBikeLog.set('LogType', '3');
-newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjgzMDAwMDAwMHhjYW1pbQ==","messageType":5,"messageBody":{"latitudeDegree":0,"latitudeMinute":0,"longitudeDegree":0,"longitudeMinute":0,"totalMileage":532.269000,"battery":0,"alarmType":4,"timeStamp":"2017-10-20 05:47:41","cellId":"460.00.20831.12002"}}');
-newEBikeLog.set('Remark', '上报数据');
+newEBikeLog.set('LogType', '1');
+newEBikeLog.set('Content', '[15852580112]用户还');
+newEBikeLog.set('Remark', '还车');
 newEBikeLog.set('SourceType', 0);
 
 // structLogContent(newEBikeLog)
