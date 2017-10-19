@@ -7,6 +7,9 @@ var httpUtil = require('./httpUtil');
 var alarmSms = require('./alarmSms');
 var logSqlUtil = require('./logSqlUtil');
 
+var http = require('http');
+var querystring = require('querystring');
+
 var redisUtil = require('../redis/leanObjectRedis');
 
 var MimaEBikeMapSql = AV.Object.extend('MimaEBikeMap');
@@ -15,6 +18,28 @@ var MimaActionSql = AV.Object.extend('MimaAction');
 
 //配置参数
 var openBatteryMin = parseInt(process.env['openBatteryMin']);
+
+
+var options = {
+    host: '10.11.442.33',
+    port: 80,
+    path: '/ww1',
+    method: 'POST'
+};
+
+
+var req = http.request(options, function(res) {
+    console.log('STATUS: ' + res.statusCode);
+    console.log('HEADERS: ' + JSON.stringify(res.headers));
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+        console.log('BODY: ' + chunk);
+    });
+});
+
+// write data to request body
+req.write(post_data + "\n");
+req.end();
 
 //Redis Key
 function serviceMoniterKey() {
@@ -71,6 +96,7 @@ router.post('/', function(req, res) {
     }, 2000);
 
     var LogParam = req.body;
+    console.log('sad' + req.body)
 
     if(LogParam == undefined || LogParam.SN == undefined){
         resTag = 1;
@@ -516,6 +542,7 @@ function structLogContent(leanContentObject) {
     }
 }
 
+// 处理电池断电，发送短信
 function getUserPhoneNumber(sn) {
     var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn;
     httpUtil.httpGetRequest(getPhoneUrl, function (getResponseBody) {
@@ -629,7 +656,7 @@ function batteryOff(sn, alarmType) {
                 getUserPhoneNumber(sn)
             }
             else {
-                console.log('运维人员打开电池仓更换电池' + sn);
+                console.log('运维人员打开电池仓更换电池--：' + sn);
             }
         })
     }
@@ -745,12 +772,12 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                     phoneList.push(ownerData.PartnerCellPhone);
                                 }
                                 //最后是不接受短信的人
-                                for (var i = 0; i < operateDatas.length; i++) {
-                                    var perationUser = operateDatas[i];
-                                    if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
-                                        phoneList.push(perationUser.UserPhone)
-                                    }
-                                }
+                                // for (var i = 0; i < operateDatas.length; i++) {
+                                //     var perationUser = operateDatas[i];
+                                //     if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
+                                //         phoneList.push(perationUser.UserPhone)
+                                //     }
+                                // }
 
                                 //递归
                                 function alarmToPhone() {
@@ -825,6 +852,11 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             })
         })
     }
+}
+
+// 监测是否有车裸奔，如果有就上锁
+function unLockedBike() {
+
 }
 
 //以下为测试debug代码
