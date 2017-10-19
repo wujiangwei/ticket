@@ -629,7 +629,7 @@ function batteryOff(sn, alarmType) {
                 getUserPhoneNumber(sn)
             }
             else {
-                console.log('运维人员打开电池仓更换电池');
+                console.log('运维人员打开电池仓更换电池' + sn);
             }
         })
     }
