@@ -56,7 +56,7 @@ exports.httpPost = function (bodyInfo) {
 
     function callback(error, response, data) {
         if (!error && response.statusCode == 200) {
-            console.log('----info------',data);
+            // console.log('----info------',data);
         }
     }
 

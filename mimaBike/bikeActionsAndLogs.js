@@ -647,10 +647,10 @@ function sendTextMessages(sn, alarmType) {
         }
 
         if (alarmType == 2 || alarmType == 3){
-            httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:bikeId + "号车发生非法触碰和非法位移"})
+            httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生非法触碰和非法位移"})
         }
         else if (alarmType == 4){
-            httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:bikeId + "号车异常断电"})
+            httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车异常断电"})
         }
 
     })
