@@ -73,9 +73,9 @@
             <td>{{eListBikeInfo.BicycleNo}}</td>
             <td>{{eListBikeInfo.ControllerNo}}</td>
             <td>
-                <button class="ui blue submit button" ng-click="bikeOnlineDetection(eListBikeInfo)">检测</button>
+                <button class="ui blue submit button" ng-click="bikeOnlineDetection(eListBikeInfo.ControllerNo)">检测</button>
                 <div class="ui pointing green basic label">
-                    {{eListBikeInfo.bikeEState}}
+                    {{bikeEState}}
                 </div>
             </td>
 
