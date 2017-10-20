@@ -134,6 +134,11 @@ router.post('/getBikeLatestLogTime',function (req, res) {
     })
 })
 
+// 监测是否有车裸奔，如果有就上锁
+function unLockedBike(unLockedBikeObject) {
+
+}
+
 //未使用
 function monitorSocketServiceByLogState(Remark) {
     var monitorTimeSpaceSecond = parseInt(process.env['monitorTimeSpaceMin']) * 60;
@@ -646,11 +651,14 @@ function sendTextMessages(sn, alarmType) {
             bikeId = sn;
         }
 
-        if (alarmType == 2 || alarmType == 3){
-            httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生非法触碰和非法位移"})
+        if (alarmType == 3){
+            httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生非法位移"})
         }
         else if (alarmType == 4){
-            httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车异常断电"})
+            httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
+        }
+        else if (alarmType == 2){
+            httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生非法触碰"})
         }
 
     })
@@ -846,11 +854,6 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
             })
         })
     }
-}
-
-// 监测是否有车裸奔，如果有就上锁
-function unLockedBike() {
-
 }
 
 //以下为测试debug代码

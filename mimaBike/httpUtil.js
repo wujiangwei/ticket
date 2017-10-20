@@ -44,7 +44,7 @@ var http=require('http');
 var request=require('request');
 
 // var a = {BicycleNo:"999999982" + " | " + "2", Message:"99999982非法位移咯"}
-
+// node.js 向接口POST传入参数
 exports.httpPost = function (bodyInfo) {
     var options = {
         // headers: {"Connection": "close"},
