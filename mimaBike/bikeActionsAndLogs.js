@@ -90,6 +90,10 @@ router.post('/', function(req, res) {
         newEBikeLog.set('SNIndex', SNList[1]);
     }
 
+    if(LogParam.LogType == 99 || LogParam.LogType == 100){
+        console.log('LogParam = ' + LogParam);
+    }
+
     newEBikeLog.set('LogType', parseInt(LogParam.LogType));
     newEBikeLog.set('Content', LogParam.Content);
     newEBikeLog.set('Remark', LogParam.Remark);
@@ -866,6 +870,11 @@ newEBikeLog.set('LogType', '1');
 newEBikeLog.set('Content', '[15852580112]用户还');
 newEBikeLog.set('Remark', '还车');
 newEBikeLog.set('SourceType', 0);
+
+var newEBikeLog = {};
+newEBikeLog.tt = "122";
+newEBikeLog.pp = "fffff";
+// console.log('newEBikeLog ', newEBikeLog);
 
 // structLogContent(newEBikeLog)
 
