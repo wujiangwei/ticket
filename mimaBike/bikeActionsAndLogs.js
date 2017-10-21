@@ -90,10 +90,6 @@ router.post('/', function(req, res) {
         newEBikeLog.set('SNIndex', SNList[1]);
     }
 
-    if(LogParam.LogType == 99 || LogParam.LogType == 100){
-        console.log('LogParam = ' + LogParam);
-    }
-
     newEBikeLog.set('LogType', parseInt(LogParam.LogType));
     newEBikeLog.set('Content', LogParam.Content);
     newEBikeLog.set('Remark', LogParam.Remark);
