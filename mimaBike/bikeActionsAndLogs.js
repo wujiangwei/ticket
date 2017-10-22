@@ -700,9 +700,9 @@ function sendTextMessages(sn, satellite, alarmType) {
                     if(illegalityMoveCount >= illegalityMovePoliceCountInMin){
                         console.log('查看是否走进来--：' + illegalityMoveCount + '次非法位移')
                         console.log('查看是否走进来--：' + illegalTouchCount + '次非法触碰')
-                        // process.env['illegalityMovePoliceMin']
-                        httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:process.env['illegalityMovePoliceMin'] + "发生" + illegalityMoveCount + "非法位移"})
-                        httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:process.env['illegalityMovePoliceMin'] + "发生" + illegalTouchCount + "非法触碰"})
+
+                        httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalityMoveCount + "非法位移"})
+                        httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouchCount + "非法触碰"})
                     }
                     else {
                         redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalityMoveCount, 'illegalTouch', illegalTouchCount, function(err, response){
