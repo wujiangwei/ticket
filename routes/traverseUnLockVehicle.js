@@ -4,7 +4,7 @@ var AV = require('leanengine');
 
 var redisUtil = require('../redis/leanObjectRedis');
 
-router.get('/:yunweiAccountSession', function(req, res) {
+router.get('/', function(req, res) {
     res.render('traverseUnLockVehicle');
 });
 

@@ -522,7 +522,7 @@ function structLogContent(leanContentObject) {
     }
 }
 
-// 处理电池断电，发送短信
+// 处理电池断电，查找该车辆运维人员手机号码，发送短信
 function getUserPhoneNumber(sn) {
     var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn;
     httpUtil.httpGetRequest(getPhoneUrl, function (getResponseBody) {
@@ -572,7 +572,7 @@ function getUserPhoneNumber(sn) {
 
                     if(phoneList.length == 0){
                         //无用户手机号时发这样几个手机号
-                        phoneList.push('15850101846');
+                        // phoneList.push('15850101846');
                         phoneList.push('15852580112');
                         phoneList.push('18379606803');
                         phoneList.push('17601528908');
@@ -628,42 +628,100 @@ function getUserPhoneNumber(sn) {
     })
 }
 
+// 处理电池异常断电，发送短信和处理电池异常断电，发送报警给谢志佳服务器！
 function batteryOff(sn, alarmType) {
     if (alarmType == 4){
         redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
-            if(openBattery != 1){
-                //not opened battery in 10 min
-                getUserPhoneNumber(sn)
-            }
-            else {
-                console.log('运维人员打开电池仓更换电池--：' + sn);
-            }
+            redisUtil.getSimpleValueFromRedis(sn,function (bikeId) {
+                if(openBattery != 1){
+                    //not opened battery in 10 min
+                    if (bikeId == null){
+                        bikeId = sn
+                    }
+                    httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
+                    getUserPhoneNumber(sn)
+                }
+                else {
+                    console.log('运维人员打开电池仓更换电池--：' + sn);
+                }
+            })
+
         })
     }
     
 }
 
-// 车辆有报警发送信息到谢志佳的服务器
-function sendTextMessages(sn, alarmType) {
+// 车辆有非法位移和非法触碰报警发送信息到谢志佳的服务器
+function sendTextMessages(sn, satellite, alarmType) {
     redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+        var illegalityMoveCount = 0;
+        var illegalTouchCount = 0;
         if (bikeId == null) {
             bikeId = sn;
         }
 
+        // alarmType== 3 非法位移, alarmType== 2 非法触碰
         if (alarmType == 3){
-            httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生非法位移"})
-        }
-        else if (alarmType == 4){
-            httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
+            if (satellite < 7){
+                return;
+            }
+            illegalityMoveCount++
         }
         else if (alarmType == 2){
-            httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生非法触碰"})
+            illegalTouchCount++
+        }
+
+        if (illegalityMoveCount == 1 || illegalTouchCount == 1){
+
+            var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
+            var illegalityMovePoliceCountInMin = 3;
+
+            var alarmRedisKey = getIllegalMoveKey(sn);
+            redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
+                if(err != null){
+                    console.error('alarmBike hgetall in redis error, ', err.message);
+                    return;
+                }
+
+                //{ illegalMove: '2', illegalTouch: '2' }
+                if(alarmValues != null){
+                    //update 计数
+                    illegalTouchCount += parseInt(alarmValues.illegalTouchCount);
+                    illegalityMoveCount += parseInt(alarmValues.illegalityMoveCount);
+                }
+
+                redisUtil.getSimpleValueFromRedis(getSatelliteKey(sn), function (redisSatellite){
+                    if(redisSatellite != undefined && redisSatellite < 6)
+                    {
+                        // console.log('sn is not illegal shifting, because of lastest gps number is ', redisSatellite);
+                        return;
+                    }
+
+                    if(illegalityMoveCount >= illegalityMovePoliceCountInMin){
+                        console.log('查看是否走进来--：' + illegalityMoveCount + '次非法位移')
+                        console.log('查看是否走进来--：' + illegalTouchCount + '次非法触碰')
+                        // process.env['illegalityMovePoliceMin']
+                        httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:process.env['illegalityMovePoliceMin'] + "发生" + illegalityMoveCount + "非法位移"})
+                        httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:process.env['illegalityMovePoliceMin'] + "发生" + illegalTouchCount + "非法触碰"})
+                    }
+                    else {
+                        redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalityMoveCount, 'illegalTouch', illegalTouchCount, function(err, response){
+                            if(err != null){
+                                console.error('alarmBike hmset in redis error, ', err.message);
+                            }else {
+                                redisUtil.redisClient.expire(alarmRedisKey, illegalityMovePoliceSecond);
+                            }
+                        });
+                    }
+
+                })
+            })
         }
 
     })
 }
 
-// 处理车辆非法位移和非法触碰报警
+// 处理车辆非法位移和非法触碰报警，发送短信给该车的运维人员
 function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
     var illegalTouch = 0;
