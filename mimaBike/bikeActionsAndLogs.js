@@ -683,7 +683,6 @@ function sendTextMessages(sn, satellite, alarmType) {
                     return;
                 }
 
-                //{ illegalMove: '2', illegalTouch: '2' }
                 if(alarmValues != null){
                     //update 计数
                     illegalTouchCount += parseInt(alarmValues.illegalTouchCount);
@@ -705,7 +704,7 @@ function sendTextMessages(sn, satellite, alarmType) {
                         httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouchCount + "非法触碰"})
                     }
                     else {
-                        redisUtil.redisClient.hmset(alarmRedisKey, 'illegalMove', illegalityMoveCount, 'illegalTouch', illegalTouchCount, function(err, response){
+                        redisUtil.redisClient.hmset(alarmRedisKey, 'illegalityMoveCount', illegalityMoveCount, 'illegalTouchCount', illegalTouchCount, function(err, response){
                             if(err != null){
                                 console.error('alarmBike hmset in redis error, ', err.message);
                             }else {
