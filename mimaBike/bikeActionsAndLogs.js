@@ -511,11 +511,11 @@ function structLogContent(leanContentObject) {
         if(serviceData.Content.messageBody.alarmType != undefined) {
             if (serviceData.Content.messageBody.alarmType == 4){
                 batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
-                sendTextMessages(serviceData.SN,serviceData.Content.messageBody.alarmType)
+                sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),Content.messageBody.alarmType)
             }
             else {
                 alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
-                sendTextMessages(serviceData.SN,serviceData.Content.messageBody.alarmType)
+                sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
             }
 
         }
