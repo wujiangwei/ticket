@@ -157,31 +157,19 @@ router.post('/getBikeLatestLogTime',function (req, res) {
 //
 //     if (unLockedObject.LogType == 5 && unLockedObject.Remark == '命令请求' && contentObject.cmdID == 1){
 //
-//         redisUtil.redisClient.rpush(unLockedObject.SN,'sendCommand',function (rel) {
-//
-//         })
 //     }
 //
 //     if (unLockedObject.LogType == 6 && unLockedObject.Remark == '命令响应'){
 //
-//         redisUtil.redisClient.rpush(unLockedObject.SN,'commandResponse',function (rel) {
-//
-//         })
 //     }
 //
 //     if (unLockedContent != undefined){
 //         if (unLockedContent.messageType == 1){
-//             redisUtil.redisClient.rpush(unLockedObject.SN,'electric',function (rel) {
 //
-//             })
 //         }
 //     }
 //
 // }
-//
-// var a = {LogType:5, Remark:'命令请求',SN:'mimacx0000000778',
-//     Content:'向[mimacx0000000778]转发命令请求成功,MsgSeq:102,payload:{"cmdID":1,"sn":"ODc3MDAwMDAwMHhjYW1pbQ=="}'}
-// unLockedBike(a)
 
 //未使用
 function monitorSocketServiceByLogState(Remark) {
@@ -556,11 +544,11 @@ function structLogContent(leanContentObject) {
         if(serviceData.Content.messageBody.alarmType != undefined) {
             if (serviceData.Content.messageBody.alarmType == 4){
                 batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
-                sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
+                // sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
             }
             else {
                 alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
-                sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
+                // sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
             }
 
         }
@@ -697,72 +685,72 @@ function batteryOff(sn, alarmType) {
 }
 
 // 车辆有非法位移和非法触碰报警发送信息到谢志佳的服务器
-function sendTextMessages(sn, satellite, alarmType) {
-    // alarmType== 3 非法位移, alarmType== 2 非法触碰
-    var illegalityMoveCount = 0;
-    var illegalTouchCount = 0;
-    if (alarmType == 3){
-        if (satellite < 7){
-            return;
-        }
-        illegalityMoveCount++
-    }
-    else if (alarmType == 2){
-        illegalTouchCount++
-    }
-
-    if (illegalityMoveCount == 1 || illegalTouchCount == 1){
-        redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-            var illegalityMoveCount = 0;
-            var illegalTouchCount = 0;
-            if (bikeId == null) {
-                bikeId = sn;
-            }
-
-            var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
-            var illegalityMovePoliceCountInMin = 3;
-
-            var alarmRedisKey = getIllegalMoveKey(sn);
-            redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
-                if(err != null){
-                    console.error('alarmBike hgetall in redis error, ', err.message);
-                    return;
-                }
-
-                if(alarmValues != null){
-                    //update 计数
-                    illegalTouchCount += parseInt(alarmValues.illegalTouchCount);
-                    illegalityMoveCount += parseInt(alarmValues.illegalityMoveCount);
-                }
-
-                redisUtil.getSimpleValueFromRedis(getSatelliteKey(sn), function (redisSatellite){
-                    if(redisSatellite != undefined && redisSatellite < 6)
-                    {
-                        // console.log('sn is not illegal shifting, because of lastest gps number is ', redisSatellite);
-                        return;
-                    }
-
-                    if(illegalityMoveCount >= illegalityMovePoliceCountInMin){
-
-                        console.log('查看是否走进来' + illegalityMoveCount + '非法位移')
-                        httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalityMoveCount + "非法位移"})
-                        httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouchCount + "非法触碰"})
-                    }
-                    else {
-                        redisUtil.redisClient.hmset(alarmRedisKey, 'illegalityMoveCount', illegalityMoveCount, 'illegalTouchCount', illegalTouchCount, function(err, response){
-                            if(err != null){
-                                console.error('alarmBike hmset in redis error, ', err.message);
-                            }else {
-                                redisUtil.redisClient.expire(alarmRedisKey, illegalityMovePoliceSecond);
-                            }
-                        });
-                    }
-
-                })
-            })
-        })
-    }
-}
+// function sendTextMessages(sn, satellite, alarmType) {
+//     // alarmType== 3 非法位移, alarmType== 2 非法触碰
+//     var illegalityMoveCount = 0;
+//     var illegalTouchCount = 0;
+//     if (alarmType == 3){
+//         if (satellite < 7){
+//             return;
+//         }
+//         illegalityMoveCount++
+//     }
+//     else if (alarmType == 2){
+//         illegalTouchCount++
+//     }
+//
+//     if (illegalityMoveCount == 1 || illegalTouchCount == 1){
+//         redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+//             var illegalityMoveCount = 0;
+//             var illegalTouchCount = 0;
+//             if (bikeId == null) {
+//                 bikeId = sn;
+//             }
+//
+//             var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
+//             var illegalityMovePoliceCountInMin = 3;
+//
+//             var alarmRedisKey = getIllegalMoveKey(sn);
+//             redisUtil.redisClient.hgetall(alarmRedisKey, function (err, alarmValues) {
+//                 if(err != null){
+//                     console.error('alarmBike hgetall in redis error, ', err.message);
+//                     return;
+//                 }
+//
+//                 if(alarmValues != null){
+//                     //update 计数
+//                     illegalTouchCount += parseInt(alarmValues.illegalTouchCount);
+//                     illegalityMoveCount += parseInt(alarmValues.illegalityMoveCount);
+//                 }
+//
+//                 redisUtil.getSimpleValueFromRedis(getSatelliteKey(sn), function (redisSatellite){
+//                     if(redisSatellite != undefined && redisSatellite < 6)
+//                     {
+//                         // console.log('sn is not illegal shifting, because of lastest gps number is ', redisSatellite);
+//                         return;
+//                     }
+//
+//                     if(illegalityMoveCount >= illegalityMovePoliceCountInMin){
+//
+//                         console.log('查看是否走进来' + illegalityMoveCount + '非法位移')
+//                         httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalityMoveCount + "非法位移"})
+//                         httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouchCount + "非法触碰"})
+//                     }
+//                     else {
+//                         redisUtil.redisClient.hmset(alarmRedisKey, 'illegalityMoveCount', illegalityMoveCount, 'illegalTouchCount', illegalTouchCount, function(err, response){
+//                             if(err != null){
+//                                 console.error('alarmBike hmset in redis error, ', err.message);
+//                             }else {
+//                                 redisUtil.redisClient.expire(alarmRedisKey, illegalityMovePoliceSecond);
+//                             }
+//                         });
+//                     }
+//
+//                 })
+//             })
+//         })
+//     }
+// }
 
 // 处理车辆非法位移和非法触碰报警，发送短信给该车的运维人员
 function alarmBike(sn, satellite, alarmType, leanContentObject) {
@@ -936,6 +924,9 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
                                 console.log('---------- bike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                                 alarmToPhone(phoneList[sendPhoneIndex]);
+
+                                httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalMove + "非法位移"})
+                                httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouch + "非法触碰"})
 
                             })
                         }
