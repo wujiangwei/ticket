@@ -90,7 +90,9 @@ router.post('/', function(req, res) {
         newEBikeLog.set('SNIndex', SNList[1]);
     }
 
-    newEBikeLog.set('LogType', parseInt(LogParam.LogType));
+    if (parseInt(LogParam.LogType) != 8){
+        newEBikeLog.set('LogType', parseInt(LogParam.LogType));
+    }
     newEBikeLog.set('Content', LogParam.Content);
     newEBikeLog.set('Remark', LogParam.Remark);
     newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
@@ -134,9 +136,52 @@ router.post('/getBikeLatestLogTime',function (req, res) {
 })
 
 // 监测是否有车裸奔，如果有就上锁
-function unLockedBike(unLockedBikeObject) {
-
-}
+// function unLockedBike(unLockedBikeObject) {
+//     var unLockedObject = Object();
+//     unLockedObject.LogType = unLockedBikeObject.LogType;
+//     unLockedObject.Remark = unLockedBikeObject.Remark;
+//
+//     unLockedObject.Content = unLockedBikeObject.Content;
+//     unLockedObject.SN = unLockedBikeObject.SN;
+//
+//     var unLockedContent = unLockedObject.Content;
+//
+//     // redisUtil.redisClient
+//     var payloadIndex = unLockedContent.indexOf("payload:");
+//     var contentObject = undefined;
+//     if (payloadIndex != -1){
+//         var contentStr = unLockedContent.substring(payloadIndex + 8, unLockedContent.length);
+//
+//         contentObject = JSON.parse(contentStr);
+//     }
+//
+//     if (unLockedObject.LogType == 5 && unLockedObject.Remark == '命令请求' && contentObject.cmdID == 1){
+//
+//         redisUtil.redisClient.rpush(unLockedObject.SN,'sendCommand',function (rel) {
+//
+//         })
+//     }
+//
+//     if (unLockedObject.LogType == 6 && unLockedObject.Remark == '命令响应'){
+//
+//         redisUtil.redisClient.rpush(unLockedObject.SN,'commandResponse',function (rel) {
+//
+//         })
+//     }
+//
+//     if (unLockedContent != undefined){
+//         if (unLockedContent.messageType == 1){
+//             redisUtil.redisClient.rpush(unLockedObject.SN,'electric',function (rel) {
+//
+//             })
+//         }
+//     }
+//
+// }
+//
+// var a = {LogType:5, Remark:'命令请求',SN:'mimacx0000000778',
+//     Content:'向[mimacx0000000778]转发命令请求成功,MsgSeq:102,payload:{"cmdID":1,"sn":"ODc3MDAwMDAwMHhjYW1pbQ=="}'}
+// unLockedBike(a)
 
 //未使用
 function monitorSocketServiceByLogState(Remark) {
@@ -699,6 +744,7 @@ function sendTextMessages(sn, satellite, alarmType) {
 
                     if(illegalityMoveCount >= illegalityMovePoliceCountInMin){
 
+                        console.log('查看是否走进来' + illegalityMoveCount + '非法位移')
                         httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalityMoveCount + "非法位移"})
                         httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouchCount + "非法触碰"})
                     }
