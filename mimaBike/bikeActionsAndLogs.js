@@ -653,25 +653,24 @@ function batteryOff(sn, alarmType) {
 
 // 车辆有非法位移和非法触碰报警发送信息到谢志佳的服务器
 function sendTextMessages(sn, satellite, alarmType) {
-    redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-        var illegalityMoveCount = 0;
-        var illegalTouchCount = 0;
-        if (bikeId == null) {
-            bikeId = sn;
+    // alarmType== 3 非法位移, alarmType== 2 非法触碰
+    if (alarmType == 3){
+        if (satellite < 7){
+            return;
         }
+        illegalityMoveCount++
+    }
+    else if (alarmType == 2){
+        illegalTouchCount++
+    }
 
-        // alarmType== 3 非法位移, alarmType== 2 非法触碰
-        if (alarmType == 3){
-            if (satellite < 7){
-                return;
+    if (illegalityMoveCount == 1 || illegalTouchCount == 1){
+        redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
+            var illegalityMoveCount = 0;
+            var illegalTouchCount = 0;
+            if (bikeId == null) {
+                bikeId = sn;
             }
-            illegalityMoveCount++
-        }
-        else if (alarmType == 2){
-            illegalTouchCount++
-        }
-
-        if (illegalityMoveCount == 1 || illegalTouchCount == 1){
 
             var illegalityMovePoliceSecond = parseInt(process.env['illegalityMovePoliceMin']) * 60;
             var illegalityMovePoliceCountInMin = 3;
@@ -697,7 +696,7 @@ function sendTextMessages(sn, satellite, alarmType) {
                     }
 
                     if(illegalityMoveCount >= illegalityMovePoliceCountInMin){
-                        
+
                         httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalityMoveCount + "非法位移"})
                         httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouchCount + "非法触碰"})
                     }
@@ -713,9 +712,8 @@ function sendTextMessages(sn, satellite, alarmType) {
 
                 })
             })
-        }
-
-    })
+        })
+    }
 }
 
 // 处理车辆非法位移和非法触碰报警，发送短信给该车的运维人员
