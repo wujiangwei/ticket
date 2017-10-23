@@ -654,6 +654,8 @@ function batteryOff(sn, alarmType) {
 // 车辆有非法位移和非法触碰报警发送信息到谢志佳的服务器
 function sendTextMessages(sn, satellite, alarmType) {
     // alarmType== 3 非法位移, alarmType== 2 非法触碰
+    var illegalityMoveCount = 0;
+    var illegalTouchCount = 0;
     if (alarmType == 3){
         if (satellite < 7){
             return;
