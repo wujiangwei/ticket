@@ -674,7 +674,7 @@ function batteryOff(sn, alarmType) {
                 if(openBattery != 1){
                     //not opened battery in 10 min
 
-                    if (bikeId == undefined){
+                    if (bikeId != undefined){
                         httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
                     }
