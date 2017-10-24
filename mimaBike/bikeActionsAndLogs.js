@@ -138,11 +138,11 @@ router.post('/getBikeLatestLogTime',function (req, res) {
 // 监测是否有车裸奔，如果有就上锁
 // function unLockedBike(unLockedBikeObject) {
 //     var unLockedObject = Object();
-//     unLockedObject.LogType = unLockedBikeObject.LogType;
-//     unLockedObject.Remark = unLockedBikeObject.Remark;
+//     unLockedObject.LogType = unLockedBikeObject.get('LogType');
+//     unLockedObject.Remark = unLockedBikeObject.get('Remark');
 //
-//     unLockedObject.Content = unLockedBikeObject.Content;
-//     unLockedObject.SN = unLockedBikeObject.SN;
+//     unLockedObject.Content = unLockedBikeObject.get('Content');
+//     unLockedObject.SN = unLockedBikeObject.get('SN');
 //
 //     var unLockedContent = unLockedObject.Content;
 //
@@ -155,11 +155,12 @@ router.post('/getBikeLatestLogTime',function (req, res) {
 //         contentObject = JSON.parse(contentStr);
 //     }
 //
-//     if (unLockedObject.LogType == 5 && unLockedObject.Remark == '命令请求' && contentObject.cmdID == 1){
-//
+//     var timestamp = Date.parse(new Date());
+//     if (unLockedObject.LogType == 5 && unLockedObject.MsgSeq == 101 && contentObject.cmdID == 1){
+//         redisUtil.setSimpleValueToRedis(unLockedObject.SN + '_unLockComment', timestamp);
 //     }
 //
-//     if (unLockedObject.LogType == 6 && unLockedObject.Remark == '命令响应'){
+//     if (unLockedObject.LogType == 99 && unLockedObject.Remark == '借车'){
 //
 //     }
 //
@@ -666,16 +667,20 @@ function batteryOff(sn, alarmType) {
     if (alarmType == 4){
         redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
             redisUtil.getSimpleValueFromRedis(sn,function (bikeId) {
+                if (bikeId == null){
+                    bikeId = sn
+                }
+
                 if(openBattery != 1){
                     //not opened battery in 10 min
-                    if (bikeId == null){
-                        bikeId = sn
+
+                    if (bikeId == undefined){
+                        httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
+                        getUserPhoneNumber(sn)
                     }
-                    httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
-                    getUserPhoneNumber(sn)
                 }
                 else {
-                    console.log('运维人员打开电池仓更换电池--：' + sn);
+                    console.log('运维人员打开电池仓更换电池--：' + bikeId);
                 }
             })
 
@@ -925,9 +930,11 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 console.log('---------- bike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                                 alarmToPhone(phoneList[sendPhoneIndex]);
 
-                                httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalMove + "非法位移"})
-                                httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouch + "非法触碰"})
+                                if (bikeId != undefined){
 
+                                    httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalMove + "非法位移"})
+                                    httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouch + "非法触碰"})
+                                }
                             })
                         }
                     })
