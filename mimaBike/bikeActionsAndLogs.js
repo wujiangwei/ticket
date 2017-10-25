@@ -136,41 +136,54 @@ router.post('/getBikeLatestLogTime',function (req, res) {
 })
 
 // 监测是否有车裸奔，如果有就上锁
-// function unLockedBike(unLockedBikeObject) {
-//     var unLockedObject = Object();
-//     unLockedObject.LogType = unLockedBikeObject.get('LogType');
-//     unLockedObject.Remark = unLockedBikeObject.get('Remark');
-//
-//     unLockedObject.Content = unLockedBikeObject.get('Content');
-//     unLockedObject.SN = unLockedBikeObject.get('SN');
-//
-//     var unLockedContent = unLockedObject.Content;
-//
-//     // redisUtil.redisClient
-//     var payloadIndex = unLockedContent.indexOf("payload:");
-//     var contentObject = undefined;
-//     if (payloadIndex != -1){
-//         var contentStr = unLockedContent.substring(payloadIndex + 8, unLockedContent.length);
-//
-//         contentObject = JSON.parse(contentStr);
-//     }
-//
-//     var timestamp = Date.parse(new Date());
-//     if (unLockedObject.LogType == 5 && unLockedObject.MsgSeq == 101 && contentObject.cmdID == 1){
-//         redisUtil.setSimpleValueToRedis(unLockedObject.SN + '_unLockComment', timestamp);
-//     }
-//
-//     if (unLockedObject.LogType == 99 && unLockedObject.Remark == '借车'){
-//
-//     }
-//
-//     if (unLockedContent != undefined){
-//         if (unLockedContent.messageType == 1){
-//
-//         }
-//     }
-//
-// }
+function unLockedBike(unLockedBikeObject) {
+    var unLockedObject = Object();
+    unLockedObject.LogType = unLockedBikeObject.get('LogType');
+    unLockedObject.Remark = unLockedBikeObject.get('Remark');
+
+    unLockedObject.Content = unLockedBikeObject.get('Content');
+    unLockedObject.SN = unLockedBikeObject.get('SN');
+
+    var unLockedContent = unLockedObject.Content;
+
+    var payloadIndex = unLockedContent.indexOf("payload:");
+    var contentObject = undefined;
+    if (payloadIndex != -1){
+        var contentStr = unLockedContent.substring(payloadIndex + 8, unLockedContent.length);
+
+        contentObject = JSON.parse(contentStr);
+    }
+
+    var timestamp = Date.parse(new Date());
+    if (unLockedObject.LogType == 5 && unLockedObject.MsgSeq == 101 && contentObject.cmdID == 1){
+        redisUtil.setSimpleValueToRedis(unLockedObject.SN + '_unLockComment', timestamp);
+    }
+
+    if (unLockedObject.LogType == 99 && unLockedObject.Remark == '借车'){
+        redisUtil.redisClient.del(unLockedObject.SN + '__unLockComment',function (err, reply) {
+            if(reply != null){
+                console.error('删除失败', err.message);
+            }
+        })
+    }
+
+    if (unLockedContent != undefined){
+        if (unLockedContent.messageType == 1){
+            redisUtil.getSimpleValueFromRedis(unLockedObject.SN + '__unLockComment',function (unLockCommentRel) {
+                if (timestamp - unLockCommentRel > 120000){
+                    redisUtil.redisClient.rpush('unLockedList',[unLockedObject.SN])
+                }
+                else {
+                    redisUtil.redisClient.del(unLockedObject.SN + '__unLockComment',function (err, reply) {
+                        if(reply != null){
+                            console.error('删除失败', err.message);
+                        }
+                    })
+                }
+            })
+        }
+    }
+}
 
 //未使用
 function monitorSocketServiceByLogState(Remark) {
@@ -674,13 +687,10 @@ function batteryOff(sn, alarmType) {
                 if(openBattery != 1){
                     //not opened battery in 10 min
 
-                    if (bikeId != undefined){
+                    if (bikeId != undefined || bikeId != ''){
                         httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
                     }
-                }
-                else {
-                    console.log('运维人员打开电池仓更换电池--：' + bikeId);
                 }
             })
 
@@ -959,16 +969,18 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 var newEBikeLog = new newEBikeLogSql();
 
-newEBikeLog.set('SN', 'mimacx0000000382');
-newEBikeLog.set('LogType', '1');
-newEBikeLog.set('Content', '[15852580112]用户还');
-newEBikeLog.set('Remark', '还车');
+newEBikeLog.set('SN', 'mimacx0000000778');
+newEBikeLog.set('LogType', 5);
+newEBikeLog.set('Content', '向[mimacx0000000756]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"NjU3MDAwMDAwMHhjYW1pbQ=="}');
+newEBikeLog.set('Remark', '发送命令');
 newEBikeLog.set('SourceType', 0);
 
 var newEBikeLog = {};
 newEBikeLog.tt = "122";
 newEBikeLog.pp = "fffff";
 // console.log('newEBikeLog ', newEBikeLog);
+
+// unLockedBike(newEBikeLog)
 
 // structLogContent(newEBikeLog)
 
