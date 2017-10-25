@@ -143,6 +143,7 @@ function unLockedBike(unLockedBikeObject) {
 
     unLockedObject.Content = unLockedBikeObject.get('Content');
     unLockedObject.SN = unLockedBikeObject.get('SN');
+    unLockedObject.MsgSeq = unLockedBikeObject.get('MsgSeq');
 
     var unLockedContent = unLockedObject.Content;
 
@@ -155,7 +156,8 @@ function unLockedBike(unLockedBikeObject) {
     }
 
     var timestamp = Date.parse(new Date());
-    if (unLockedObject.LogType == 5 && unLockedObject.MsgSeq == 101 && contentObject.cmdID == 1){
+
+    if (unLockedObject.LogType == 5 && unLockedContent.MsgSeq == 101 && contentObject.cmdID == 1){
         redisUtil.setSimpleValueToRedis(unLockedObject.SN + '_unLockComment', timestamp);
     }
 
@@ -689,7 +691,7 @@ function batteryOff(sn, alarmType) {
                 if(openBattery != 1){
                     //not opened battery in 10 min
 
-                    if (bikeId != undefined || bikeId != ''){
+                    if (bikeId != null || bikeId != undefined){
                         httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
                     }
@@ -976,9 +978,9 @@ newEBikeLog.set('Content', '向[mimacx0000000756]转发命令请求成功,MsgSeq
 newEBikeLog.set('Remark', '发送命令');
 newEBikeLog.set('SourceType', 0);
 
-var newEBikeLog = {};
-newEBikeLog.tt = "122";
-newEBikeLog.pp = "fffff";
+// var newEBikeLog = {};
+// newEBikeLog.tt = "122";
+// newEBikeLog.pp = "fffff";
 // console.log('newEBikeLog ', newEBikeLog);
 
 // unLockedBike(newEBikeLog)
