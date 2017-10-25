@@ -135,57 +135,77 @@ router.post('/getBikeLatestLogTime',function (req, res) {
     })
 })
 
-// 监测是否有车裸奔，如果有就上锁
-function unLockedBike(unLockedBikeObject) {
+// 监测是否有车裸奔，第一个函数处理获取未上锁车辆
+function unLockedBikeList(unLockedBikeObject) {
     var unLockedObject = Object();
     unLockedObject.LogType = unLockedBikeObject.get('LogType');
     unLockedObject.Remark = unLockedBikeObject.get('Remark');
 
     unLockedObject.Content = unLockedBikeObject.get('Content');
     unLockedObject.SN = unLockedBikeObject.get('SN');
-    unLockedObject.MsgSeq = unLockedBikeObject.get('MsgSeq');
 
     var unLockedContent = unLockedObject.Content;
 
     var payloadIndex = unLockedContent.indexOf("payload:");
+
     var contentObject = undefined;
-    if (payloadIndex != -1){
+    if (payloadIndex != -1 ){
         var contentStr = unLockedContent.substring(payloadIndex + 8, unLockedContent.length);
 
         contentObject = JSON.parse(contentStr);
     }
 
+    var MsgSeqNumber = undefined;
+    if (unLockedContent.indexOf("MsgSeq:") != -1){
+        MsgSeqNumber = Number(unLockedContent.substring(unLockedContent.indexOf("MsgSeq:") + 7, unLockedContent.indexOf("MsgSeq:") + 10));
+    }
+
+
     var timestamp = Date.parse(new Date());
 
-    if (unLockedObject.LogType == 5 && unLockedContent.MsgSeq == 101 && contentObject.cmdID == 1){
+    if (unLockedObject.LogType == 5 && MsgSeqNumber == 101 && contentObject.cmdID == 1){
         redisUtil.setSimpleValueToRedis(unLockedObject.SN + '_unLockComment', timestamp);
     }
 
     if (unLockedObject.LogType == 99 && unLockedObject.Remark == '借车'){
-        redisUtil.redisClient.del(unLockedObject.SN + '__unLockComment',function (err, reply) {
-            if(reply != null){
+        redisUtil.redisClient.del(unLockedObject.SN + '_unLockComment',function (err, reply) {
+            if(err != null){
                 console.error('删除失败', err.message);
             }
         })
     }
 
     if (unLockedContent != undefined){
-        if (unLockedContent.messageType == 1){
-            redisUtil.getSimpleValueFromRedis(unLockedObject.SN + '__unLockComment',function (unLockCommentRel) {
-                if (timestamp - unLockCommentRel > 120000){
-                    redisUtil.redisClient.rpush('unLockedList',[unLockedObject.SN])
-                }
-                else {
-                    redisUtil.redisClient.del(unLockedObject.SN + '__unLockComment',function (err, reply) {
-                        if(reply != null){
-                            console.error('删除失败', err.message);
-                        }
-                    })
+        if (contentObject.messageType == 1){
+            redisUtil.getSimpleValueFromRedis(unLockedObject.SN + '_unLockComment',function (unLockCommentRel) {
+                if (unLockCommentRel != null){
+                    if (timestamp - unLockCommentRel > 120000){
+                        redisUtil.getSimpleValueFromRedis(unLockedObject.SN,function (bikeID) {
+                            if (bikeID != null){
+                                redisUtil.redisClient.rpush('unLockedList', bikeID)
+                            }
+                        })
+                    }
+                    else {
+                        redisUtil.redisClient.del(unLockedObject.SN + '_unLockComment',function (err, reply) {
+                            if(err != null){
+                                console.error('删除失败', err.message);
+                            }
+                        })
+                    }
                 }
             })
         }
     }
 }
+
+// 第二个函数处理裸奔车辆上锁
+function lockedVehicles() {
+    var a = redisUtil.redisClient.lrange('unLockedList', [0])
+
+}
+
+// lockedVehicles()
 
 //未使用
 function monitorSocketServiceByLogState(Remark) {
@@ -691,7 +711,7 @@ function batteryOff(sn, alarmType) {
                 if(openBattery != 1){
                     //not opened battery in 10 min
 
-                    if (bikeId != '' || bikeId != undefined){
+                    if (bikeId != ''){
                         console.log('查看断电redis里状态' + bikeId);
                         httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
@@ -974,18 +994,24 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 var newEBikeLog = new newEBikeLogSql();
 
-newEBikeLog.set('SN', 'mimacx0000000778');
+newEBikeLog.set('SN', 'mimacx0000000012');
 newEBikeLog.set('LogType', 5);
-newEBikeLog.set('Content', '向[mimacx0000000756]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"NjU3MDAwMDAwMHhjYW1pbQ=="}');
-newEBikeLog.set('Remark', '发送命令');
+newEBikeLog.set('Content', '向[mimacx0000000009]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MjEwMDAwMDAwMHhjYW1pbQ=="}');
+newEBikeLog.set('Remark', '命令请求');
 newEBikeLog.set('SourceType', 0);
+
+// newEBikeLog.set('SN', 'mimacx0000000012');
+// newEBikeLog.set('LogType', 3);
+// newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjEwMDAwMDAwMHhjYW1pbQ==","messageType":1,"messageBody":{"latitudeDegree":31,"latitudeMinute":14.259180,"longitudeDegree":120,"longitudeMinute":24.825480,"totalMileage":306.973000,"battery":90,"gpstype":2,"satellite":0,"timeStamp":"2017-10-25 15:00:19","cellId":"460.00.20831.14753"}}');
+// newEBikeLog.set('Remark', '上报数据');
+// newEBikeLog.set('SourceType', 0);
 
 // var newEBikeLog = {};
 // newEBikeLog.tt = "122";
 // newEBikeLog.pp = "fffff";
 // console.log('newEBikeLog ', newEBikeLog);
 
-// unLockedBike(newEBikeLog)
+// unLockedBikeList(newEBikeLog)
 
 // structLogContent(newEBikeLog)
 
