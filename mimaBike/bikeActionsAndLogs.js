@@ -557,7 +557,9 @@ function structLogContent(leanContentObject) {
         //车辆报警
         if(serviceData.Content.messageBody.alarmType != undefined) {
             if (serviceData.Content.messageBody.alarmType == 4){
-                batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
+                if (serviceData.SN != undefined){
+                    batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
+                }
                 // sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
             }
             else {
@@ -677,26 +679,24 @@ function getUserPhoneNumber(sn) {
 
 // 处理电池异常断电，发送短信和处理电池异常断电，发送报警给谢志佳服务器！
 function batteryOff(sn, alarmType) {
-    if (sn != undefined){
-        if (alarmType == 4){
-            redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
-                redisUtil.getSimpleValueFromRedis(sn,function (bikeId) {
-                    if (bikeId == null){
-                        bikeId = sn
+    if (alarmType == 4){
+        redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
+            redisUtil.getSimpleValueFromRedis(sn,function (bikeId) {
+                if (bikeId == null){
+                    bikeId = sn
+                }
+
+                if(openBattery != 1){
+                    //not opened battery in 10 min
+
+                    if (bikeId != undefined || bikeId != ''){
+                        httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
+                        getUserPhoneNumber(sn)
                     }
-
-                    if(openBattery != 1){
-                        //not opened battery in 10 min
-
-                        if (bikeId != undefined || bikeId != ''){
-                            httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
-                            getUserPhoneNumber(sn)
-                        }
-                    }
-                })
-
+                }
             })
-        }
+
+        })
     }
 }
 
