@@ -677,26 +677,27 @@ function getUserPhoneNumber(sn) {
 
 // 处理电池异常断电，发送短信和处理电池异常断电，发送报警给谢志佳服务器！
 function batteryOff(sn, alarmType) {
-    if (alarmType == 4){
-        redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
-            redisUtil.getSimpleValueFromRedis(sn,function (bikeId) {
-                if (bikeId == null){
-                    bikeId = sn
-                }
-
-                if(openBattery != 1){
-                    //not opened battery in 10 min
-
-                    if (bikeId != undefined || bikeId != ''){
-                        httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
-                        getUserPhoneNumber(sn)
+    if (sn != undefined){
+        if (alarmType == 4){
+            redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
+                redisUtil.getSimpleValueFromRedis(sn,function (bikeId) {
+                    if (bikeId == null){
+                        bikeId = sn
                     }
-                }
-            })
 
-        })
+                    if(openBattery != 1){
+                        //not opened battery in 10 min
+
+                        if (bikeId != undefined || bikeId != ''){
+                            httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
+                            getUserPhoneNumber(sn)
+                        }
+                    }
+                })
+
+            })
+        }
     }
-    
 }
 
 // 车辆有非法位移和非法触碰报警发送信息到谢志佳的服务器
