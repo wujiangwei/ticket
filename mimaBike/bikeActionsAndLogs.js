@@ -941,7 +941,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                 console.log('---------- bike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                                 alarmToPhone(phoneList[sendPhoneIndex]);
 
-                                if (bikeId != undefined){
+                                if (sn != undefined){
 
                                     httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalMove + "非法位移"})
                                     httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouch + "非法触碰"})
