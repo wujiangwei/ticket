@@ -940,7 +940,7 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 
                                 var sendPhoneIndex = 0;
 
-                                if (sn != undefined){
+                                if (bikeId != null || bikeId != undefined){
                                     //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
                                     console.log('---------- bike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                                     alarmToPhone(phoneList[sendPhoneIndex]);
