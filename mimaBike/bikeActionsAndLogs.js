@@ -609,9 +609,6 @@ function getUserPhoneNumber(sn) {
         }
         else {
             redisUtil.getSimpleValueFromRedis(sn, function (powerOffBikeId) {
-                if(powerOffBikeId == null){
-                    powerOffBikeId = sn;
-                }
 
                 var areaData = getResponseBody.data;
                 var ownerData = areaData.PartnerinfoModel;
@@ -695,14 +692,20 @@ function getUserPhoneNumber(sn) {
 
                 }
 
-                if (powerOffBikeId != null){
+                if(powerOffBikeId == null){
+                    powerOffBikeId = sn;
+
                     var sendPhoneIndex = 0;
                     //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
-                    console.log('---------- bike: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
+                    console.log('---------- powerOffBikeSN: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                     alarmToPhone(phoneList[sendPhoneIndex]);
                 }
-
-
+                else {
+                    var sendPhoneIndex = 0;
+                    //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
+                    console.log('---------- powerOffBikeID: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
+                    alarmToPhone(phoneList[sendPhoneIndex]);
+                }
             })
 
         }
