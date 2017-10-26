@@ -608,9 +608,9 @@ function getUserPhoneNumber(sn) {
             console.error('minihorse_zb/StuCert/GetCarMes.do api error');
         }
         else {
-            redisUtil.getSimpleValueFromRedis(sn, function (bikeId) {
-                if(bikeId == null){
-                    bikeId = sn;
+            redisUtil.getSimpleValueFromRedis(sn, function (powerOffBikeId) {
+                if(powerOffBikeId == null){
+                    powerOffBikeId = sn;
                 }
 
                 var areaData = getResponseBody.data;
@@ -657,7 +657,7 @@ function getUserPhoneNumber(sn) {
                     }
 
                     if(sendPhoneIndex >= phoneList.length){
-                        console.log('---------- bike: ' + bikeId + ' powerOff,and send error(no phone can send)');
+                        console.log('---------- bike: ' + powerOffBikeId + ' powerOff,and send error(no phone can send)');
                         return;
                     }
 
@@ -676,7 +676,7 @@ function getUserPhoneNumber(sn) {
                         var sendSmsData = {
                             mobilePhoneNumber: phoneList[sendPhoneIndex],
                             template: 'batteryAlarm',
-                            bikeNumber: bikeId,
+                            bikeNumber: powerOffBikeId,
                             bikePower:bikeBatteryPower
                         };
 
@@ -695,10 +695,10 @@ function getUserPhoneNumber(sn) {
 
                 }
 
-                if (bikeId != null){
+                if (powerOffBikeId != null){
                     var sendPhoneIndex = 0;
                     //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
-                    console.log('---------- bike: ' + bikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
+                    console.log('---------- bike: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                     alarmToPhone(phoneList[sendPhoneIndex]);
                 }
 
@@ -714,18 +714,17 @@ function batteryOff(sn, alarmType) {
     if (alarmType == 4){
         redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
             redisUtil.getSimpleValueFromRedis(sn,function (powerBikeID) {
-                if (powerBikeID == null){
-                    powerBikeID = sn
-                }
 
                 if(openBattery != 1){
                     //not opened battery in 10 min
+                    if (powerBikeID == null){
+                        powerBikeID = sn
 
-                    if (powerBikeID != null){
                         console.log('查看断电redis里状态' + powerBikeID);
                         httpUtil.httpPost({BicycleNo:powerBikeID + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
                     }
+
                 }
             })
 
