@@ -700,7 +700,7 @@ function getUserPhoneNumber(sn) {
                     console.log('---------- powerOffBikeSN: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                     alarmToPhone(phoneList[sendPhoneIndex]);
                 }
-                else {
+                else if (powerOffBikeId != ''){
                     var sendPhoneIndex = 0;
                     //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
                     console.log('---------- powerOffBikeID: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
