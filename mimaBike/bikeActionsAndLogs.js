@@ -724,6 +724,10 @@ function batteryOff(sn, alarmType) {
                         httpUtil.httpPost({BicycleNo:powerBikeID + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
                     }
+                    else {
+                        httpUtil.httpPost({BicycleNo:powerBikeID + " | 2 ",Message:"车辆异常断电"})
+                        getUserPhoneNumber(sn)
+                    }
 
                 }
             })
