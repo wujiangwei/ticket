@@ -713,17 +713,17 @@ function getUserPhoneNumber(sn) {
 function batteryOff(sn, alarmType) {
     if (alarmType == 4){
         redisUtil.getSimpleValueFromRedis(getOpenBatteryKey(sn), function (openBattery) {
-            redisUtil.getSimpleValueFromRedis(sn,function (bikeId) {
-                if (bikeId == null){
-                    bikeId = sn
+            redisUtil.getSimpleValueFromRedis(sn,function (powerBikeID) {
+                if (powerBikeID == null){
+                    powerBikeID = sn
                 }
 
                 if(openBattery != 1){
                     //not opened battery in 10 min
 
-                    if (bikeId != null){
-                        console.log('查看断电redis里状态' + bikeId);
-                        httpUtil.httpPost({BicycleNo:bikeId + " | 2 ",Message:"车辆异常断电"})
+                    if (powerBikeID != null){
+                        console.log('查看断电redis里状态' + powerBikeID);
+                        httpUtil.httpPost({BicycleNo:powerBikeID + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
                     }
                 }
@@ -971,10 +971,9 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
                                     })
                                 }
 
-                                var sendPhoneIndex = 0;
-
                                 if (bikeId != null){
                                     console.log('查看ID状态' + bikeId);
+                                    var sendPhoneIndex = 0;
                                     //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
                                     console.log('---------- bike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
                                     alarmToPhone(phoneList[sendPhoneIndex]);
