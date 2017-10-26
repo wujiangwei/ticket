@@ -63,6 +63,47 @@ exports.httpPost = function (bodyInfo) {
     request(options, callback);
 }
 
+//
+var unLockBikePost = function (bikeNo) {
+    var options = {
+        // headers: {"Connection": "close"},
+        url: 'http://120.27.221.91:2000/Peration/AppBack',
+        method: 'POST',
+        json:true,
+        body: bikeNo
+    };
+
+    var req = http.request(options, function (res) {
+        console.log('STATUS: ' + res.statusCode);
+        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('BODY: ' + chunk);
+        });
+    });
+
+    req.on('error', function (e) {
+        console.log('problem with request: ' + e.message);
+    });
+
+    req.end();
+}
+
+var crypto = require('crypto');
+var timestamp = Date.parse(new Date()) / 1000;
+
+var crypto_md5 = crypto.createHash('md5');
+
+var a = timestamp + '98klFJ=UX!878_XX8fk'
+crypto_md5.update(a)
+
+var mimacxSign = crypto_md5.digest('hex')
+
+var bo = {"UserGuid":"4e407681-e342-4ff0-b1ad-5ce31bc753e1","BicycleNo":"00000019","SessionKey":"e6d4a490-881d-4d18-9fe9-e4085a8fb999",
+    "mimacxtimeSpan":timestamp,"mimacxSign":mimacxSign}
+
+// unLockBikePost(bo)
+
 // httpPost(a)
 
 exports.httpPostRequest = function (url, port, path, reqData, callback) {

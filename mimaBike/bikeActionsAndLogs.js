@@ -201,7 +201,16 @@ function unLockedBikeList(unLockedBikeObject) {
 
 // 第二个函数处理裸奔车辆上锁
 function lockedVehicles() {
-    var a = redisUtil.redisClient.lrange('unLockedList', [0])
+    redisUtil.redisClient.lrange('unLockedList', 0, -1, function (err, unLockList) {
+
+        if (unLockList.length > 0){
+            for (var i = 0; i < unLockList.length; i++){
+                var BicycleNo = unLockList[i];
+
+
+            }
+        }
+    })
 
 }
 
@@ -579,9 +588,7 @@ function structLogContent(leanContentObject) {
         //车辆报警
         if(serviceData.Content.messageBody.alarmType != undefined) {
             if (serviceData.Content.messageBody.alarmType == 4){
-                if (serviceData.SN != undefined){
-                    batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
-                }
+                batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
                 // sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
             }
             else {
@@ -688,10 +695,13 @@ function getUserPhoneNumber(sn) {
 
                 }
 
-                var sendPhoneIndex = 0;
-                //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
-                console.log('---------- bike: ' + bikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
-                alarmToPhone(phoneList[sendPhoneIndex]);
+                if (bikeId != null){
+                    var sendPhoneIndex = 0;
+                    //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
+                    console.log('---------- bike: ' + bikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
+                    alarmToPhone(phoneList[sendPhoneIndex]);
+                }
+
 
             })
 
@@ -722,6 +732,8 @@ function batteryOff(sn, alarmType) {
         })
     }
 }
+
+// batteryOff('mimacx0000000038', 4)
 
 // 车辆有非法位移和非法触碰报警发送信息到谢志佳的服务器
 // function sendTextMessages(sn, satellite, alarmType) {
@@ -994,17 +1006,17 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 var newEBikeLog = new newEBikeLogSql();
 
-newEBikeLog.set('SN', 'mimacx0000000012');
-newEBikeLog.set('LogType', 5);
-newEBikeLog.set('Content', '向[mimacx0000000009]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MjEwMDAwMDAwMHhjYW1pbQ=="}');
-newEBikeLog.set('Remark', '命令请求');
-newEBikeLog.set('SourceType', 0);
-
-// newEBikeLog.set('SN', 'mimacx0000000012');
-// newEBikeLog.set('LogType', 3);
-// newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjEwMDAwMDAwMHhjYW1pbQ==","messageType":1,"messageBody":{"latitudeDegree":31,"latitudeMinute":14.259180,"longitudeDegree":120,"longitudeMinute":24.825480,"totalMileage":306.973000,"battery":90,"gpstype":2,"satellite":0,"timeStamp":"2017-10-25 15:00:19","cellId":"460.00.20831.14753"}}');
-// newEBikeLog.set('Remark', '上报数据');
+// newEBikeLog.set('SN', 'mimacx0000000778');
+// newEBikeLog.set('LogType', 5);
+// newEBikeLog.set('Content', '向[mimacx0000000009]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MjEwMDAwMDAwMHhjYW1pbQ=="}');
+// newEBikeLog.set('Remark', '命令请求');
 // newEBikeLog.set('SourceType', 0);
+
+newEBikeLog.set('SN', 'mimacx0000000778');
+newEBikeLog.set('LogType', 3);
+newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjEwMDAwMDAwMHhjYW1pbQ==","messageType":1,"messageBody":{"latitudeDegree":31,"latitudeMinute":14.259180,"longitudeDegree":120,"longitudeMinute":24.825480,"totalMileage":306.973000,"battery":90,"gpstype":2,"satellite":0,"timeStamp":"2017-10-25 15:00:19","cellId":"460.00.20831.14753"}}');
+newEBikeLog.set('Remark', '上报数据');
+newEBikeLog.set('SourceType', 0);
 
 // var newEBikeLog = {};
 // newEBikeLog.tt = "122";
