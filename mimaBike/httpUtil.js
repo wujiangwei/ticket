@@ -99,8 +99,8 @@ crypto_md5.update(a)
 
 var mimacxSign = crypto_md5.digest('hex')
 
-var bo = {"UserGuid":"4e407681-e342-4ff0-b1ad-5ce31bc753e1","BicycleNo":"00000019","SessionKey":"e6d4a490-881d-4d18-9fe9-e4085a8fb999",
-    "mimacxtimeSpan":timestamp,"mimacxSign":mimacxSign}
+var bo = {UserGuid:"4e407681-e342-4ff0-b1ad-5ce31bc753e1",BicycleNo:"00000622",SessionKey:"e6d4a490-881d-4d18-9fe9-e4085a8fb999",
+    mimacxtimeSpan:timestamp,mimacxSign:mimacxSign}
 
 // unLockBikePost(bo)
 
