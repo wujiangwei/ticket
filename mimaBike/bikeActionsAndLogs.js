@@ -121,7 +121,7 @@ router.post('/', function(req, res) {
     // 监控socket服务器正常否
     structLogContent(newEBikeLog);
 
-    unLockedBikeList(newEBikeLog);
+    // unLockedBikeList(newEBikeLog);
 
     //update bike time in redis
     redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
