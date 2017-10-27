@@ -165,7 +165,7 @@ function unLockedBikeList(unLockedBikeObject) {
     unLockedObject.Content = unLockedBikeObject.get('Content');
     unLockedObject.SN = unLockedBikeObject.get('SN');
 
-    var unLockedContent = unLockedObject.Content;
+    var unLockedContent = unLockedBikeObject.get('Content');
 
     var payloadIndex = unLockedContent.indexOf("payload:");
 
