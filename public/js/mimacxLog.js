@@ -142,6 +142,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
     $scope.justBikeGetReturn = false;
     //todayDate == 2017/10/09
     $scope.userSelectedOriginalTime = todayDate.toLocaleDateString() + ' 23:59:59';
+    $scope.userSelectedStartTime = todayDate.toLocaleDateString() + ' 00:00:00';
 
     $(".ebike-log-flatpickr").flatpickr({
         defaultDate:todayDate,
@@ -150,6 +151,9 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             //dateStr == 2017-10-09
             $scope.userSelectedOriginalTime = dateStr + ' 23:59:59';
             $scope.selectedBikeLogDate = $scope.userSelectedOriginalTime;
+
+            $scope.userSelectedStartTime = dateStr + ' 00:00:00';
+            $scope.selectedStartLogDate = $scope.userSelectedStartTime;
             console.log($scope.userSelectedOriginalTime);
         }
     });
@@ -188,6 +192,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                 $scope.bikeLogDateList = [];
                 $scope.bikeDisplayLogDateList = [];
                 $scope.selectedBikeLogDate = $scope.userSelectedOriginalTime;
+                $scope.selectedStartLogDate = $scope.userSelectedStartTime;
                 toastr.info('开始刷新，起飞了');
             }else {
                 if($scope.bikeLogDateList.length % $scope.pageDateCount > 0){
@@ -283,6 +288,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
             "userPhone" : $scope.ebikeUserPhone,
             "pageCount":$scope.pageDateCount,
             "selectedTime":$scope.selectedBikeLogDate,
+            "selectedStartTime":$scope.selectedStartLogDate,
             "justBikeOperationLog" : $scope.justBikeOperationLog,
             "justBikeAlarm": $scope.justBikeAlarm,
             "justBikeGetReturn": $scope.justBikeGetReturn

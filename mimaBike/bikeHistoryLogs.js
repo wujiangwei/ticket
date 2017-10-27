@@ -33,8 +33,10 @@ router.post('/ebileLogList',function (req, res) {
     var ebikeHistoryLogQuery = undefined;
 
     var selectedDate = new Date(req.body.selectedTime);
+    var selectedStartDate = new Date(req.body.selectedStartTime);
     ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(selectedDate));
     ebikeHistoryLogQuery.lessThanOrEqualTo('createdAt', selectedDate);
+    ebikeHistoryLogQuery.greaterThanOrEqualTo('createdAt', selectedStartDate);
 
     if(req.body.userPhone != undefined && req.body.userPhone.length == 11){
         ebikeHistoryLogQuery.equalTo('userPhone', req.body.userPhone);

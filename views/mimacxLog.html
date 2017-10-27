@@ -250,146 +250,153 @@
             <!--<td> {{messageDateObject.Content.messageBody.timeStamp}}</td>-->
         </tr>
         </tbody>
-
-        <tfoot>
-        <tr><th colspan="3">
-            <div class="ui right floated pagination menu">
-                <a class="icon item" ng-click="getEBikeLog(-1)">
-                    <i class="right arrow up icon"></i>
-                </a>
-                <a class="item">
-                    <i class="left bicycle icon"></i>
-                </a>
-                <a class="icon item">
-                    <!--<i class="right refresh icon">{{}}</i>-->
-                    {{currentPage + " / " + todayTotalMessageCount}}
-                </a>
-                <a class="item">
-                    <i class="left bicycle icon"></i>
-                </a>
-                <a class="icon item" ng-click="getEBikeLog(1)">
-                    <i class="left arrow down icon"></i>
-                </a>
-
-            </div>
-        </th>
-        </tr></tfoot>
     </table>
 
-    <div class="ui active dimmer" ng-show="netRequestState == 'start'">
-        <div class="ui medium text loader">Loading</div>
+    <div class="ui pagination menu" style="margin-top: 50px;margin-left: 350px">
+        <a class="icon item" ng-click="getEBikeLog(-1)">
+            <i class="right arrow up icon"></i>
+        </a>
+        <a class="item">
+            <i class="left bicycle icon"></i>
+        </a>
+        <a class="icon item">
+            第{{currentPage}}页
+        </a>
+        <a class="item">
+            <i class="left bicycle icon"></i>
+        </a>
+        <a class="icon item" ng-click="getEBikeLog(1)">
+            <i class="left arrow down icon"></i>
+        </a>
+
     </div>
 
-    <div class="ui red message" style="margin-left: 20%; width: 60%" ng-show="netRequestState == 'error'">
-        {{currentErrorMsg}}
-    </div>
+    <button id="test" class="ui  basic button" style="border:none;margin-top: 30px;float: right">
+        点我<img src="/static/images/飞机.png" style="border: 0;height: 45px">点我
+    </button>
 
-    <div class="ui horizontal segments">
-        <div class="ui segment message">
-            <div class="header">
-                觅马日志系统解释
-            </div>
-            <ul class="list">
-                <li>心跳包日志包不显示</li>
-                <li>心跳包显示最近的一次时间</li>
-                <li>若有其他报文则心跳包延后到下个批次</li>
-                <li>登录鉴权显示</li>
-                <li>车辆到服务器报文显示</li>
-                <li>服务器发送命令给车辆的报文</li>
-                <li>车辆回复服务器命令的报文</li>
-                <li>App蓝牙报文显示</li>
-            </ul>
+    <div style="margin-top: 50px">
+        <div class="ui active dimmer" ng-show="netRequestState == 'start'">
+            <div class="ui medium text loader">Loading</div>
         </div>
 
-        <div class="ui blue segment message">
-            <div class="header">
-                报文类型解析
-            </div>
-            <ul class="list">
-                <li>1：开锁状态下每30s上报一次的信息</li>
-                <li>2：未开锁状态下每5min上报一次的信息</li>
-                <li>3：由车辆开始充电触发的上报信息</li>
-                <li>4：由车辆断开充电触发的上报信息</li>
-                <li>5：由车辆报警触发的上报信息</li>
-                <li>7：蓝牙成功开锁触发的上报信息</li>
-                <li>9：低功耗模式下周期上报消息</li>
-                <li>8：历史位置数据上报信息(待移除)</li>
-                <li>6：由车辆自动上锁触发的上报信息(废弃)</li>
-            </ul>
+        <div class="ui red message" style="margin-left: 20%; width: 60%" ng-show="netRequestState == 'error'">
+            {{currentErrorMsg}}
         </div>
-        <div class="ui green segment message">
-            <div class="header">
-                服务器主动发送cmdID
+
+        <div class="ui horizontal segments">
+            <div class="ui segment message">
+                <div class="header">
+                    觅马日志系统解释
+                </div>
+                <ul class="list">
+                    <li>心跳包日志包不显示</li>
+                    <li>心跳包显示最近的一次时间</li>
+                    <li>若有其他报文则心跳包延后到下个批次</li>
+                    <li>登录鉴权显示</li>
+                    <li>车辆到服务器报文显示</li>
+                    <li>服务器发送命令给车辆的报文</li>
+                    <li>车辆回复服务器命令的报文</li>
+                    <li>App蓝牙报文显示</li>
+                </ul>
             </div>
-            <ul class="list">
-                <li>1：服务器发送的车辆开锁命令</li>
-                <li>2：服务器发送的车辆上锁命令</li>
-                <li>3：车辆状态查询命令</li>
-                <li>4：寻车命令</li>
-                <li>5：大灯闪烁命令</li>
-                <li>6：打开电池仓命令</li>
-                <li>7：最大行驶速度设定命令</li>
-                <li>9：是否激活报警</li>
-                <li>10：远程恢复出厂设置</li>
-                <li>11：远程立即定位</li>
-                <li>12：远程重启终端</li>
-                <li>13：远程固件升级</li>
-                <li>15：车辆播放指定语音</li>
-            </ul>
-        </div>
-        <div class="ui segment message">
-            <div class="header">
-                操作命令响应(MsgSeq)
+
+            <div class="ui blue segment message">
+                <div class="header">
+                    报文类型解析
+                </div>
+                <ul class="list">
+                    <li>1：开锁状态下每30s上报一次的信息</li>
+                    <li>2：未开锁状态下每5min上报一次的信息</li>
+                    <li>3：由车辆开始充电触发的上报信息</li>
+                    <li>4：由车辆断开充电触发的上报信息</li>
+                    <li>5：由车辆报警触发的上报信息</li>
+                    <li>7：蓝牙成功开锁触发的上报信息</li>
+                    <li>9：低功耗模式下周期上报消息</li>
+                    <li>8：历史位置数据上报信息(待移除)</li>
+                    <li>6：由车辆自动上锁触发的上报信息(废弃)</li>
+                </ul>
             </div>
-            <ul class="list">
-                <li>100 自动还车</li>
-                <li>101 觅马用户</li>
-                <li>102 运维人员</li>
-            </ul>
-        </div>
-        <div class="ui segment message">
-            <div class="header">
-                故障码(1为故障)
+            <div class="ui green segment message">
+                <div class="header">
+                    服务器主动发送cmdID
+                </div>
+                <ul class="list">
+                    <li>1：服务器发送的车辆开锁命令</li>
+                    <li>2：服务器发送的车辆上锁命令</li>
+                    <li>3：车辆状态查询命令</li>
+                    <li>4：寻车命令</li>
+                    <li>5：大灯闪烁命令</li>
+                    <li>6：打开电池仓命令</li>
+                    <li>7：最大行驶速度设定命令</li>
+                    <li>9：是否激活报警</li>
+                    <li>10：远程恢复出厂设置</li>
+                    <li>11：远程立即定位</li>
+                    <li>12：远程重启终端</li>
+                    <li>13：远程固件升级</li>
+                    <li>15：车辆播放指定语音</li>
+                </ul>
             </div>
-            <ul class="list">
-                <li>霍尔故障</li>
-                <li>转把故障</li>
-                <li>刹车故障</li>
-                <li>控制器故障</li>
-                <li>电机故障</li>
-                <li>电池电压故障(BMS)</li>
-                <li>蓝牙故障</li>
-                <li>BMS故障(无法通讯)</li>
-                <li>Ecu主控制器固件故障</li>
-            </ul>
-        </div>
-        <div class="ui segment message">
-            <div class="header">
-                X-Man In MimaCX
+            <div class="ui segment message">
+                <div class="header">
+                    操作命令响应(MsgSeq)
+                </div>
+                <ul class="list">
+                    <li>100 自动还车</li>
+                    <li>101 觅马用户</li>
+                    <li>102 运维人员</li>
+                </ul>
             </div>
-            <ol class="list">
-                <li>Mima Chuxing Suzhou</li>
-                <li>Sun Kai</li>
-                <li>Wan Rongrong</li>
-                <li>Wu Jiangwei</li>
-            </ol>
-        </div>
-        <div class="ui segment message">
-            <div class="header">
-                Out X-Man Support MimaCX
+            <div class="ui segment message">
+                <div class="header">
+                    故障码(1为故障)
+                </div>
+                <ul class="list">
+                    <li>霍尔故障</li>
+                    <li>转把故障</li>
+                    <li>刹车故障</li>
+                    <li>控制器故障</li>
+                    <li>电机故障</li>
+                    <li>电池电压故障(BMS)</li>
+                    <li>蓝牙故障</li>
+                    <li>BMS故障(无法通讯)</li>
+                    <li>Ecu主控制器固件故障</li>
+                </ul>
             </div>
-            <ol class="list">
-                <li>Leancloud</li>
-                <li>Node.js</li>
-                <li>Semantic-Ui</li>
-                <li>Super Power</li>
-                <li>GB/JX</li>
-                <li>TBit</li>
-                <li>ZYDWLW</li>
-            </ol>
+            <div class="ui segment message">
+                <div class="header">
+                    X-Man In MimaCX
+                </div>
+                <ol class="list">
+                    <li>Mima Chuxing Suzhou</li>
+                    <li>Sun Kai</li>
+                    <li>Wan Rongrong</li>
+                    <li>Wu Jiangwei</li>
+                </ol>
+            </div>
+            <div class="ui segment message">
+                <div class="header">
+                    Out X-Man Support MimaCX
+                </div>
+                <ol class="list">
+                    <li>Leancloud</li>
+                    <li>Node.js</li>
+                    <li>Semantic-Ui</li>
+                    <li>Super Power</li>
+                    <li>GB/JX</li>
+                    <li>TBit</li>
+                    <li>ZYDWLW</li>
+                </ol>
+            </div>
         </div>
     </div>
+
 
 
 </body>
 </html>
+<script>
+    test.onclick = function(){
+        scrollTo(0,0);
+    }
+</script>
