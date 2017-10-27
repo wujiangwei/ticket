@@ -118,7 +118,7 @@
         <tr>
             <th></th>
             <th>报文/命令类型</th>
-            <th>插入时间</th>
+            <th>报文时间</th>
             <th>数据来源</th>
 
             <th>GPS原生坐标/鉴权报文</th>
@@ -133,11 +133,11 @@
             <th>报警类型</th>
             <th>故障码</th>
 
-            <th>基站ID</th>
-            <th>充电状态</th>
-            <th>充电循环</th>
+            <!--<th>基站ID</th>-->
+            <!--<th>充电状态</th>-->
+            <!--<th>充电循环</th>-->
             <th>断电原因</th>
-            <th>报文时间</th>
+            <!--<th>报文时间</th>-->
 
         </tr>
         </thead>
@@ -162,7 +162,8 @@
                     <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
                 </div>
             </td>
-            <td>{{messageDateObject.OperationTime}}</td>
+            <td ng-if="messageDateObject.OperationTime != undefined">{{messageDateObject.OperationTime}}</td>
+            <td ng-if="messageDateObject.OperationTime == undefined">{{messageDateObject.Content.messageBody.timeStamp}}</td>
             <td>{{messageDateObject.SourceType == 1 ? "蓝牙" : "2G"}}</td>
             <td>
                 <div ng-if="messageDateObject.LogType == 100 || messageDateObject.LogType == 99">
@@ -232,21 +233,21 @@
 
             <!--故障码  基站ID   充电状态	充电循环次数	断开充电的原因-->
             <td>{{messageDateObject.Content.messageBody.errorCode}}</td>
-            <td>
-                {{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.cellId != undefined) ?
-                messageDateObject.Content.messageBody.cellId : ""}}
-            </td>
-            <td>
-                {{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.charging != undefined) ?
-                (messageDateObject.Content.messageBody.charging == true ? "有效充电" : "未充电") : ""}}
-            </td>
-            <td>{{messageDateObject.Content.messageBody.chargeCount}}</td>
+            <!--<td>-->
+                <!--{{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.cellId != undefined) ?-->
+                <!--messageDateObject.Content.messageBody.cellId : ""}}-->
+            <!--</td>-->
+            <!--<td>-->
+                <!--{{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.charging != undefined) ?-->
+                <!--(messageDateObject.Content.messageBody.charging == true ? "有效充电" : "未充电") : ""}}-->
+            <!--</td>-->
+            <!--<td>{{messageDateObject.Content.messageBody.chargeCount}}</td>-->
             <td ng-class="{true:'positive',false:'negative'}[messageDateObject.Content.messageBody.reason]">
                 {{(messageDateObject.Content.messageBody != undefined && messageDateObject.Content.messageBody.reason != undefined) ?
                 (messageDateObject.Content.messageBody.reason == true ? "正常断开" : "保护断开") : ""}}
             </td>
 
-            <td> {{messageDateObject.Content.messageBody.timeStamp}}</td>
+            <!--<td> {{messageDateObject.Content.messageBody.timeStamp}}</td>-->
         </tr>
         </tbody>
 

@@ -3,6 +3,7 @@
  */
 var request = require('request');
 var http = require('http');
+var redisUtil = require('../redis/leanObjectRedis');
 
 exports.httpGetRequest = function (url, callback) {
     //http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=mimacx0000000326
@@ -63,35 +64,8 @@ exports.httpPost = function (bodyInfo) {
     request(options, callback);
 }
 
-//
-var unLockBikePost = function (bikeNo) {
-    var options = {
-        // headers: {"Connection": "close"},
-        url: 'http://120.27.221.91:2000/Peration/AppBack',
-        method: 'POST',
-        json:true,
-        body: bikeNo
-    };
-
-    var req = http.request(options, function (res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-        });
-    });
-
-    req.on('error', function (e) {
-        console.log('problem with request: ' + e.message);
-    });
-
-    req.end();
-}
-
 var crypto = require('crypto');
 var timestamp = Date.parse(new Date()) / 1000;
-
 var crypto_md5 = crypto.createHash('md5');
 
 var a = timestamp + '98klFJ=UX!878_XX8fk'
@@ -99,10 +73,40 @@ crypto_md5.update(a)
 
 var mimacxSign = crypto_md5.digest('hex')
 
-var bo = {UserGuid:"4e407681-e342-4ff0-b1ad-5ce31bc753e1",BicycleNo:"00000622",SessionKey:"e6d4a490-881d-4d18-9fe9-e4085a8fb999",
-    mimacxtimeSpan:timestamp,mimacxSign:mimacxSign}
+// 向运维锁车接口发送命令
+exports.lockBikePost = function (bikeNo) {
 
-// unLockBikePost(bo)
+    var bodyInfo = {UserGuid:'eb3e46d1-963b-4802-b327-6b1cd70a1322',BicycleNo:bikeNo,SessionKey:'3cb20128-0fb2-4054-808f-a53df0f40618',
+        mimacxtimeSpan:timestamp,mimacxSign:mimacxSign}
+
+    console.log(timestamp)
+    console.log(mimacxSign)
+
+    var lockOptions = {
+        // headers: {"Connection": "close"},
+        url: 'http://120.27.221.91:2000/Peration/AppBack',
+        method: 'POST',
+        json:true,
+        body: bodyInfo
+    };
+
+    request(lockOptions, function (error, response, data) {
+        if (!error && response.statusCode == 200) {
+            // console.log('----info------',data);
+            if (data.returnCode != 1){
+                // console.log('---' + )
+                console.log('锁不上++' + data.returnMsg)
+            }
+            else {
+                redisUtil.redisClient.lrem('unLockedList', 0, bikeNo);
+            }
+        }
+    });
+}
+
+
+
+// lockBikePost('00000019')
 
 // httpPost(a)
 

@@ -90,19 +90,26 @@ router.post('/', function(req, res) {
         newEBikeLog.set('SNIndex', SNList[1]);
     }
 
+    var newBikeLogContent = LogParam.Content;
+
+    var payloadIndex = newBikeLogContent.indexOf("payload:");
+
     var contentObject = undefined;
-    if(LogParam.Content.indexOf("payload:") != -1){
-        var contentStr = LogParam.Content.substring(LogParam.Content.indexOf("payload:") + 8, LogParam.Content.length);
+    if (payloadIndex != -1 ){
+        var contentStr = newBikeLogContent.substring(payloadIndex + 8, newBikeLogContent.length);
 
         contentObject = JSON.parse(contentStr);
-
+    }
+    else {
+        newEBikeLog.set('LogType', parseInt(LogParam.LogType));
     }
 
-    if (LogParam.Content != undefined){
+    if (contentObject != undefined){
         if (contentObject.messageType != 8){
             newEBikeLog.set('LogType', parseInt(LogParam.LogType));
         }
     }
+
     newEBikeLog.set('Content', LogParam.Content);
     newEBikeLog.set('Remark', LogParam.Remark);
     newEBikeLog.set('SourceType', parseInt(LogParam.SourceType));
@@ -111,6 +118,8 @@ router.post('/', function(req, res) {
     }
     // 监控socket服务器正常否
     structLogContent(newEBikeLog);
+
+    unLockedBikeList(newEBikeLog);
 
     //update bike time in redis
     redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
@@ -215,16 +224,12 @@ function lockedVehicles() {
 
         if (unLockList.length > 0){
             for (var i = 0; i < unLockList.length; i++){
-                var BicycleNo = unLockList[i];
-
-
+                var bicycleNo = unLockList[i];
+                httpUtil.lockBikePost(bicycleNo);
             }
         }
     })
-
 }
-
-// lockedVehicles()
 
 //未使用
 function monitorSocketServiceByLogState(Remark) {
@@ -1018,13 +1023,13 @@ function alarmBike(sn, satellite, alarmType, leanContentObject) {
 var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 var newEBikeLog = new newEBikeLogSql();
 
-// newEBikeLog.set('SN', 'mimacx0000000778');
+// newEBikeLog.set('SN', 'mimacx0000000020');
 // newEBikeLog.set('LogType', 5);
 // newEBikeLog.set('Content', '向[mimacx0000000009]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MjEwMDAwMDAwMHhjYW1pbQ=="}');
 // newEBikeLog.set('Remark', '命令请求');
 // newEBikeLog.set('SourceType', 0);
 
-newEBikeLog.set('SN', 'mimacx0000000778');
+newEBikeLog.set('SN', 'mimacx0000000020');
 newEBikeLog.set('LogType', 3);
 newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjEwMDAwMDAwMHhjYW1pbQ==","messageType":1,"messageBody":{"latitudeDegree":31,"latitudeMinute":14.259180,"longitudeDegree":120,"longitudeMinute":24.825480,"totalMileage":306.973000,"battery":90,"gpstype":2,"satellite":0,"timeStamp":"2017-10-25 15:00:19","cellId":"460.00.20831.14753"}}');
 newEBikeLog.set('Remark', '上报数据');
