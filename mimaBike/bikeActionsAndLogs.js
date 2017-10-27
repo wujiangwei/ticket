@@ -90,25 +90,27 @@ router.post('/', function(req, res) {
         newEBikeLog.set('SNIndex', SNList[1]);
     }
 
-    var newBikeLogContent = LogParam.Content;
+    // var newBikeLogContent = LogParam.Content;
+    //
+    // var payloadIndex = newBikeLogContent.indexOf("payload:");
+    //
+    // var contentObject = undefined;
+    // if (payloadIndex != -1 ){
+    //     var contentStr = newBikeLogContent.substring(payloadIndex + 8, newBikeLogContent.length);
+    //
+    //     contentObject = JSON.parse(contentStr);
+    // }
+    // else {
+    //     newEBikeLog.set('LogType', parseInt(LogParam.LogType));
+    // }
 
-    var payloadIndex = newBikeLogContent.indexOf("payload:");
+    newEBikeLog.set('LogType', parseInt(LogParam.LogType));
 
-    var contentObject = undefined;
-    if (payloadIndex != -1 ){
-        var contentStr = newBikeLogContent.substring(payloadIndex + 8, newBikeLogContent.length);
-
-        contentObject = JSON.parse(contentStr);
-    }
-    else {
-        newEBikeLog.set('LogType', parseInt(LogParam.LogType));
-    }
-
-    if (contentObject != undefined){
-        if (contentObject.messageType != 8){
-            newEBikeLog.set('LogType', parseInt(LogParam.LogType));
-        }
-    }
+    // if (contentObject != undefined){
+    //     if (contentObject.messageType != 8){
+    //         newEBikeLog.set('LogType', parseInt(LogParam.LogType));
+    //     }
+    // }
 
     newEBikeLog.set('Content', LogParam.Content);
     newEBikeLog.set('Remark', LogParam.Remark);
