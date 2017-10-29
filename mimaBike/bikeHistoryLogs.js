@@ -234,11 +234,11 @@ router.post('/lookVehicleIsNoElectric', function (req, res) {
 function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
 
     var ebikeHistoryLogQuery = new AV.Query(logSqlUtil.getEBikeLogSqlName(undefined));
-    // ebikeHistoryLogQuery.equalTo('LogType', 99);
+    // ebikeHistoryLogQuery.equalTo('LogType', 6);
     // ebikeHistoryLogQuery.contains('bikeOperationResult', '失败');
-    // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
+    ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
     // ebikeHistoryLogQuery.equalTo('userPhone', '15767758151');
-    ebikeHistoryLogQuery.contains('Content', 'Redis');
+    // ebikeHistoryLogQuery.contains('Content', 'Redis');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
 
@@ -347,8 +347,8 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     })
 }
 
-var queryDate = new Date("2017-10-10 02:06:32");
-// testLink(queryDate, 1, 1000, []);
+var queryDate = new Date("2017-10-29 00:55:34");
+// testLink(queryDate, 2, 1000, []);
 
 
 //应用内搜索示例

@@ -124,7 +124,7 @@ router.post('/', function(req, res) {
     // unLockedBikeList(newEBikeLog);
 
     //update bike time in redis
-    // redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
+    redisUtil.setSimpleValueToRedis(LogParam.SN + '_Time', new Date(), 0);
 
     newEBikeLog.save().then(function (savedNewEBikeLog) {
         if(resTag == 0) {
@@ -373,7 +373,7 @@ function structLogContent(leanContentObject) {
     var serviceDataContent = serviceData.Content;
 
     //服务器监控报警事宜
-    // serviceMonitor(serviceDataContent);
+    serviceMonitor(serviceDataContent);
 
     //处理鉴权事宜
     if(serviceData.LogType == 1){
@@ -479,28 +479,28 @@ function structLogContent(leanContentObject) {
             if(contentObject != undefined){
 
 
-                // if (contentObject.messageType == 1 || (contentObject.cmdID == 1 && contentObject.result == 0) ||
-                //     contentObject.messageType == 7){
-                //
-                //     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
-                //     if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
-                //     }
-                //     else {
-                //         redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
-                //     }
-                //
-                // }
+                if (contentObject.messageType == 1 || (contentObject.cmdID == 1 && contentObject.result == 0) ||
+                    contentObject.messageType == 7){
 
-                // if (contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0) ||
-                //         contentObject.messageType == 5 || contentObject.messageType == 6){
-                //
-                //     redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
-                //     if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
-                //     }
-                //     else {
-                //         redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
-                //     }
-                // }
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'electric',0)
+                    if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
+                    }
+                    else {
+                        redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
+                    }
+
+                }
+
+                if (contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0) ||
+                        contentObject.messageType == 5 || contentObject.messageType == 6){
+
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(serviceData.SN),'noElectric',0)
+                    if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
+                    }
+                    else {
+                        redisUtil.setSimpleValueToRedis(serviceData.SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
+                    }
+                }
 
 
                 if(contentObject.messageBody == undefined && contentObject.data != undefined){
@@ -567,15 +567,16 @@ function structLogContent(leanContentObject) {
         leanContentObject.set('cmdId', parseInt(contentObject.cmdID));
         if(parseInt(contentObject.cmdID) == 6 ){
             //处理打开电池仓
-            // redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
+            redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
         }
     }
 
-    // if (contentObject != undefined && contentObject.messageBody != undefined){
-    //     if (contentObject.messageBody.actionMethod == 'BlueTooth' && contentObject.messageBody.role == 'operator'){
-    //         redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
-    //     }
-    // }
+    if (contentObject != undefined && contentObject.messageBody != undefined){
+        if (contentObject.messageBody.actionMethod == 'BlueTooth' && contentObject.messageBody.role == 'operator'){
+            redisUtil.setSimpleValueToRedis(getOpenBatteryKey(serviceData.SN), 1, openBatteryMin * 60);
+        }
+
+    }
 
     //deal data
     if(serviceData.Content != undefined && serviceData.Content.messageBody != undefined){
@@ -604,10 +605,12 @@ function structLogContent(leanContentObject) {
         //车辆报警
         if(serviceData.Content.messageBody.alarmType != undefined) {
             if (serviceData.Content.messageBody.alarmType == 4){
-                // batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
+                batteryOff(serviceData.SN,serviceData.Content.messageBody.alarmType)
+                // sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
             }
             else {
                 alarmBike(serviceData.SN, parseInt(contentObject.messageBody.satellite), serviceData.Content.messageBody.alarmType, leanContentObject);
+                // sendTextMessages(serviceData.SN,parseInt(contentObject.messageBody.satellite),serviceData.Content.messageBody.alarmType)
             }
 
         }
