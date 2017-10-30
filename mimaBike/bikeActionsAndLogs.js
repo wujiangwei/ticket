@@ -11,13 +11,13 @@ router.post('/', function(req, res) {
 
     //超时直接回调，防止长时间不会掉导致车辆服务器出现问题
     setTimeout(function(){
-        console.error("响应超时.");
         if(resTag == 0){
             resTag = 1;
             // return res.json({'errorCode': -100, 'errorMsg': '响应超时'});
+            console.error("响应超时. 503");
             res.sendStatus(503);
         }
-    }, 2000);
+    }, 2500);
 
     var LogParam = req.body;
 

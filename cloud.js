@@ -20,9 +20,11 @@ function dealEBikeLog(logObject) {
     redisUtil.setSimpleValueToRedis(SN + '_Time', new Date(), 0);
 
     //处理鉴权里的车辆号和sn号，保存到数据库
-    if(logObject.get("bikeID") == 1){
+    var bikeID = logObject.get("bikeID");
+    if(bikeID != undefined && bikeID.length > 7){
         //解析车辆号进行保存
-        setBikeMapWithRedis(SN, logObject.get("bikeID"));
+        console.log('dealEBikeLog, bikeID : ' , bikeID);
+        setBikeMapWithRedis(SN, bikeID);
     }
 
     //监控服务器是否有异常
@@ -137,6 +139,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
 
 function serviceMonitor(serviceDataContent) {
     if(serviceDataContent.indexOf("离线") != -1 || serviceDataContent.indexOf("断线") != -1){
+        console.log('dealEBikeLog, serviceMonitor : ' , serviceDataContent);
         var alarmFailedMonitorMin = parseInt(process.env['alarmFailedMonitorMin']);
         var alarmFailedMonitorTime = parseInt(process.env['alarmFailedMonitorTime']);
         var alarmSpaceMin = parseInt(process.env['alarmSpaceMin']);
