@@ -7,6 +7,7 @@ const bodyParser = require('body-parser')
 const compression = require('compression')
 const uuid = require('uuid/v4')
 const AV = require('leanengine')
+var cloud = require('./cloud');
 
 const app = express()
 // 设置默认超时时间
@@ -36,6 +37,9 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // angularjs views
+// 加载hook函数
+require('./cloud');
+
 var mimacxLog = require('./routes/mimacxLog')
 var mimacxEBike = require('./routes/mimacxEBike')
 var mimacxProducts = require('./routes/mimacxProduct')
