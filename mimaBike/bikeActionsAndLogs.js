@@ -212,7 +212,10 @@ function structLogContent(leanContentObject) {
                     }
                 }
 
-                leanContentObject.set('messageType', parseInt(contentObject.messageType));
+                if(contentObject.messageBody.messageType != undefined && contentObject.messageBody.messageType != null && contentObject.messageBody.messageType != 'null'){
+                    leanContentObject.set('messageType', parseInt(contentObject.messageType));
+                }
+
                 if(contentObject.messageBody.satellite != undefined && contentObject.messageBody.satellite != null && contentObject.messageBody.satellite != 'null'){
                     leanContentObject.set('satellite', parseInt(contentObject.messageBody.satellite));
                 }
