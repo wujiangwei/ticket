@@ -23,7 +23,7 @@ function dealEBikeLog(logObject) {
     var bikeID = logObject.get("bikeID");
     if(bikeID != undefined && bikeID.length > 7){
         //解析车辆号进行保存
-        console.log('dealEBikeLog, bikeID : ' , bikeID);
+        // console.log('dealEBikeLog, bikeID : ' , bikeID);
         setBikeMapWithRedis(SN, bikeID);
     }
 

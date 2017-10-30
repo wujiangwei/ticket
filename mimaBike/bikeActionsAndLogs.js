@@ -23,7 +23,7 @@ router.post('/', function(req, res) {
 
     if(LogParam == undefined || LogParam.SN == undefined || LogParam.SN.length != 16){
         resTag = 1;
-        console.error("LogParam is invalid : ", LogParam.SN);
+        console.error("LogParam is invalid : ", LogParam);
         return res.json({'errorCode': 1, 'errorMsg': 'LogParam is invalid'});
     }
 
