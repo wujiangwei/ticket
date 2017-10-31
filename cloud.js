@@ -89,17 +89,17 @@ function dealEBikeLog(logObject) {
         }
     }
 
-    // if(serviceDataContent != undefined){
-    //     if (serviceDataContent.messageType == 1 || serviceDataContent.cmdID == 1 || serviceDataContent.messageType == 7){
+    // if(messageType != undefined){
+    //     if (messageType == 1 || cmdID == 1  || messageType == 7){
     //         redisUtil.setSimpleValueToRedis(getBikeStateKey(SN),'electric',0)
-    //         if (serviceDataContent.battery != undefined && serviceDataContent.battery != 0){
+    //         if (battery != undefined && battery != 0){
     //             redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
     //         }
     //     }
     //
-    //     if (serviceDataContent.messageType == 2 || serviceDataContent.cmdID == 2 || serviceDataContent.messageType == 5 || serviceDataContent.messageType == 6){
+    //     if (messageType == 2 ||cmdID == 2 || messageType == 5 || messageType == 6){
     //         redisUtil.setSimpleValueToRedis(getBikeStateKey(SN), 'noElectric', 0)
-    //         if (serviceDataContent.battery != undefined && serviceDataContent.battery != 0){
+    //         if (battery != undefined && battery != 0){
     //             redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
     //         }
     //     }
