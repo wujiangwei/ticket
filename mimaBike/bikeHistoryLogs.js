@@ -237,8 +237,8 @@ function testLink(queryDate, bachCount, queryCountEatchBatch, logList) {
     // ebikeHistoryLogQuery.equalTo('LogType', 6);
     // ebikeHistoryLogQuery.contains('bikeOperationResult', '失败');
     // ebikeHistoryLogQuery.equalTo('Remark', '鉴权');
-    ebikeHistoryLogQuery.doesNotExist('SN');
-    ebikeHistoryLogQuery.contains('Content', '用户还车成功(扣款成功)');
+    // ebikeHistoryLogQuery.doesNotExist('SN');
+    // ebikeHistoryLogQuery.contains('Content', '用户还车成功(扣款成功)');
 
     // ebikeHistoryLogQuery.startsWith('bikeID', '000');
 
