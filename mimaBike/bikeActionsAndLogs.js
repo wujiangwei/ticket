@@ -7,22 +7,8 @@ var logSqlUtil = require('../mimaBike/logSqlUtil');
 
 router.post('/', function(req, res) {
 
-    var resTag = 0;
-
-    //超时直接回调，防止长时间不会掉导致车辆服务器出现问题
-    setTimeout(function(){
-        if(resTag == 0){
-            resTag = 1;
-            // return res.json({'errorCode': -100, 'errorMsg': '响应超时'});
-            console.error("响应超时. 503");
-            res.sendStatus(503);
-        }
-    }, 2500);
-
     var LogParam = req.body;
-
     if(LogParam == undefined){
-        resTag = 1;
         console.error("LogParam is invalid : ", LogParam);
         return res.json({'errorCode': 1, 'errorMsg': 'LogParam is invalid'});
     }
@@ -30,7 +16,6 @@ router.post('/', function(req, res) {
     //无效的SN号并且是无效的BicycleNo
     if((LogParam.SN == undefined || LogParam.SN.length != 16) &&
         (LogParam.BicycleNo == undefined || LogParam.BicycleNo.length < 7)){
-        resTag = 1;
         console.error("LogParam is invalid : ", LogParam);
         return res.json({'errorCode': 1, 'errorMsg': 'LogParam is invalid'});
     }
@@ -57,24 +42,13 @@ router.post('/', function(req, res) {
     var ret = structLogContent(newEBikeLog);
     if(ret == true){
         newEBikeLog.save().then(function (savedNewEBikeLog) {
-            if(resTag == 0) {
-                resTag = 1;
-                return res.json({'errorCode': 0});
-            }
+            //
         }, function (error) {
-            console.log(req.body.SN + ' save log failed:' + error);
-
-            if(resTag == 0){
-                resTag = 1;
-                return res.json({'errorCode': -1, 'errorMsg': error.message});
-            }
+            console.error(req.body.SN + ' save log failed:' + error);
         });
-    }else {
-        if(resTag == 0) {
-            resTag = 1;
-            return res.json({'errorCode': 0});
-        }
     }
+
+    return res.json({'errorCode': 0});
 })
 
 

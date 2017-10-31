@@ -192,7 +192,7 @@ function setBikeMapWithRedis(bikeSN, bikeID) {
 
 function serviceMonitor(serviceDataContent) {
     if(serviceDataContent.indexOf("离线") != -1 || serviceDataContent.indexOf("断线") != -1){
-        console.log('dealEBikeLog, serviceMonitor : ' , serviceDataContent);
+        // console.log('dealEBikeLog, serviceMonitor : ' , serviceDataContent);
         var alarmFailedMonitorMin = parseInt(process.env['alarmFailedMonitorMin']);
         var alarmFailedMonitorTime = parseInt(process.env['alarmFailedMonitorTime']);
         var alarmSpaceMin = parseInt(process.env['alarmSpaceMin']);
