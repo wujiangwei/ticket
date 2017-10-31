@@ -37,25 +37,77 @@ function dealEBikeLog(logObject) {
     var cmdID = logObject.get("cmdID");
     var cmdResponseResult = logObject.get("cmdResponseResult");
     var battery = logObject.get("battery");
-    if(messageType != undefined){
-        if (messageType == 1 || cmdID == 1 || messageType == 7){
-            redisUtil.setSimpleValueToRedis(getBikeStateKey(SN),'electric',0)
-            if (battery != undefined && battery != 0){
-                redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
-            }
-        }
 
-        if (messageType == 2 || cmdID == 2 || messageType == 5 || messageType == 6){
-            redisUtil.setSimpleValueToRedis(getBikeStateKey(SN), 'noElectric', 0)
-            if (battery != undefined && battery != 0){
-                redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
-            }
-        }
+    var payloadIndex = serviceDataContent.indexOf("payload:");
+    if(payloadIndex != -1){
+        var contentStr = serviceDataContent.substring(payloadIndex + 8, serviceDataContent.length);
+        var contentObject = undefined;
 
-        if(satellite != undefined && satellite != null && satellite != 'null'){
-            redisUtil.setSimpleValueToRedis(getSatelliteKey(SN), satellite, 600);
+        try{
+            contentObject = JSON.parse(contentStr);
+            if(contentObject != undefined){
+
+
+                if (contentObject.messageType == 1 || (contentObject.cmdID == 1 && contentObject.result == 0) ||
+                    contentObject.messageType == 7){
+
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(SN),'electric',0)
+                    if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
+                    }
+                    else {
+                        redisUtil.setSimpleValueToRedis(SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
+                    }
+
+                }
+
+                if (contentObject.messageType == 2 ||(contentObject.cmdID == 2 && contentObject.result == 0) ||
+                    contentObject.messageType == 5 || contentObject.messageType == 6){
+
+                    redisUtil.setSimpleValueToRedis(getBikeStateKey(SN),'noElectric',0)
+                    if (parseInt(contentObject.messageBody.battery) == undefined || parseInt(contentObject.messageBody.battery) == 0){
+                    }
+                    else {
+                        redisUtil.setSimpleValueToRedis(SN + '_batteryPower',parseInt(contentObject.messageBody.battery),0)
+                    }
+                }
+
+                //保存定位
+                if(contentObject.messageBody.latitudeMinute != undefined || contentObject.messageBody.longitudeMinute != undefined){
+                    if(contentObject.messageBody.latitudeMinute != 0 || contentObject.messageBody.longitudeMinute != 0){
+                        var lat = Number(contentObject.messageBody.latitudeMinute) / 60.0 + Number(contentObject.messageBody.latitudeDegree);
+                        var lon = Number(contentObject.messageBody.longitudeMinute) / 60.0 + Number(contentObject.messageBody.longitudeDegree);
+                        var satellite = lat + ',' + lon;
+
+                        redisUtil.setSimpleValueToRedis(getSatelliteKey(SN), satellite, 600);
+                    }
+
+                }
+
+            }
+        }catch(err) {
+
         }
     }
+
+    // if(serviceDataContent != undefined){
+    //     if (serviceDataContent.messageType == 1 || serviceDataContent.cmdID == 1 || serviceDataContent.messageType == 7){
+    //         redisUtil.setSimpleValueToRedis(getBikeStateKey(SN),'electric',0)
+    //         if (serviceDataContent.battery != undefined && serviceDataContent.battery != 0){
+    //             redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
+    //         }
+    //     }
+    //
+    //     if (serviceDataContent.messageType == 2 || serviceDataContent.cmdID == 2 || serviceDataContent.messageType == 5 || serviceDataContent.messageType == 6){
+    //         redisUtil.setSimpleValueToRedis(getBikeStateKey(SN), 'noElectric', 0)
+    //         if (serviceDataContent.battery != undefined && serviceDataContent.battery != 0){
+    //             redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
+    //         }
+    //     }
+    //
+    //     if(satellite != undefined && satellite != null && satellite != 'null'){
+    //         redisUtil.setSimpleValueToRedis(getSatelliteKey(SN), satellite, 600);
+    //     }
+    // }
 
     //车辆指令相关
     var cmdId = logObject.get("cmdId");
@@ -65,6 +117,7 @@ function dealEBikeLog(logObject) {
     }
     //蓝牙打开电池仓
     var role = logObject.get('roleDes');
+    console.log('这个字段有吗？：' + role);
     var actionMethod = logObject.get('actionMethod');
     if (actionMethod == 'BlueTooth' && role == 'operator'){
         redisUtil.setSimpleValueToRedis(getOpenBatteryKey(SN), 1, openBatteryMin * 60);
@@ -657,7 +710,7 @@ var newEBikeLog = new newEBikeLogSql();
 
 newEBikeLog.set('SN', 'mimacx0000000020');
 newEBikeLog.set('LogType', 3);
-newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjEwMDAwMDAwMHhjYW1pbQ==","messageType":1,"messageBody":{"latitudeDegree":31,"latitudeMinute":14.259180,"longitudeDegree":120,"longitudeMinute":24.825480,"totalMileage":306.973000,"battery":90,"gpstype":2,"satellite":0,"timeStamp":"2017-10-25 15:00:19","cellId":"460.00.20831.14753"}}');
+newEBikeLog.set('Content', '转发命令至OperService成功,cmdId:1,protocolMsgSeq:101,payload:{"sn":"mimacx0000000017","messageType":1,"messageBody":{"longitudeMinute":"24.8265","latitudeDegree":"31","totalMileage":"309.896","longitudeDegree":"120","battery":"68","latitudeMinute":"14.255"}}');
 newEBikeLog.set('Remark', '上报数据');
 newEBikeLog.set('SourceType', 0);
 
