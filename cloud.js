@@ -38,14 +38,14 @@ function dealEBikeLog(logObject) {
     var cmdResponseResult = logObject.get("cmdResponseResult");
     var battery = logObject.get("battery");
     if(messageType != undefined){
-        if (messageType == 1 || (cmdID == 1 && cmdResponseResult == 0) || messageType == 7){
+        if (messageType == 1 || cmdID == 1 || messageType == 7){
             redisUtil.setSimpleValueToRedis(getBikeStateKey(SN),'electric',0)
             if (battery != undefined && battery != 0){
                 redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
             }
         }
 
-        if (messageType == 2 ||(cmdID == 2 && cmdResponseResult == 0) || messageType == 5 || messageType == 6){
+        if (messageType == 2 || cmdID == 2 || messageType == 5 || messageType == 6){
             redisUtil.setSimpleValueToRedis(getBikeStateKey(SN), 'noElectric', 0)
             if (battery != undefined && battery != 0){
                 redisUtil.setSimpleValueToRedis(SN + '_batteryPower', battery, 0);
