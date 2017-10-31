@@ -21,7 +21,15 @@ router.post('/', function(req, res) {
 
     var LogParam = req.body;
 
-    if(LogParam == undefined || LogParam.SN == undefined || LogParam.SN.length != 16){
+    if(LogParam == undefined){
+        resTag = 1;
+        console.error("LogParam is invalid : ", LogParam);
+        return res.json({'errorCode': 1, 'errorMsg': 'LogParam is invalid'});
+    }
+
+    //无效的SN号并且是无效的BicycleNo
+    if((LogParam.SN == undefined || LogParam.SN.length != 16) &&
+        (LogParam.BicycleNo == undefined && LogParam.BicycleNo.length < 7)){
         resTag = 1;
         console.error("LogParam is invalid : ", LogParam);
         return res.json({'errorCode': 1, 'errorMsg': 'LogParam is invalid'});
