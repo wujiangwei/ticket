@@ -117,7 +117,6 @@ function dealEBikeLog(logObject) {
     }
     //蓝牙打开电池仓
     var role = logObject.get('roleDes');
-    console.log('这个字段有吗？：' + role);
     var actionMethod = logObject.get('actionMethod');
     if (actionMethod == 'BlueTooth' && role == 'operator'){
         redisUtil.setSimpleValueToRedis(getOpenBatteryKey(SN), 1, openBatteryMin * 60);
