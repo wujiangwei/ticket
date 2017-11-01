@@ -303,7 +303,7 @@ function structLogContent(leanContentObject) {
                 case 9:
                     //不保存车辆扶正的报文
                     leanContentObject.set('bikeNState', 'vertical');
-                    return false;
+                    // return false;
                 default:
                     break;
             }
