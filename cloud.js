@@ -24,7 +24,7 @@ function dealEBikeLog(logObject) {
     if(bikeID != undefined && bikeID.length > 7){
         //解析车辆号进行保存
         // console.log('dealEBikeLog, bikeID : ' , bikeID);
-        setBikeMapWithRedis(SN, bikeID);
+        setBikeMapWithRedis(logObject.id, SN, bikeID);
     }
 
     //监控服务器是否有异常
@@ -84,14 +84,14 @@ function dealEBikeLog(logObject) {
 }
 
 //deal log sub function
-function setBikeMapWithRedis(bikeSN, bikeID) {
+function setBikeMapWithRedis(logObjectId, bikeSN, bikeID) {
     if(bikeSN == undefined || bikeSN.length != 16){
-        console.error('invalid sn : ', bikeSN);
+        console.error(logObjectId + ' invalid sn : ' + bikeSN + ' , invalid bikeID : ' + bikeID);
         return;
     }
 
-    if(bikeID == undefined || bikeID.length >= 10 ){
-        console.error('invalid bikeID : ', bikeID);
+    if(bikeID == undefined || bikeID.length < 8 ){
+        console.error(logObjectId + ' invalid sn : ' + bikeSN + ' , invalid bikeID : ' + bikeID);
         return;
     }
 
