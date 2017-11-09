@@ -30,7 +30,7 @@ function dealEBikeLog(logObject) {
     //监控服务器是否有异常
     //TODO: 要不同的车辆号出现异常（现在是统计了离线出现的次数）
     var serviceDataContent = logObject.get("Content");
-    serviceMonitor(serviceDataContent);
+    // serviceMonitor(serviceDataContent);
 
     //MessageType 相关的处理：车辆状态，电池被盗监控等
     var messageType = logObject.get("messageType");
@@ -333,7 +333,7 @@ function getUserPhoneNumber(sn) {
 
                 }
 
-                if(powerOffBikeId == null){
+                if(powerOffBikeId == null ){
                     powerOffBikeId = sn;
 
                     var sendPhoneIndex = 0;
@@ -625,7 +625,6 @@ function unLockedBikeList(unLockedBikeObject) {
     unLockedObject.LogType = unLockedBikeObject.get('LogType');
     unLockedObject.Remark = unLockedBikeObject.get('Remark');
 
-    unLockedObject.Content = unLockedBikeObject.get('Content');
     unLockedObject.SN = unLockedBikeObject.get('SN');
 
     var unLockedContent = unLockedBikeObject.get('Content');
@@ -701,17 +700,17 @@ function lockedVehicles() {
 var newEBikeLogSql = AV.Object.extend(logSqlUtil.getEBikeLogSqlName(undefined));
 var newEBikeLog = new newEBikeLogSql();
 
-// newEBikeLog.set('SN', 'mimacx0000000020');
-// newEBikeLog.set('LogType', 5);
-// newEBikeLog.set('Content', '向[mimacx0000000009]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MjEwMDAwMDAwMHhjYW1pbQ=="}');
-// newEBikeLog.set('Remark', '命令请求');
-// newEBikeLog.set('SourceType', 0);
-
-newEBikeLog.set('SN', 'mimacx0000000020');
-newEBikeLog.set('LogType', 3);
-newEBikeLog.set('Content', '转发命令至OperService成功,cmdId:1,protocolMsgSeq:101,payload:{"sn":"mimacx0000000017","messageType":1,"messageBody":{"longitudeMinute":"24.8265","latitudeDegree":"31","totalMileage":"309.896","longitudeDegree":"120","battery":"68","latitudeMinute":"14.255"}}');
-newEBikeLog.set('Remark', '上报数据');
+newEBikeLog.set('SN', 'mimacx0000000011');
+newEBikeLog.set('LogType', 5);
+newEBikeLog.set('Content', '向[mimacx0000000011]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MTEwMDAwMDAwMHhjYW1pbQ=="}');
+newEBikeLog.set('Remark', '命令请求');
 newEBikeLog.set('SourceType', 0);
+
+// newEBikeLog.set('SN', 'mimacx0000000011');
+// newEBikeLog.set('LogType', 3);
+// newEBikeLog.set('Content', '转发命令至OperService成功,cmdId:1,protocolMsgSeq:101,payload:{"sn":"mimacx0000000017","messageType":1,"messageBody":{"longitudeMinute":"24.8265","latitudeDegree":"31","totalMileage":"309.896","longitudeDegree":"120","battery":"68","latitudeMinute":"14.255"}}');
+// newEBikeLog.set('Remark', '上报数据');
+// newEBikeLog.set('SourceType', 0);
 
 // var newEBikeLog = {};
 // newEBikeLog.tt = "122";
@@ -783,3 +782,4 @@ newEBikeLog.set('SourceType', 0);
 // }, function(err) {
 //     // 处理调用失败
 // });
+
