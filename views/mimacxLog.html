@@ -162,8 +162,10 @@
                     <div ng-class="{true:'ui blue ribbon label',false:'ui ribbon label'}[messageDateObject.Content.cmdID != undefined]" ng-if="messageDateObject.firstMessageTag.length > 0">{{messageDateObject.firstMessageTag}}</div>
                 </div>
             </td>
+
             <td ng-if="messageDateObject.Content.messageBody.timeStamp == undefined">{{messageDateObject.OperationTime}}</td>
             <td ng-if="messageDateObject.Content.messageBody.timeStamp != undefined">{{messageDateObject.Content.messageBody.timeStamp}}</td>
+
             <td>{{messageDateObject.SourceType == 1 ? "蓝牙" : "2G"}}</td>
             <td>
                 <div ng-if="messageDateObject.LogType == 100 || messageDateObject.LogType == 99">
@@ -224,7 +226,15 @@
                 {{messageDateObject.Content.messageBody.battery == undefined ? "" : messageDateObject.Content.messageBody.battery + "%"}}
             </td>
 
-            <td>{{messageDateObject.Content.messageBody.ctrlStateDes}}</td>
+            <td>
+                <div ng-if="messageDateObject.LogType == 77">
+                    {{messageDateObject.Content.messageBody.closeReason}}
+                </div>
+                <div ng-if="messageDateObject.LogType != 77">
+                    {{messageDateObject.Content.messageBody.ctrlStateDes}}
+                </div>
+            </td>
+
             <td>
                 {{messageDateObject.Content.messageBody.totalMileage == undefined ? "" : messageDateObject.Content.messageBody.totalMileage + "km"}}
             </td>

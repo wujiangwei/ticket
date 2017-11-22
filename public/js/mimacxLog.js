@@ -321,6 +321,10 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         serviceData.isActive = true;
                     }
 
+                    if(serviceData.SourceType == 77){
+                        serviceData.isActive = true;
+                    }
+
                     //2个特殊报文
                     if(serviceData.LogType == 100 || serviceData.LogType == 99){
                         //借还车

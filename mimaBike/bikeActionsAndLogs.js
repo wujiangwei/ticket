@@ -76,6 +76,27 @@ function structLogContent(leanContentObject) {
 
     var serviceDataContent = serviceData.Content;
 
+    //处理车辆断线事宜
+    if(serviceData.LogType == 77){
+        var payloadIndex = serviceDataContent.indexOf("Payload:");
+        if(payloadIndex != -1){
+
+            var closeContentStr = serviceDataContent.substring(payloadIndex + 8, serviceDataContent.length);
+            var closeContentObject = undefined;
+
+            try {
+                closeContentObject = JSON.parse(closeContentStr);
+                leanContentObject.set('closeReason', closeContentObject.messageBody.closeReason);
+            }catch(err) {
+                console.log('close with no sn ', err.message);
+                console.log(contentStr);
+            }
+        }else {
+            return false;
+        }
+        return true;
+    }
+
     //处理鉴权事宜
     if(serviceData.LogType == 1){
         //解析车辆号进行保存
@@ -102,6 +123,7 @@ function structLogContent(leanContentObject) {
             leanContentObject.set('authResult', false);
         }
 
+        return true;
     }
 
     // 处理借车和还车事宜
