@@ -221,31 +221,37 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                 getEBikeLogsFromMima();
             }else {
                 $scope.netRequestState = 'start';
-                $http.post("https://api.mimacx.com/BatteryCar/GetControllerInfoByBicycleNo",{
-                    "BicycleNo" : $scope.ebikeNumber,
-                    "AppVersion" : "1.3.0"
-                })
-                    .then(function (result) {
-                        var response = result.data;
-                        if(response.returnCode == 0){
-                            $scope.EBikeInfo = response.Data;
+                if($scope.ebikeNumber.indexOf('mimacx00') == -1){
+                    $http.post("https://api.mimacx.com/BatteryCar/GetControllerInfoByBicycleNo",{
+                        "BicycleNo" : $scope.ebikeNumber,
+                        "AppVersion" : "1.3.0"
+                    })
+                        .then(function (result) {
+                            var response = result.data;
+                            if(response.returnCode == 0){
+                                $scope.EBikeInfo = response.Data;
 
-                            getEBikeLogsFromMima();
-                        }else {
+                                getEBikeLogsFromMima();
+                            }else {
+                                $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
+                                $scope.EBikeInfo.error = 'serviceError';
+                                $scope.EBikeInfo.BluetoothNo = response.Message;
+                            }
+                        })
+                        .catch(function (result) {
+                            $scope.EBikeInfo = {};
                             $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
-                            $scope.EBikeInfo.error = 'serviceError';
-                            $scope.EBikeInfo.BluetoothNo = response.Message;
-                        }
-                    })
-                    .catch(function (result) {
-                        $scope.EBikeInfo = {};
-                        $scope.EBikeInfo.BicycleNo = $scope.ebikeNumber;
-                        $scope.EBikeInfo.error = '?Error';
-                        $scope.EBikeInfo.BluetoothNo = '?Error';
-                    })
-                    .finally(function () {
-                        //
-                    });
+                            $scope.EBikeInfo.error = '?Error';
+                            $scope.EBikeInfo.BluetoothNo = '?Error';
+                        })
+                        .finally(function () {
+                            //
+                        });
+                }else {
+                    $scope.EBikeInfo = {};
+                    $scope.EBikeInfo.SN = $scope.ebikeNumber;
+                    getEBikeLogsFromMima();
+                }
             }
         }
     }
