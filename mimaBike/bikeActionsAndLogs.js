@@ -205,7 +205,7 @@ function structLogContent(leanContentObject) {
                 }
 
                 if (contentObject.messageType == 8){
-                    return false;
+                    // return false;
                 }
 
                 //周期性报文
