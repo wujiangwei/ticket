@@ -324,11 +324,8 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         serviceData.isActive = true;
                     }
 
-                    if(serviceData.SourceType == 77){
-                        serviceData.messageType = "车辆断线报文";
+                    if(serviceData.LogType == 77){
                         serviceData.isActive = false;
-                        $scope.bikeLogDateList.push(serviceData);
-                        continue;
                     }
 
                     //2个特殊报文
