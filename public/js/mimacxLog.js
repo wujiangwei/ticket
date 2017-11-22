@@ -101,6 +101,9 @@ function translateMessageTypeToDes(messageType) {
         case 9:
             return "低功耗报文";
             break;
+        case 77:
+            return "车辆网络断线";
+            break;
         default:
             return "未知报文";
     }
@@ -322,7 +325,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                     }
 
                     if(serviceData.SourceType == 77){
-                        serviceData.isActive = true;
+                        serviceData.isActive = false;
                     }
 
                     //2个特殊报文
