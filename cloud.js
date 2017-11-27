@@ -502,6 +502,10 @@ function alarmBike(sn, satellite, alarmType) {
                                         return;
                                     }
 
+                                    if(bikeId == undefined ||  bikeId.length == 0){
+                                        console.error('sn ' + SN + ' but bike id is null');
+                                        return;
+                                    }
                                     // return;
                                     var sendSmsData = {
                                         mobilePhoneNumber: phoneList[sendPhoneIndex],
@@ -511,6 +515,11 @@ function alarmBike(sn, satellite, alarmType) {
                                         touches: illegalTouch,
                                         illegalityMove: illegalMove
                                     };
+
+                                    if(bikeId == undefined ||  bikeId.length == 0){
+                                        console.error('bikeAlarm: sn ' + SN + ' but bike id is null');
+                                        return;
+                                    }
 
                                     alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
                                         sendPhoneIndex++;
