@@ -149,7 +149,7 @@ function structLogContent(leanContentObject) {
         var Index2 = serviceDataContent.indexOf("(");
         var Index2Ex = serviceDataContent.indexOf(")");
 
-        var userPhone = serviceDataContent.substring(Index0, Index1);
+        var userPhone = serviceDataContent.substring(Index0 + 1, Index1);
         leanContentObject.set('userPhone', userPhone);
 
         var bikeOperationResult;
@@ -157,7 +157,7 @@ function structLogContent(leanContentObject) {
             bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
             leanContentObject.set('bikeOperationResult', bikeOperationResult);
             // 有()
-            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex);
+            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex + 1);
             leanContentObject.set('bikeOperationResultDes', bikeOperationResultDes);
 
         }else {

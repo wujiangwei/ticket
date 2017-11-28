@@ -352,20 +352,27 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         }
 
                         //截取content中的MsgSeq后的数字
+                        var Index0 = serviceDataContent.indexOf("[");
                         var Index1 = serviceDataContent.indexOf("]");
                         var Index2 = serviceDataContent.indexOf("(");
                         var Index2Ex = serviceDataContent.indexOf(")");
 
-                        var userPhone = serviceDataContent.substring(1, Index1);
+                        var userPhone = serviceDataContent.substring(Index0 + 1, Index1);
                         serviceData.userPhone = userPhone;
 
                         var bikeOperationResult;
                         if(Index2 != -1){
-                            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
+                            if(serviceData.SourceType == 1){
+                                //蓝牙
+                                bikeOperationResult = serviceDataContent.substring(0, 6);
+                            }else {
+                                bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
+                            }
                             serviceData.bikeOperationResult = bikeOperationResult;
                             // 有()
-                            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex);
+                            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex + 1);
                             serviceData.bikeOperationResultDes = bikeOperationResultDes;
+
                         }else {
                             bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, serviceDataContent.length);
 
