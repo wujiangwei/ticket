@@ -144,11 +144,12 @@ function structLogContent(leanContentObject) {
         }
 
         //截取content中的MsgSeq后的数字
+        var Index0 = serviceDataContent.indexOf("[");
         var Index1 = serviceDataContent.indexOf("]");
         var Index2 = serviceDataContent.indexOf("(");
         var Index2Ex = serviceDataContent.indexOf(")");
 
-        var userPhone = serviceDataContent.substring(1, Index1);
+        var userPhone = serviceDataContent.substring(Index0, Index1);
         leanContentObject.set('userPhone', userPhone);
 
         var bikeOperationResult;
