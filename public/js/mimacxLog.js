@@ -322,7 +322,7 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                     var serviceData = bikeLogList[i];
 
                     if(i == 0 && $scope.bikeLogDateList.length == 0){
-                        $scope.todayTotalMessageCount = Math.floor(serviceData.ID/$scope.pageDateCount) + 1;
+                        $scope.todayTotalMessageCount = Math.floor(serviceData.ID / $scope.pageDateCount) + 1;
                     }
 
                     //报文类型
@@ -352,39 +352,17 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
                         }
 
                         //截取content中的MsgSeq后的数字
+                        //phone
                         var Index0 = serviceDataContent.indexOf("[");
                         var Index1 = serviceDataContent.indexOf("]");
+
                         var Index2 = serviceDataContent.indexOf("(");
                         var Index2Ex = serviceDataContent.indexOf(")");
 
                         var userPhone = serviceDataContent.substring(Index0 + 1, Index1);
-                        serviceData.userPhone = userPhone;
-
-                        var bikeOperationResult;
-                        if(Index2 != -1){
-                            if(serviceData.SourceType == 1){
-                                //蓝牙
-                                bikeOperationResult = serviceDataContent.substring(0, 6);
-                            }else {
-                                bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
-                            }
-                            serviceData.bikeOperationResult = bikeOperationResult;
-                            // 有()
-                            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex + 1);
-                            serviceData.bikeOperationResultDes = bikeOperationResultDes;
-
-                        }else {
-                            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, serviceDataContent.length);
-
-                            //for des logic
-                            if(bikeOperationResult.length > 8){
-                                serviceData.bikeOperationResult = bikeOperationResult.substring(0, 8);
-                                serviceData.bikeOperationResultDes = bikeOperationResult.substring(8, bikeOperationResult.length);
-                            }else {
-                                serviceData.bikeOperationResult = bikeOperationResult;
-                            }
-                        }
-
+                        serviceData.userPhone = serviceData.userPhone;
+                        serviceData.bikeOperationResult = serviceData.bikeOperationResult;
+                        serviceData.bikeOperationResultDes = serviceData.bikeOperationResultDes;
                         $scope.bikeLogDateList.push(serviceData);
                         continue;
                     }

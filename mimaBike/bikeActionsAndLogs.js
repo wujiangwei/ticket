@@ -144,8 +144,11 @@ function structLogContent(leanContentObject) {
         }
 
         //截取content中的MsgSeq后的数字
+        //手机号
         var Index0 = serviceDataContent.indexOf("[");
         var Index1 = serviceDataContent.indexOf("]");
+
+        //原因或相关备注
         var Index2 = serviceDataContent.indexOf("(");
         var Index2Ex = serviceDataContent.indexOf(")");
 
@@ -154,20 +157,19 @@ function structLogContent(leanContentObject) {
 
         var bikeOperationResult;
         if(Index2 != -1){
-            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, Index2);
+            bikeOperationResult = serviceDataContent.substring(Index1 + 1, Index2);
             leanContentObject.set('bikeOperationResult', bikeOperationResult);
             // 有()
-            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex + 1);
+            var bikeOperationResultDes = serviceDataContent.substring(Index2 + 1, Index2Ex);
             leanContentObject.set('bikeOperationResultDes', bikeOperationResultDes);
 
         }else {
-            bikeOperationResult = serviceDataContent.substring(Index1 + 1 + 2, serviceDataContent.length);
+            bikeOperationResult = serviceDataContent.substring(Index1 + 1, serviceDataContent.length);
+            leanContentObject.set('bikeOperationResultDes', bikeOperationResultDes);
 
             //for des logic
             if(bikeOperationResult.length > 8){
-                leanContentObject.set('bikeOperationResult', bikeOperationResult.substring(0, 8));
-                var bikeOperationResultDes = bikeOperationResult.substring(8, bikeOperationResult.length);
-                leanContentObject.set('bikeOperationResultDes', bikeOperationResultDes);
+                leanContentObject.set('bikeOperationResult', bikeOperationResult.substring(0, 7) + '..');
             }else {
                 leanContentObject.set('bikeOperationResult', bikeOperationResult);
             }
@@ -337,31 +339,31 @@ function structLogContent(leanContentObject) {
 }
 
 
-var newEBikeLogSql = AV.Object.extend("MimaEBikeLogsPartB");
-var newEBikeLog = new newEBikeLogSql();
-
-newEBikeLog.set('SN', 'mimacx0000000000');
-newEBikeLog.set('LogType', 5);
-newEBikeLog.set('Content', '向[mimacx0000000009]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MjEwMDAwMDAwMHhjYW1pbQ=="}');
-newEBikeLog.set('Remark', '命令请求');
-newEBikeLog.set('SourceType', 0);
-
+// var newEBikeLogSql = AV.Object.extend("MimaEBikeLogsPartB");
+// var newEBikeLog = new newEBikeLogSql();
+//
 // newEBikeLog.set('SN', 'mimacx0000000000');
-// newEBikeLog.set('LogType', 3);
-// newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjEwMDAwMDAwMHhjYW1pbQ==","messageType":1,"messageBody":{"latitudeDegree":31,"latitudeMinute":14.259180,"longitudeDegree":120,"longitudeMinute":24.825480,"totalMileage":306.973000,"battery":90,"gpstype":2,"satellite":0,"timeStamp":"2017-10-25 15:00:19","cellId":"460.00.20831.14753"}}');
-// newEBikeLog.set('Remark', '上报数据');
+// newEBikeLog.set('LogType', 5);
+// newEBikeLog.set('Content', '向[mimacx0000000009]转发命令请求成功,MsgSeq:101,payload:{"cmdID":1,"sn":"MjEwMDAwMDAwMHhjYW1pbQ=="}');
+// newEBikeLog.set('Remark', '命令请求');
 // newEBikeLog.set('SourceType', 0);
-
-
-var ret = structLogContent(newEBikeLog)
-if(ret == true){
-    newEBikeLog.save().then(function (savedNewEBikeLog) {
-        console.log('debug structLogContent success');
-    }, function (error) {
-        console.log('mimacx0000000000 save log failed:' + error);
-    });
-}else {
-    console.log('debug structLogContent false');
-}
+//
+// // newEBikeLog.set('SN', 'mimacx0000000000');
+// // newEBikeLog.set('LogType', 3);
+// // newEBikeLog.set('Content', 'protocolCmId:3,payload:{"sn":"MjEwMDAwMDAwMHhjYW1pbQ==","messageType":1,"messageBody":{"latitudeDegree":31,"latitudeMinute":14.259180,"longitudeDegree":120,"longitudeMinute":24.825480,"totalMileage":306.973000,"battery":90,"gpstype":2,"satellite":0,"timeStamp":"2017-10-25 15:00:19","cellId":"460.00.20831.14753"}}');
+// // newEBikeLog.set('Remark', '上报数据');
+// // newEBikeLog.set('SourceType', 0);
+//
+//
+// var ret = structLogContent(newEBikeLog)
+// if(ret == true){
+//     newEBikeLog.save().then(function (savedNewEBikeLog) {
+//         console.log('debug structLogContent success');
+//     }, function (error) {
+//         console.log('mimacx0000000000 save log failed:' + error);
+//     });
+// }else {
+//     console.log('debug structLogContent false');
+// }
 
 module.exports = router
