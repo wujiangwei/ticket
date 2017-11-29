@@ -202,14 +202,14 @@ function structLogContent(leanContentObject) {
                 }
 
                 if (contentObject.messageType == 8){
-                    // return false;
+                    return false;
                 }
 
                 //周期性报文
                 if(contentObject.messageType == 1 || contentObject.messageType == 2){
-                    if(parseInt(contentObject.messageBody.gpstype) == 1 && parseInt(contentObject.messageBody.satellite) < 6){
+                    if(parseInt(contentObject.messageBody.gpstype) == 1 && parseInt(contentObject.messageBody.satellite) < 5){
                         //无效的周期性报文定位
-                        // return false;
+                        return false;
                     }
                 }
 
@@ -322,7 +322,7 @@ function structLogContent(leanContentObject) {
                 case 9:
                     //不保存车辆扶正的报文
                     leanContentObject.set('bikeNState', 'vertical');
-                    // return false;
+                    return false;
                 default:
                     break;
             }
