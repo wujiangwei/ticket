@@ -129,12 +129,6 @@ function structLogContent(leanContentObject) {
     // 处理借车和还车事宜
     if(serviceData.LogType == 100 || serviceData.LogType == 99){
         //借还车
-        // [15656672077]用户还车BT费用计算接口成功,车辆号：077100157
-        // [15656672077]用户还车成功(扣款成功),车辆号：077100157
-        //
-        // [18356610542]用户借车成功,车辆号：077100183
-        // [15888642133]用户借车失败,车辆号：077100124,此车处于下线状态
-
         //str to object
         var serviceDataContent = serviceData.Content;
         if(serviceDataContent.indexOf("成功") != -1){
@@ -149,8 +143,8 @@ function structLogContent(leanContentObject) {
         var Index1 = serviceDataContent.indexOf("]");
 
         //原因或相关备注
-        var Index2 = serviceDataContent.indexOf("(");
-        var Index2Ex = serviceDataContent.indexOf(")");
+        var Index2 = serviceDataContent.lastIndexOf("(");
+        var Index2Ex = serviceDataContent.lastIndexOf(")");
 
         var userPhone = serviceDataContent.substring(Index0 + 1, Index1);
         leanContentObject.set('userPhone', userPhone);
