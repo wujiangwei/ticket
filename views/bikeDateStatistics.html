@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en,cn">
+<head>
+    <meta charset="UTF-8">
+    <title>数据统计</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="http://www.mimadd.com/logo57.png" />
+
+    <!-- 引入 AngularJS Mini 文件 -->
+    <script src="/angular/angular.js"></script>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>-->
+    <!-- Bootstrap core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--需要遵守react的目录结构，日了狗-->
+    <link rel="stylesheet" href="/css/semantic.min.css">
+    <script src="/js/semantic.min.js"></script>
+
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr.min.js"></script>
+
+    <script src="/js/toastr.min.js"></script>
+    <link rel="text/html" href="/js/toastr.min.css">
+    <!--end-->
+
+    <!--网站内部js-->
+    <script src="/static/js/bikeDateStatistics.js"></script>
+
+</head>
+<body ng-app="bikeDateStatisticsApp" ng-controller="bikeDateStatisticsCtrl">
+    <div>
+        <h3 class="ui center aligned header" style="margin-top: 20px">每日数据统计</h3>
+        <div class="ui divider"></div>
+        <h4 class="ui center aligned header">{{todayDate}}</h4>
+
+        <table class="ui red table">
+            <thead>
+            <tr>
+                <th>类型</th>
+                <th>成功总数</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>借车成功</td>
+                <td>{{borrowElectricBikeSCount}}</td>
+
+            </tr>
+
+            <tr>
+                <td>2G借车</td>
+                <td>{{twoGBorrowSuccessCount}}</td>
+
+            </tr>
+
+            <tr>
+                <td>蓝牙借车</td>
+                <td>{{bluetoothBorrowElectricBikeSucceedCount}}</td>
+            </tr>
+
+        </tbody>
+        </table>
+
+        <table class="ui orange table">
+            <thead>
+            <tr>
+                <th>类型</th>
+                <th>失败总数</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>借车失败</td>
+                <td>{{borrowBikeFailureCount}}</td>
+            </tr>
+            <tr>
+                <td>由于下线</td>
+                <td>{{offlineBorrowBikeCount}}</td>
+            </tr>
+            <tr>
+                <td>电量低失败</td>
+                <td>{{lowPowerBorrowBikeCount}}</td>
+            </tr>
+            <tr>
+                <td>Redis被锁失败</td>
+                <td>{{redisCBorrowBikeCount}}</td>
+            </tr>
+            <tr>
+                <td>未开蓝牙失败</td>
+                <td>{{notOpenBluetoothBorrowBikeCount}}</td>
+            </tr>
+
+            <tr>
+                <td>服务区外失败</td>
+                <td>{{outSABorrowBikeFailureCount}}</td>
+            </tr>
+        </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>

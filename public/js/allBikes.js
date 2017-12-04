@@ -281,4 +281,9 @@ app.controller('allBikesCtrl', function($scope, $http, $location) {
             .finally(function () {
             })
     }
+
+    // 查看数据
+    $scope.openButton = function () {
+        window.open('https://mimacx.leanapp.cn/bikeDateStatistics');
+    }
 });
