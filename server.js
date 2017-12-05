@@ -46,6 +46,7 @@ var mimacxProducts = require('./routes/mimacxProduct')
 var liveQuery = require('./routes/liveQuery')
 var traverseUnLockVehicle = require('./routes/traverseUnLockVehicle')
 var bikeDateStatistics = require('./routes/bikeDateStatistics')
+var disconnectLogRem = require('./routes/disconnectLogRemApi')
 
 
 app.set('views', path.join(__dirname, 'views'))
@@ -62,6 +63,7 @@ app.use('/mimacxProducts', mimacxProducts)
 app.use('/liveQuery', liveQuery)
 app.use('/traverseUnLockVehicle', traverseUnLockVehicle)
 app.use('/bikeDateStatistics',bikeDateStatistics)
+app.use('/disconnectLogRem',disconnectLogRem)
 
 //end angularjs
 
