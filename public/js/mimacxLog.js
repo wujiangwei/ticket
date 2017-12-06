@@ -261,6 +261,10 @@ app.controller('mimacxLogCtrl', function($scope, $http, $location) {
         getBikeLogs(action);
     };
 
+    $scope.getUpBikeLog = function (action) {
+        getBikeLogs(action);
+    };
+
 
     $scope.openGpsMap = function(gpsStr) {
         window.open("http://www.gpsspg.com/maps.htm");
