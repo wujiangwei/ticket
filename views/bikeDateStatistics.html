@@ -36,71 +36,194 @@
     <div>
         <h3 class="ui center aligned header" style="margin-top: 20px">每日数据统计</h3>
         <div class="ui divider"></div>
-        <h4 class="ui center aligned header">{{todayDate}}</h4>
+
+        <div class="ui right labeled left icon input" style="margin-left: 450px">
+            <i class="tags icon"></i>
+            <input type="text" placeholder="输入日期" ng-model="inputDate">
+            <a class="ui tag label">
+                格式：2017-12-10
+            </a>
+            <button class="ui blue submit button" ng-disabled="" ng-click="clickHereToView(0)">点击查看</button>
+        </div>
+
+        <div class="ui horizontal divider" style="color: red">
+            借车成功和失败统计
+        </div>
+
+        <div>
+            <table class="ui red table">
+                <thead>
+                <tr>
+                    <th>类型</th>
+                    <th>借车成功总数</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                    <td>借车成功</td>
+                    <td>{{borrowElectricBikeSCount}}</td>
+
+                </tr>
+
+                <tr>
+                    <td>2G借车</td>
+                    <td>{{twoGBorrowSuccessCount}}</td>
+
+                </tr>
+
+                <tr>
+                    <td>蓝牙借车</td>
+                    <td>{{bluetoothBorrowElectricBikeSucceedCount}}</td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <table class="ui orange table">
+                <thead>
+                <tr>
+                    <th>类型</th>
+                    <th>失败总数</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>借车失败</td>
+                    <td>{{borrowBikeFailureCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>2G开锁失败数</td>
+                    <td>{{unlockFaileCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>蓝牙开锁失败数</td>
+                    <td>{{batteryUnlockFaileCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>由于下线</td>
+                    <td>{{offlineBorrowBikeCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>电量低失败</td>
+                    <td>{{lowPowerBorrowBikeCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>车辆已被他人使用</td>
+                    <td>{{redisCBorrowBikeCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>未开蓝牙失败</td>
+                    <td>{{notOpenBluetoothBorrowBikeCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>服务区外失败</td>
+                    <td>{{outSABorrowBikeFailureCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>存在处理中订单</td>
+                    <td>{{existProcessOrderCount}}</td>
+                </tr>
+
+                <tr>
+                    <td>其他原因</td>
+                    <td>{{otherReasons}}</td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="ui horizontal divider" style="color: red">
+            还车成功和失败统计
+        </div>
 
         <table class="ui red table">
             <thead>
             <tr>
                 <th>类型</th>
-                <th>成功总数</th>
+                <th>还车成功总数</th>
             </tr>
             </thead>
 
             <tbody>
             <tr>
-                <td>借车成功</td>
-                <td>{{borrowElectricBikeSCount}}</td>
+                <td>还车成功</td>
+                <td>{{returningBikeSuccessCount}}</td>
 
             </tr>
 
             <tr>
-                <td>2G借车</td>
-                <td>{{twoGBorrowSuccessCount}}</td>
+                <td>2G还车</td>
+                <td>{{twoGReturningBikeSuccess}}</td>
 
             </tr>
 
             <tr>
-                <td>蓝牙借车</td>
-                <td>{{bluetoothBorrowElectricBikeSucceedCount}}</td>
+                <td>蓝牙还车</td>
+                <td>{{batteryReturningBikeSuccess}}</td>
             </tr>
 
-        </tbody>
+            </tbody>
         </table>
 
         <table class="ui orange table">
             <thead>
             <tr>
                 <th>类型</th>
-                <th>失败总数</th>
+                <th>还车失败总数</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td>借车失败</td>
-                <td>{{borrowBikeFailureCount}}</td>
-            </tr>
-            <tr>
-                <td>由于下线</td>
-                <td>{{offlineBorrowBikeCount}}</td>
-            </tr>
-            <tr>
-                <td>电量低失败</td>
-                <td>{{lowPowerBorrowBikeCount}}</td>
-            </tr>
-            <tr>
-                <td>Redis被锁失败</td>
-                <td>{{redisCBorrowBikeCount}}</td>
-            </tr>
-            <tr>
-                <td>未开蓝牙失败</td>
-                <td>{{notOpenBluetoothBorrowBikeCount}}</td>
+                <td>还车失败</td>
+                <td>{{returningBikeFailure}}</td>
             </tr>
 
             <tr>
-                <td>服务区外失败</td>
-                <td>{{outSABorrowBikeFailureCount}}</td>
+                <td>2G还车失败数</td>
+                <td>{{twoGReturningBikeFailure}}</td>
             </tr>
-        </tbody>
+
+            <tr>
+                <td>蓝牙还车失败数</td>
+                <td>{{batteryReturningBikeFailure}}</td>
+            </tr>
+
+            <tr>
+                <td>还车时上锁失败且未开蓝牙</td>
+                <td>{{notOpenBatteryReBikeFailure}}</td>
+            </tr>
+
+            <tr>
+                <td>还车超时</td>
+                <td>{{returningBikeTimeout}}</td>
+            </tr>
+
+            <tr>
+                <td>服务区外还车失败</td>
+                <td>{{outSAReBikeFailure}}</td>
+            </tr>
+
+            <tr>
+                <td>GPS星数小于5</td>
+                <td>{{GPSFailure}}</td>
+            </tr>
+
+            <tr>
+                <td>其他原因</td>
+                <td>{{otherReasonsFailure}}</td>
+            </tr>
+
+            </tbody>
         </table>
 
     </div>
