@@ -56,6 +56,7 @@
                 <tr>
                     <th>类型</th>
                     <th>借车成功总数</th>
+                    <th>百分比</th>
                 </tr>
                 </thead>
 
@@ -63,18 +64,21 @@
                 <tr>
                     <td>借车成功</td>
                     <td>{{borrowElectricBikeSCount}}</td>
+                    <td></td>
 
                 </tr>
 
                 <tr>
                     <td>2G借车</td>
                     <td>{{twoGBorrowSuccessCount}}</td>
+                    <td>{{twoG}}</td>
 
                 </tr>
 
                 <tr>
                     <td>蓝牙借车</td>
                     <td>{{bluetoothBorrowElectricBikeSucceedCount}}</td>
+                    <td>{{bluetooth}}</td>
                 </tr>
 
                 </tbody>
@@ -85,57 +89,68 @@
                 <tr>
                     <th>类型</th>
                     <th>失败总数</th>
+                    <th>百分比</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>借车失败</td>
                     <td>{{borrowBikeFailureCount}}</td>
+                    <td></td>
                 </tr>
 
                 <tr>
                     <td>2G开锁失败数</td>
                     <td>{{unlockFaileCount}}</td>
+                    <td>{{unLock}}</td>
                 </tr>
 
                 <tr>
                     <td>蓝牙开锁失败数</td>
                     <td>{{batteryUnlockFaileCount}}</td>
+                    <td>{{batteryUnLock}}</td>
                 </tr>
 
                 <tr>
                     <td>由于下线</td>
                     <td>{{offlineBorrowBikeCount}}</td>
+                    <td>{{offline}}</td>
                 </tr>
 
                 <tr>
                     <td>电量低失败</td>
                     <td>{{lowPowerBorrowBikeCount}}</td>
+                    <td>{{lowPower}}</td>
                 </tr>
 
                 <tr>
                     <td>车辆已被他人使用</td>
                     <td>{{redisCBorrowBikeCount}}</td>
+                    <td>{{redisC}}</td>
                 </tr>
 
                 <tr>
                     <td>未开蓝牙失败</td>
                     <td>{{notOpenBluetoothBorrowBikeCount}}</td>
+                    <td>{{notOpenBattery}}</td>
                 </tr>
 
                 <tr>
                     <td>服务区外失败</td>
                     <td>{{outSABorrowBikeFailureCount}}</td>
+                    <td>{{outSA}}</td>
                 </tr>
 
                 <tr>
                     <td>存在处理中订单</td>
                     <td>{{existProcessOrderCount}}</td>
+                    <td>{{existProcess}}</td>
                 </tr>
 
                 <tr>
                     <td>其他原因</td>
                     <td>{{otherReasons}}</td>
+                    <td>{{other}}</td>
                 </tr>
 
                 </tbody>
@@ -151,6 +166,7 @@
             <tr>
                 <th>类型</th>
                 <th>还车成功总数</th>
+                <th>百分比</th>
             </tr>
             </thead>
 
@@ -158,18 +174,21 @@
             <tr>
                 <td>还车成功</td>
                 <td>{{returningBikeSuccessCount}}</td>
+                <td></td>
 
             </tr>
 
             <tr>
                 <td>2G还车</td>
                 <td>{{twoGReturningBikeSuccess}}</td>
+                <td>{{A}}</td>
 
             </tr>
 
             <tr>
                 <td>蓝牙还车</td>
                 <td>{{batteryReturningBikeSuccess}}</td>
+                <td>{{B}}</td>
             </tr>
 
             </tbody>
@@ -180,47 +199,56 @@
             <tr>
                 <th>类型</th>
                 <th>还车失败总数</th>
+                <th>百分比</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td>还车失败</td>
                 <td>{{returningBikeFailure}}</td>
+                <td></td>
             </tr>
 
             <tr>
                 <td>2G还车失败数</td>
                 <td>{{twoGReturningBikeFailure}}</td>
+                <td>{{C}}</td>
             </tr>
 
             <tr>
                 <td>蓝牙还车失败数</td>
                 <td>{{batteryReturningBikeFailure}}</td>
+                <td>{{D}}</td>
             </tr>
 
             <tr>
                 <td>还车时上锁失败且未开蓝牙</td>
                 <td>{{notOpenBatteryReBikeFailure}}</td>
+                <td>{{E}}</td>
             </tr>
 
             <tr>
                 <td>还车超时</td>
                 <td>{{returningBikeTimeout}}</td>
+                <td>{{F}}</td>
             </tr>
 
             <tr>
                 <td>服务区外还车失败</td>
                 <td>{{outSAReBikeFailure}}</td>
+                <td>{{G}}</td>
             </tr>
 
             <tr>
                 <td>GPS星数小于5</td>
                 <td>{{GPSFailure}}</td>
+                <td>{{H}}</td>
             </tr>
 
             <tr>
                 <td>其他原因</td>
                 <td>{{otherReasonsFailure}}</td>
+                <td>{{I}}</td>
             </tr>
 
             </tbody>
