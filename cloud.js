@@ -240,10 +240,22 @@ function serviceMonitor(serviceDataContent) {
     }
 }
 
+var crypto = require('crypto');
+
+var timestamp = new Date().getTime();
+
+var crypto_md5 = crypto.createHash('md5');
+
+var a = timestamp + '98klFJ=UX!878_XX8fk'
+crypto_md5.update(a)
+
+var mimacxSign = crypto_md5.digest('hex')
+
 //发送报警短信相关
 // 处理电池断电，查找该车辆运维人员手机号码，发送短信
 function getUserPhoneNumber(sn) {
-    var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn;
+    var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn + '&timestamp=' + timestamp +
+    '&randomNum=98klFJ=UX!878_XX8fk' + '&secretKey=' + mimacxSign;
     httpUtil.httpGetRequest(getPhoneUrl, function (getResponseBody) {
         if(getResponseBody == undefined){
             console.error('minihorse_zb/StuCert/GetCarMes.do api error');
@@ -252,102 +264,100 @@ function getUserPhoneNumber(sn) {
             redisUtil.getSimpleValueFromRedis(sn, function (powerOffBikeId) {
 
                 var areaData = getResponseBody.data;
-                if (areaData.PartnerinfoModel != undefined){
-                    var ownerData = areaData.PartnerinfoModel;
-                    var operateDatas = areaData.PerationuserModel;
+                var ownerData = areaData.PartnerinfoModel;
+                var operateDatas = areaData.PerationuserModel;
 
 
-                    var phoneList = [];
-                    for(var i = 0; i < operateDatas.length; i++){
-                        var perationUser = operateDatas[i];
-                        if(perationUser.NeedWaring == 1){
-                            phoneList.push(perationUser.UserPhone)
-                        }
+                var phoneList = [];
+                for(var i = 0; i < operateDatas.length; i++){
+                    var perationUser = operateDatas[i];
+                    if(perationUser.NeedWaring == 1){
+                        phoneList.push(perationUser.UserPhone)
                     }
-                    //老总放到最后提示，无视他是不是接受短信
-                    for(var i = 0; i < operateDatas.length; i++){
-                        var perationUser = operateDatas[i];
-                        if(perationUser.UserRealName.indexOf('总') != -1 && phoneList.indexOf(perationUser.UserPhone) == -1){
-                            phoneList.push(perationUser.UserPhone)
-                        }
+                }
+                //老总放到最后提示，无视他是不是接受短信
+                for(var i = 0; i < operateDatas.length; i++){
+                    var perationUser = operateDatas[i];
+                    if(perationUser.UserRealName.indexOf('总') != -1 && phoneList.indexOf(perationUser.UserPhone) == -1){
+                        phoneList.push(perationUser.UserPhone)
                     }
-                    //其次是负责人
-                    if(ownerData != null && (ownerData.PartnerCellPhone != null || ownerData.PartnerCellPhone != undefined) && phoneList.indexOf(ownerData.PartnerCellPhone) == -1){
+                }
+                //其次是负责人
+                if(ownerData != null && (ownerData.PartnerCellPhone != null || ownerData.PartnerCellPhone != undefined) && phoneList.indexOf(ownerData.PartnerCellPhone) == -1){
 
-                        phoneList.push(ownerData.PartnerCellPhone);
+                    phoneList.push(ownerData.PartnerCellPhone);
+                }
+                //最后是不接受短信的人
+                // for (var i = 0; i < operateDatas.length; i++) {
+                //     var perationUser = operateDatas[i];
+                //     if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
+                //         phoneList.push(perationUser.UserPhone)
+                //     }
+                // }
+
+                //递归
+                function alarmToPhone() {
+
+                    if(phoneList.length == 0){
+                        //无用户手机号时发这样几个手机号
+                        phoneList.push('15850101846');
+                        phoneList.push('15852580112');
+                        phoneList.push('18379606803');
+                        phoneList.push('17601528908');
                     }
-                    //最后是不接受短信的人
-                    // for (var i = 0; i < operateDatas.length; i++) {
-                    //     var perationUser = operateDatas[i];
-                    //     if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
-                    //         phoneList.push(perationUser.UserPhone)
-                    //     }
-                    // }
 
-                    //递归
-                    function alarmToPhone() {
+                    if(sendPhoneIndex >= phoneList.length){
+                        console.log('---------- bike: ' + powerOffBikeId + ' powerOff,and send error(no phone can send)');
+                        return;
+                    }
 
-                        if(phoneList.length == 0){
-                            //无用户手机号时发这样几个手机号
-                            phoneList.push('15850101846');
-                            phoneList.push('15852580112');
-                            phoneList.push('18379606803');
-                            phoneList.push('17601528908');
-                        }
+                    if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == '' || phoneList[sendPhoneIndex].length < 10){
+                        console.error('phoneList length is ' + phoneList.length);
+                        console.error('sendPhoneIndex is ' + sendPhoneIndex + 'phoneList[sendPhoneIndex] is' + phoneList[sendPhoneIndex]);
+                        sendPhoneIndex++;
+                        alarmToPhone();
+                        return;
+                    }
 
-                        if(sendPhoneIndex >= phoneList.length){
-                            console.log('---------- bike: ' + powerOffBikeId + ' powerOff,and send error(no phone can send)');
-                            return;
-                        }
+                    redisUtil.getSimpleValueFromRedis(sn + '_batteryPower', function (bikeBattery) {
+                        var bikeBatteryPower = bikeBattery;
 
-                        if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == '' || phoneList[sendPhoneIndex].length < 10){
-                            console.error('phoneList length is ' + phoneList.length);
-                            console.error('sendPhoneIndex is ' + sendPhoneIndex + 'phoneList[sendPhoneIndex] is' + phoneList[sendPhoneIndex]);
+                        // return;
+                        var sendSmsData = {
+                            mobilePhoneNumber: phoneList[sendPhoneIndex],
+                            template: 'batteryAlarm',
+                            bikeNumber: powerOffBikeId,
+                            bikePower:bikeBatteryPower
+                        };
+
+                        alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
                             sendPhoneIndex++;
-                            alarmToPhone();
-                            return;
-                        }
+                            if(Ret == 0 && sendPhoneIndex < phoneList.length){
+                                //发送失败，且有人在，继续发送
+                                alarmToPhone();
+                            }else {
+                                //报警成功，删掉这个key，reset
 
-                        redisUtil.getSimpleValueFromRedis(sn + '_batteryPower', function (bikeBattery) {
-                            var bikeBatteryPower = bikeBattery;
-
-                            // return;
-                            var sendSmsData = {
-                                mobilePhoneNumber: phoneList[sendPhoneIndex],
-                                template: 'batteryAlarm',
-                                bikeNumber: powerOffBikeId,
-                                bikePower:bikeBatteryPower
-                            };
-
-                            alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
-                                sendPhoneIndex++;
-                                if(Ret == 0 && sendPhoneIndex < phoneList.length){
-                                    //发送失败，且有人在，继续发送
-                                    alarmToPhone();
-                                }else {
-                                    //报警成功，删掉这个key，reset
-
-                                }
-                            })
+                            }
                         })
+                    })
 
 
-                    }
+                }
 
-                    if(powerOffBikeId == null ){
-                        powerOffBikeId = sn;
+                if(powerOffBikeId == null ){
+                    powerOffBikeId = sn;
 
-                        var sendPhoneIndex = 0;
-                        //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
-                        console.log('---------- powerOffBikeSN: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
-                        alarmToPhone(phoneList[sendPhoneIndex]);
-                    }
-                    else if (powerOffBikeId != ''){
-                        var sendPhoneIndex = 0;
-                        //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
-                        console.log('---------- powerOffBikeID: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
-                        alarmToPhone(phoneList[sendPhoneIndex]);
-                    }
+                    var sendPhoneIndex = 0;
+                    //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
+                    console.log('---------- powerOffBikeSN: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
+                    alarmToPhone(phoneList[sendPhoneIndex]);
+                }
+                else if (powerOffBikeId != ''){
+                    var sendPhoneIndex = 0;
+                    //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板
+                    console.log('---------- powerOffBikeID: ' + powerOffBikeId + ' powerOff,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
+                    alarmToPhone(phoneList[sendPhoneIndex]);
                 }
             })
 
@@ -437,7 +447,8 @@ function alarmBike(sn, satellite, alarmType) {
                 if(illegalMove >= illegalityMovePoliceCountInMin){
                     //请求觅马服务器，获取该车的负责人，发送短信
                     var reqData = {'SN': sn};
-                    var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn;
+                    var getPhoneUrl = 'http://120.27.221.91:8080/minihorse_zb/StuCert/GetCarMes.do?SN=' + sn + '&timestamp=' + timestamp +
+                        '&randomNum=98klFJ=UX!878_XX8fk' + '&secretKey=' + mimacxSign;
                     httpUtil.httpGetRequest(getPhoneUrl, function (getResponseBody) {
 
                         if(getResponseBody == undefined){
@@ -449,106 +460,104 @@ function alarmBike(sn, satellite, alarmType) {
                                 }
 
                                 var areaData = getResponseBody.data;
-                                if (areaData.PartnerinfoModel != undefined){
-                                    var ownerData = areaData.PartnerinfoModel;
-                                    var operateDatas = areaData.PerationuserModel;
+                                var ownerData = areaData.PartnerinfoModel;
+                                var operateDatas = areaData.PerationuserModel;
 
 
-                                    var phoneList = [];
-                                    for(var i = 0; i < operateDatas.length; i++){
-                                        var perationUser = operateDatas[i];
-                                        if(perationUser.NeedWaring == 1){
-                                            phoneList.push(perationUser.UserPhone)
-                                        }
+                                var phoneList = [];
+                                for(var i = 0; i < operateDatas.length; i++){
+                                    var perationUser = operateDatas[i];
+                                    if(perationUser.NeedWaring == 1){
+                                        phoneList.push(perationUser.UserPhone)
                                     }
-                                    //老总放到最后提示，无视他是不是接受短信
-                                    for(var i = 0; i < operateDatas.length; i++){
-                                        var perationUser = operateDatas[i];
-                                        if(perationUser.UserRealName.indexOf('总') != -1 && phoneList.indexOf(perationUser.UserPhone) == -1){
-                                            phoneList.push(perationUser.UserPhone)
-                                        }
-                                    }
-                                    //其次是负责人
-                                    if(ownerData != null && (ownerData.PartnerCellPhone != null || ownerData.PartnerCellPhone != undefined) && phoneList.indexOf(ownerData.PartnerCellPhone) == -1){
-
-                                        phoneList.push(ownerData.PartnerCellPhone);
-                                    }
-                                    //最后是不接受短信的人
-                                    // for (var i = 0; i < operateDatas.length; i++) {
-                                    //     var perationUser = operateDatas[i];
-                                    //     if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
-                                    //         phoneList.push(perationUser.UserPhone)
-                                    //     }
-                                    // }
-
-                                    //递归
-                                    function alarmToPhone() {
-
-                                        if(phoneList.length == 0){
-                                            //无用户手机号时发这样几个手机号
-                                            phoneList.push('15850101846');
-                                            phoneList.push('15852580112');
-                                            phoneList.push('18379606803');
-                                            phoneList.push('17601528908');
-                                        }
-
-                                        if(sendPhoneIndex >= phoneList.length){
-                                            console.log('---------- bike: ' + bikeId + ' shifting,and send error(no phone can send)');
-                                            return;
-                                        }
-
-                                        if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == '' || phoneList[sendPhoneIndex].length < 10){
-                                            console.error('phoneList length is ' + phoneList.length);
-                                            console.error('sendPhoneIndex is ' + sendPhoneIndex + 'phoneList[sendPhoneIndex] is' + phoneList[sendPhoneIndex]);
-                                            sendPhoneIndex++;
-                                            alarmToPhone();
-                                            return;
-                                        }
-
-                                        if(bikeId == undefined ||  bikeId.length == 0){
-                                            console.error('sn ' + SN + ' but bike id is null');
-                                            return;
-                                        }
-                                        // return;
-                                        var sendSmsData = {
-                                            mobilePhoneNumber: phoneList[sendPhoneIndex],
-                                            template: 'bikeAlarm',
-                                            bikeNumber: bikeId,
-                                            alarmTime: process.env['illegalityMovePoliceMin'],
-                                            touches: illegalTouch,
-                                            illegalityMove: illegalMove
-                                        };
-
-                                        if(bikeId == undefined ||  bikeId.length == 0){
-                                            console.error('bikeAlarm: sn ' + SN + ' but bike id is null');
-                                            return;
-                                        }
-
-                                        alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
-                                            sendPhoneIndex++;
-                                            if(Ret == 0 && sendPhoneIndex < phoneList.length){
-                                                //发送失败，且有人在，继续发送
-                                                alarmToPhone();
-                                            }else {
-                                                //报警成功，删掉这个key，reset
-                                                redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
-                                                    if(err != null){
-                                                        console.error('alarmBike del in redis error, ', err.message);
-                                                        return;
-                                                    }
-                                                });
-                                            }
-                                        })
-                                    }
-
-                                    var sendPhoneIndex = 0;
-                                    //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
-                                    console.log('---------- shiftingBike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
-                                    alarmToPhone(phoneList[sendPhoneIndex]);
-
-                                    httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalMove + "非法位移"})
-                                    httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouch + "非法触碰"})
                                 }
+                                //老总放到最后提示，无视他是不是接受短信
+                                for(var i = 0; i < operateDatas.length; i++){
+                                    var perationUser = operateDatas[i];
+                                    if(perationUser.UserRealName.indexOf('总') != -1 && phoneList.indexOf(perationUser.UserPhone) == -1){
+                                        phoneList.push(perationUser.UserPhone)
+                                    }
+                                }
+                                //其次是负责人
+                                if(ownerData != null && (ownerData.PartnerCellPhone != null || ownerData.PartnerCellPhone != undefined) && phoneList.indexOf(ownerData.PartnerCellPhone) == -1){
+
+                                    phoneList.push(ownerData.PartnerCellPhone);
+                                }
+                                //最后是不接受短信的人
+                                // for (var i = 0; i < operateDatas.length; i++) {
+                                //     var perationUser = operateDatas[i];
+                                //     if (perationUser.NeedWaring != 1 && phoneList.indexOf(perationUser.UserPhone) == -1) {
+                                //         phoneList.push(perationUser.UserPhone)
+                                //     }
+                                // }
+
+                                //递归
+                                function alarmToPhone() {
+
+                                    if(phoneList.length == 0){
+                                        //无用户手机号时发这样几个手机号
+                                        phoneList.push('15850101846');
+                                        phoneList.push('15852580112');
+                                        phoneList.push('18379606803');
+                                        phoneList.push('17601528908');
+                                    }
+
+                                    if(sendPhoneIndex >= phoneList.length){
+                                        console.log('---------- bike: ' + bikeId + ' shifting,and send error(no phone can send)');
+                                        return;
+                                    }
+
+                                    if(phoneList[sendPhoneIndex] == undefined || phoneList[sendPhoneIndex] == '' || phoneList[sendPhoneIndex].length < 10){
+                                        console.error('phoneList length is ' + phoneList.length);
+                                        console.error('sendPhoneIndex is ' + sendPhoneIndex + 'phoneList[sendPhoneIndex] is' + phoneList[sendPhoneIndex]);
+                                        sendPhoneIndex++;
+                                        alarmToPhone();
+                                        return;
+                                    }
+
+                                    if(bikeId == undefined ||  bikeId.length == 0){
+                                        console.error('sn ' + SN + ' but bike id is null');
+                                        return;
+                                    }
+                                    // return;
+                                    var sendSmsData = {
+                                        mobilePhoneNumber: phoneList[sendPhoneIndex],
+                                        template: 'bikeAlarm',
+                                        bikeNumber: bikeId,
+                                        alarmTime: process.env['illegalityMovePoliceMin'],
+                                        touches: illegalTouch,
+                                        illegalityMove: illegalMove
+                                    };
+
+                                    if(bikeId == undefined ||  bikeId.length == 0){
+                                        console.error('bikeAlarm: sn ' + SN + ' but bike id is null');
+                                        return;
+                                    }
+
+                                    alarmSms.sendAlarmSms(sendSmsData, function (Ret) {
+                                        sendPhoneIndex++;
+                                        if(Ret == 0 && sendPhoneIndex < phoneList.length){
+                                            //发送失败，且有人在，继续发送
+                                            alarmToPhone();
+                                        }else {
+                                            //报警成功，删掉这个key，reset
+                                            redisUtil.redisClient.del(alarmRedisKey, function (err, reply) {
+                                                if(err != null){
+                                                    console.error('alarmBike del in redis error, ', err.message);
+                                                    return;
+                                                }
+                                            });
+                                        }
+                                    })
+                                }
+
+                                var sendPhoneIndex = 0;
+                                //开始根据发送短信人的优先级发送短信，先接受报警人，其次老板，然后是不接受短信的人
+                                console.log('---------- shiftingBike: ' + bikeId + ' shifting,and start send sms to ' + phoneList[sendPhoneIndex] + '(' + sendPhoneIndex + ')');
+                                alarmToPhone(phoneList[sendPhoneIndex]);
+
+                                httpUtil.httpPost({BicycleNo:bikeId + " | 1 ",Message:"发生" + illegalMove + "非法位移"})
+                                httpUtil.httpPost({BicycleNo:bikeId + " | 3 ",Message:"发生" + illegalTouch + "非法触碰"})
                             })
                         }
                     })
