@@ -117,8 +117,8 @@ function dealEBikeLog(logObject) {
     }
     //蓝牙打开电池仓
     var role = logObject.get('roleDes');
-    var actionMethod = logObject.get('actionMethod');
-    if (actionMethod == 'BlueTooth' && role == 'operator'){
+    var actionMethod = logObject.get('Remark');
+    if (actionMethod == '蓝牙打开电池仓'){
         redisUtil.setSimpleValueToRedis(getOpenBatteryKey(SN), 1, openBatteryMin * 60);
     }
 
@@ -376,7 +376,8 @@ function batteryOff(sn, alarmType) {
                     if (powerBikeID == null){
                         powerBikeID = sn
 
-                        console.log('查看断电redis里状态' + powerBikeID);
+                        console.log('查看断电redis里状态' + openBattery);
+
                         httpUtil.httpPost({BicycleNo:powerBikeID + " | 2 ",Message:"车辆异常断电"})
                         getUserPhoneNumber(sn)
                     }
@@ -642,80 +643,80 @@ AV.Cloud.afterSave('MimaEBikeLogsPartE', function(request) {
 
 
 // 监测是否有车裸奔，第一个函数处理获取未上锁车辆
-function unLockedBikeList(unLockedBikeObject) {
-    var unLockedObject = Object();
-    unLockedObject.LogType = unLockedBikeObject.get('LogType');
-    unLockedObject.Remark = unLockedBikeObject.get('Remark');
-
-    unLockedObject.SN = unLockedBikeObject.get('SN');
-
-    var unLockedContent = unLockedBikeObject.get('Content');
-
-    var payloadIndex = unLockedContent.indexOf("payload:");
-
-    var contentObject = undefined;
-    if (payloadIndex != -1 ){
-        var contentStr = unLockedContent.substring(payloadIndex + 8, unLockedContent.length);
-
-        contentObject = JSON.parse(contentStr);
-    }
-
-    var MsgSeqNumber = undefined;
-    if (unLockedContent.indexOf("MsgSeq:") != -1){
-        MsgSeqNumber = Number(unLockedContent.substring(unLockedContent.indexOf("MsgSeq:") + 7, unLockedContent.indexOf("MsgSeq:") + 10));
-    }
-
-
-    var timestamp = Date.parse(new Date());
-
-    if (unLockedObject.LogType == 5 && MsgSeqNumber == 101 && contentObject.cmdID == 1){
-        redisUtil.setSimpleValueToRedis(unLockedObject.SN + '_unLockComment', timestamp);
-    }
-
-    if (unLockedObject.LogType == 99 && unLockedObject.Remark == '借车'){
-        redisUtil.redisClient.del(unLockedObject.SN + '_unLockComment',function (err, reply) {
-            if(err != null){
-                console.error('删除失败', err.message);
-            }
-        })
-    }
-
-    if (unLockedContent != undefined){
-        if (contentObject.messageType == 1){
-            redisUtil.getSimpleValueFromRedis(unLockedObject.SN + '_unLockComment',function (unLockCommentRel) {
-                if (unLockCommentRel != null){
-                    if (timestamp - unLockCommentRel > 120000){
-                        redisUtil.getSimpleValueFromRedis(unLockedObject.SN,function (bikeID) {
-                            if (bikeID != null){
-                                redisUtil.redisClient.rpush('unLockedList', bikeID)
-                            }
-                        })
-                    }
-                    else {
-                        redisUtil.redisClient.del(unLockedObject.SN + '_unLockComment',function (err, reply) {
-                            if(err != null){
-                                console.error('删除失败', err.message);
-                            }
-                        })
-                    }
-                }
-            })
-        }
-    }
-}
+// function unLockedBikeList(unLockedBikeObject) {
+//     var unLockedObject = Object();
+//     unLockedObject.LogType = unLockedBikeObject.get('LogType');
+//     unLockedObject.Remark = unLockedBikeObject.get('Remark');
+//
+//     unLockedObject.SN = unLockedBikeObject.get('SN');
+//
+//     var unLockedContent = unLockedBikeObject.get('Content');
+//
+//     var payloadIndex = unLockedContent.indexOf("payload:");
+//
+//     var contentObject = undefined;
+//     if (payloadIndex != -1 ){
+//         var contentStr = unLockedContent.substring(payloadIndex + 8, unLockedContent.length);
+//
+//         contentObject = JSON.parse(contentStr);
+//     }
+//
+//     var MsgSeqNumber = undefined;
+//     if (unLockedContent.indexOf("MsgSeq:") != -1){
+//         MsgSeqNumber = Number(unLockedContent.substring(unLockedContent.indexOf("MsgSeq:") + 7, unLockedContent.indexOf("MsgSeq:") + 10));
+//     }
+//
+//
+//     var timestamp = Date.parse(new Date());
+//
+//     if (unLockedObject.LogType == 5 && MsgSeqNumber == 101 && contentObject.cmdID == 1){
+//         redisUtil.setSimpleValueToRedis(unLockedObject.SN + '_unLockComment', timestamp);
+//     }
+//
+//     if (unLockedObject.LogType == 99 && unLockedObject.Remark == '借车'){
+//         redisUtil.redisClient.del(unLockedObject.SN + '_unLockComment',function (err, reply) {
+//             if(err != null){
+//                 console.error('删除失败', err.message);
+//             }
+//         })
+//     }
+//
+//     if (unLockedContent != undefined){
+//         if (contentObject.messageType == 1){
+//             redisUtil.getSimpleValueFromRedis(unLockedObject.SN + '_unLockComment',function (unLockCommentRel) {
+//                 if (unLockCommentRel != null){
+//                     if (timestamp - unLockCommentRel > 120000){
+//                         redisUtil.getSimpleValueFromRedis(unLockedObject.SN,function (bikeID) {
+//                             if (bikeID != null){
+//                                 redisUtil.redisClient.rpush('unLockedList', bikeID)
+//                             }
+//                         })
+//                     }
+//                     else {
+//                         redisUtil.redisClient.del(unLockedObject.SN + '_unLockComment',function (err, reply) {
+//                             if(err != null){
+//                                 console.error('删除失败', err.message);
+//                             }
+//                         })
+//                     }
+//                 }
+//             })
+//         }
+//     }
+// }
 
 // 第二个函数处理裸奔车辆上锁
-function lockedVehicles() {
-    redisUtil.redisClient.lrange('unLockedList', 0, -1, function (err, unLockList) {
-
-        if (unLockList.length > 0){
-            for (var i = 0; i < unLockList.length; i++){
-                var bicycleNo = unLockList[i];
-                httpUtil.lockBikePost(bicycleNo);
-            }
-        }
-    })
-}
+// function lockedVehicles() {
+//     redisUtil.redisClient.lrange('unLockedList', 0, -1, function (err, unLockList) {
+//
+//         if (unLockList.length > 0){
+//             for (var i = 0; i < unLockList.length; i++){
+//                 var bicycleNo = unLockList[i];
+//                 httpUtil.lockBikePost(bicycleNo);
+//             }
+//         }
+//     })
+// }
 
 //以下为测试debug代码
 
