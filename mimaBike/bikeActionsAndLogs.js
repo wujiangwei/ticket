@@ -5,6 +5,8 @@ const router = require('express').Router()
 var AV = require('leanengine');
 var logSqlUtil = require('../mimaBike/logSqlUtil');
 
+var redisUtil = require('../redis/leanObjectRedis');
+
 router.post('/', function(req, res) {
 
     var LogParam = req.body;
